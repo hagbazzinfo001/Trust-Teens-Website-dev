@@ -1,3 +1,5 @@
+import StatsSection from "@/components/ui/statsection";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import CountUpOnView from "@/components/ui/countup";
@@ -9,25 +11,8 @@ import icon5 from "@/public/icon5.svg";
 import icon6 from "@/public/icon6.svg";
 import { Users, GraduationCap, BookOpen, Package } from "lucide-react";
 import Image from "next/image";
-export default function Home() {
-  const stats = [
-    {
-      value: "25+",
-      label: "Purpose driven programs facilitated",
-      color: "bg-orange-500",
-    },
-    {
-      value: "8500+",
-      label: "Direct beneficiaries of our programs and consultancy",
-      color: "bg-yellow-500",
-    },
-    {
-      value: "40+",
-      label: "Programs held in Africa, Europe and North America",
-      color: "bg-purple-700",
-    },
-  ];
 
+export default function Home() {
   const programs = [
     {
       title: "TT Campaigns",
@@ -103,32 +88,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {stats.map((stat, index) => (
-              <Card
-                key={index}
-                className={`${stat.color} text-white border-0 rounded-3xl overflow-hidden`}
-              >
-                <CardContent className="p-6">
-                  <div className="text-3xl md:text-4xl font-bold mb-2">
-                    {stat.value}
-                  </div>
-                  <p className="text-sm">{stat.label}</p>
-                </CardContent>
-              </Card>
-            ))}
-            <div className="sm:col-span-2 lg:col-span-1">
-              <Image
-                src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764462349/Image_2_ckefa5.png?auto=compress&cs=tinysrgb&w=400"
-                alt="Community"
-                width={400}
-                height={400}
-                className="object-cover rounded-3xl"
-              />
-            </div>
-          </div>
+          <StatsSection />
 
-          <div className="rounded-3xl overflow-hidden">
+          <div className="rounded-3xl overflow-hidden mt-12 md:mt-16">
             <Image
               src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764463806/Image_3_1_oi5zni.png?auto=compress&cs=tinysrgb&w=1200"
               alt="Conference"
@@ -178,25 +140,7 @@ export default function Home() {
               Our Program highlights
             </h2>
           </div>
-          {/* <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {programs.map((program, index) => (
-              <Card
-                key={index}
-                className="bg-white text-gray-900 border-0 hover:shadow-xl transition-shadow"
-              >
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="text-3xl">{program.icon}</div>
-                    <div className="text-gray-400">→</div>
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{program.title}</h3>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {program.description}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div> */}
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {programs.map((program, index) => (
               <Card
