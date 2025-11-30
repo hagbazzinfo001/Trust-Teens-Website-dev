@@ -49,27 +49,28 @@ type StatCard = ImageItem | StatItem;
 
 export default function StatsSection() {
   const cardHeights = {
-    tall: "h-[320px] md:h-[380px]",
-    medium: "h-[220px] md:h-[260px]",
-    small: "h-[160px] md:h-[180px]",
+    tall: "h-[350px] md:h-[380px]",
+    medium: "h-[350px] md:h-[260px]",
+    small: "h-[180px] md:h-[200px]",
   };
 
   const stats: StatCard[] = [
     {
       type: "image",
-      img: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764463675/Image_1_1_qihjaa.png",
+      img: "/schchild.svg",
     },
     {
       type: "stat",
       bg: "/oran.svg",
-      value: 150,
-      label: "Active Volunteers",
+      value: 25,
+      label: "Purpose driven initiatives executed",
     },
     {
       type: "stat",
       bg: "/yel.svg",
-      value: 25,
-      label: "Outreach Events",
+      value: 8500,
+      label:
+        "Direct beneficiaries of our programs and continuous learning efforts.",
     },
 
     {
@@ -80,7 +81,8 @@ export default function StatsSection() {
       type: "stat",
       bg: "/bluestar.svg",
       value: 12,
-      label: "Communities Reached",
+      label:
+        "Communities in Africa, expanding presence across cities and schools.",
     },
   ];
 
@@ -121,9 +123,9 @@ export default function StatsSection() {
                   className="object-cover brightness-50"
                 />
 
-                <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-3">
+                <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-3 ">
                   <h2 className="text-3xl md:text-4xl font-bold">
-                    <CountUp end={item.value} />
+                    <CountUp end={item.value} />+
                   </h2>
                   <p className="text-sm md:text-base mt-1">{item.label}</p>
                 </div>

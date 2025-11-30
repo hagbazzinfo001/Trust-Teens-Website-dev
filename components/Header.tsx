@@ -69,32 +69,41 @@ export default function Header() {
 
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t">
-            <nav className="flex flex-col gap-4">
+            {/* <nav className="flex flex-col gap-4"> */}
+            <nav
+              className="flex flex-col gap-4"
+              onClick={() => setIsMenuOpen(false)}
+            >
               <Link
+                onClick={() => setIsMenuOpen(false)}
                 href="/about"
                 className="text-sm hover:text-orange-500 transition-colors"
               >
                 About us
               </Link>
               <Link
+                onClick={() => setIsMenuOpen(false)}
                 href="/impact"
                 className="text-sm hover:text-orange-500 transition-colors"
               >
                 Our impact
               </Link>
               <Link
+                onClick={() => setIsMenuOpen(false)}
                 href="/missions"
                 className="text-sm hover:text-orange-500 transition-colors"
               >
                 Missions
               </Link>
               <Link
+                onClick={() => setIsMenuOpen(false)}
                 href="/community"
                 className="text-sm hover:text-orange-500 transition-colors"
               >
                 Community
               </Link>
               <Link
+                onClick={() => setIsMenuOpen(false)}
                 href="/team"
                 className="text-sm hover:text-orange-500 transition-colors"
               >
