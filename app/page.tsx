@@ -1,4 +1,7 @@
+"use client";
+
 import StatsSection from "@/components/ui/statsection";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -132,7 +135,78 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className="py-12 md:py-20 bg-blue-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+              Our Program highlights
+            </h2>
+          </div>
 
+          {/* Parent for stagger animation */}
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={{
+              hidden: {},
+              show: {
+                transition: {
+                  staggerChildren: 0.25,
+                },
+              },
+            }}
+          >
+            {programs.map((program, index) => (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    x: index % 2 === 0 ? -80 : 80, // LEFT for even, RIGHT for odd
+                  },
+                  show: {
+                    opacity: 1,
+                    x: 0,
+                    transition: {
+                      duration: 0.7,
+                      ease: "easeOut",
+                    },
+                  },
+                }}
+              >
+                <Card className="bg-white text-gray-900 border-0 hover:shadow-xl transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="mb-2">
+                        {typeof program.icon === "string" ? (
+                          <span className="text-3xl">{program.icon}</span>
+                        ) : (
+                          <Image
+                            src={program.icon.src}
+                            width={40}
+                            height={40}
+                            alt={program.title}
+                          />
+                        )}
+                      </div>
+                      <div className="text-gray-400">→</div>
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-3">{program.title}</h3>
+
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {program.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+      {/* 
       <section className="py-12 md:py-20 bg-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
@@ -172,7 +246,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
       <section className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat text-white">
         {/* <section className="py-12 md:py-20 bg-gray-900 text-white"> */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
