@@ -28,13 +28,15 @@ export default function PastCampaigns() {
                   onClick={() => setFeaturedCampaign(campaign)}
                   className={`w-full p-4 rounded-xl text-left transition-all duration-200 group ${
                     featuredCampaign.id === campaign.id
-                      ? `bg-gradient-to-r ${campaign.color} text-white shadow-lg`
-                      : 'bg-gray-50 text-gray-900 hover:bg-gray-100'
+                      // ? `bg-gradient-to-r ${campaign.color} text-black shadow-lg`
+                      ? `bg-orange-300 text-black shadow-lg`
+
+                      : 'bg-white-500 text-gray-900 hover:bg-orange-500'
                   }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-bold text-lg">{campaign.name}</h3>
+                      <h3 className="font-bold text-lg text-black">{campaign.name}</h3>
                       <p className={`text-sm ${
                         featuredCampaign.id === campaign.id
                           ? 'opacity-90'
@@ -53,7 +55,7 @@ export default function PastCampaigns() {
 
             <div className="lg:col-span-2">
               <div className="space-y-4">
-                <div className={`bg-gradient-to-r ${featuredCampaign.color} text-white rounded-2xl p-6 md:p-8`}>
+                <div className={`bg-gradient-to-r ${featuredCampaign.color} text-black rounded-2xl p-6 md:p-8`}>
                   <h3 className="text-2xl md:text-3xl font-bold mb-3">{featuredCampaign.name}</h3>
                   <p className="opacity-90 text-sm md:text-base leading-relaxed">
                     {featuredCampaign.description}
@@ -72,10 +74,10 @@ export default function PastCampaigns() {
 
                 <button
                   onClick={() => setSelectedCampaign(featuredCampaign)}
-                  className={`w-full bg-gradient-to-r ${featuredCampaign.color} text-white font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group`}
+                  className={`w-full bg-gradient-to-r ${featuredCampaign.color} text-black font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group bg-red-500`}
                 >
-                  <span>View Full Campaign Details</span>
-                  <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  <span className='text-white'>View Full Campaign Details</span>
+                  <ChevronRight size={30} className="group-hover:translate-x-1 transition-transform " />
                 </button>
               </div>
             </div>

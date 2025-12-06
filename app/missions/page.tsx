@@ -1,19 +1,24 @@
   
   "use client";
-  import { motion } from "framer-motion";
-import Image from "next/image";
+ import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+
 import { useInView } from "react-intersection-observer";
 import CountUp from "react-countup";
-import { BarChart3, MessageSquare, Settings } from "lucide-react";
-import { useState } from "react";
+ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
  import PastCampaigns from '@/components/PastCampaigns';
  import bb from '@/public/bb.svg'
  import gg from '@/public/gg.svg'
  import oo from '@/public/oo.svg'
  import pp from '@/public/pp.svg'
- // import PartnerSection from "@/components/PartnerSection";
-import UpcomingCampaigns from "@/components/ui/UpcomingCampaigns";
+import icon1 from "@/public/icon1.svg";
+import icon3 from "@/public/icon3.svg";
+import icon4 from "@/public/icon4.svg";
+import icon2 from "@/public/icon2.svg";
+import icon5 from "@/public/icon5.svg";
+import icon6 from "@/public/icon6.svg";
+ import UpcomingCampaigns from "@/components/ui/UpcomingCampaigns";
 import {
   ArrowRight,
   Users,
@@ -37,37 +42,37 @@ const features = [
     title: "Health & Wellness",
     description:
       "Helping teens build healthy habits, stay active, and improve wellbeing.",
-    icon: Users,
+    icon: icon1,
   },
   {
     title: "Digital Literacy",
     description:
       "Teaching safe online behaviour, smart tech use, and digital awareness.",
-    icon: GraduationCap,
+    icon: icon2,
   },
   {
     title: "Social justice",
     description:
       "Helping teens understand fairness, challenge inequality, serve others, support justice.",
-    icon: BookOpen,
+    icon: icon3,
   },
   {
     title: "Emotions & Relationships",
     description:
       "Helping teens understand emotions, build respect, strengthen friendships, set boundaries.",
-    icon: BarChart3,
+    icon: icon4,
   },
   {
     title: "Creativity",
     description:
       "Encouraging teens to explore ideas, express themselves, create new work.",
-    icon: MessageSquare,
+    icon: icon5,
   },
   {
     title: "Food & Nutrition",
     description:
       "Teaching teens healthy eating habits, food awareness, simple nutrition knowledge.",
-    icon: Settings,
+    icon: icon6,
   },
 ];
  
@@ -143,53 +148,79 @@ const displayedFeatures = features.slice(
         </div>
       </section>
 
-      <section className="py-12 md:py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-Our Campaign Sectors            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              This Privacy Policy becomes effective upon your first use ofthe service. understood the and agree to be bound thereby.
-            </p>
-          </div>
-
-       
-<div className="grid md:grid-cols-3 gap-6 mb-12">
-  {displayedFeatures.map((feature, index) => (
-    <Card
-      key={index}
-      className="border-0 shadow-lg hover:shadow-xl transition-shadow"
-    >
-      <CardContent className="p-8">
-        <div className="flex items-start justify-between mb-4">
-          <div className="p-3 bg-orange-100 rounded-lg">
-            <feature.icon className="w-6 h-6 text-orange-600" />
-          </div>
-          <ArrowRight className="w-5 h-5 text-gray-400" />
-        </div>
-        <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-        <p className="text-gray-600 text-sm leading-relaxed">
-          {feature.description}
-        </p>
-      </CardContent>
-    </Card>
-  ))}
-</div>
  
-          <div className="flex justify-center gap-2">
-  {[0, 1].map((i) => (
-    <button
-      key={i}
-      onClick={() => setActiveSet(i)}
-      className={`h-2 rounded-full transition-all ${
-        activeSet === i ? "w-8 bg-orange-500" : "w-2 bg-gray-300"
-      }`}
-    ></button>
-  ))}
-</div>
+      <section className="py-12 md:py-20 bg-gray-50">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-12">
+      <h2 className="text-3xl md:text-5xl font-bold mb-4">
+        Our Campaign Sectors
+      </h2>
+      <p className="text-gray-600 max-w-2xl mx-auto">
+        This Privacy Policy becomes effective upon your first use of the service.
+        Understood and agreed to be bound thereby.
+      </p>
+    </div>
 
-        </div>
-      </section>
+    {/* 🔥 Animated Cards */}
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={activeSet} // triggers animation on click
+        initial={{ opacity: 0, x: 60 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -60 }}
+        transition={{ duration: 0.45 }}
+        className="grid md:grid-cols-3 gap-6 mb-12"
+      >
+        {displayedFeatures.map((feature, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.15 }}
+          >
+            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
+              <CardContent className="p-8">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-3 bg-orange-100 rounded-lg">
+                     <Image
+    src={feature.icon}
+    alt={feature.title}
+    width={30}
+    height={30}
+    className="w-6 h-6 object-contain"
+  />
+                    {/* <feature.icon className="w-6 h-6 text-orange-600" /> */}
+                  </div>
+                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                </div>
+
+                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+
+                <p className="text-gray-600 text-sm leading-relaxed">
+                  {feature.description}
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+
+    {/* Control Dots */}
+    <div className="flex justify-center gap-2">
+      {[0, 1].map((i) => (
+        <button
+          key={i}
+          onClick={() => setActiveSet(i)}
+          className={`h-2 rounded-full transition-all ${
+            activeSet === i ? "w-8 bg-orange-500" : "w-2 bg-gray-300"
+          }`}
+        ></button>
+      ))}
+    </div>
+  </div>
+</section>
+
   <div className="text-center mb-8 mt-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
 Campaigns’ impact            </h2>
@@ -319,8 +350,7 @@ Campaigns’ impact            </h2>
         </motion.a>
       </motion.div>
     </section>
-          {/* <PartnerSection /> */}
-
+ 
     </>
   );
 }

@@ -33,8 +33,8 @@ export const mockCampaigns: Campaign[] = [
       'To provide teenagers with essential hygiene products and knowledge to support their well-being',
       'Foster a sense of empowerment and responsibility among teenagers towards their own health and well-being'
     ],
-    featuredImage: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400',
-    headerImage: 'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featuredImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765054416/Rectangle_17_uzmndm.png?auto=compress&cs=tinysrgb&w=400',
+    headerImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765054416/Rectangle_17_uzmndm.png?auto=compress&cs=tinysrgb&w=800',
     impact: [
       { label: 'Teenagers Reached', value: 210 },
       { label: 'Communities Engaged', value: 4 },
@@ -52,7 +52,7 @@ export const mockCampaigns: Campaign[] = [
       { name: 'OYO', logo: '🏨' }
     ],
     gallery: [
-      'https://images.pexels.com/photos/3807517/pexels-photo-3807517.jpeg?auto=compress&cs=tinysrgb&w=400',
+      'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765054416/Rectangle_17_uzmndm.png?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3807518/pexels-photo-3807518.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3807519/pexels-photo-3807519.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3807520/pexels-photo-3807520.jpeg?auto=compress&cs=tinysrgb&w=400',
@@ -76,8 +76,8 @@ export const mockCampaigns: Campaign[] = [
       'Raise awareness about mental health and emotional well-being',
       'Build confidence and foster positive peer relationships'
     ],
-    featuredImage: 'https://images.pexels.com/photos/3808059/pexels-photo-3808059.jpeg?auto=compress&cs=tinysrgb&w=400',
-    headerImage: 'https://images.pexels.com/photos/3808059/pexels-photo-3808059.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featuredImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510689/Group_516_bplvj3.png?auto=compress&cs=tinysrgb&w=400',
+    headerImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510689/Group_516_bplvj3.png?auto=compress&cs=tinysrgb&w=800',
     impact: [
       { label: 'Teenagers Reached', value: 180 },
       { label: 'Communities Engaged', value: 3 },
@@ -90,7 +90,7 @@ export const mockCampaigns: Campaign[] = [
       { name: 'Amazon', logo: '📦' }
     ],
     gallery: [
-      'https://images.pexels.com/photos/3808059/pexels-photo-3808059.jpeg?auto=compress&cs=tinysrgb&w=400',
+      'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510689/Group_516_bplvj3.png?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808060/pexels-photo-3808060.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808061/pexels-photo-3808061.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808062/pexels-photo-3808062.jpeg?auto=compress&cs=tinysrgb&w=400',
@@ -100,7 +100,7 @@ export const mockCampaigns: Campaign[] = [
       'https://images.pexels.com/photos/3808066/pexels-photo-3808066.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808067/pexels-photo-3808067.jpeg?auto=compress&cs=tinysrgb&w=400'
     ],
-    color: 'from-pink-500 to-pink-600'
+    color: 'from-orange-500 to-orange-600'
   },
   {
     id: '3',
@@ -114,8 +114,8 @@ export const mockCampaigns: Campaign[] = [
       'Foster entrepreneurship mindset and skills',
       'Create job-ready opportunities for youth'
     ],
-    featuredImage: 'https://images.pexels.com/photos/3808100/pexels-photo-3808100.jpeg?auto=compress&cs=tinysrgb&w=400',
-    headerImage: 'https://images.pexels.com/photos/3808100/pexels-photo-3808100.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featuredImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510219/Group_582_g80ue8.png?auto=compress&cs=tinysrgb&w=400',
+    headerImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510219/Group_582_g80ue8.png?auto=compress&cs=tinysrgb&w=800',
     impact: [
       { label: 'Teenagers Reached', value: 250 },
       { label: 'Communities Engaged', value: 5 },
@@ -128,7 +128,7 @@ export const mockCampaigns: Campaign[] = [
       { name: 'OYO', logo: '🏨' }
     ],
     gallery: [
-      'https://images.pexels.com/photos/3808100/pexels-photo-3808100.jpeg?auto=compress&cs=tinysrgb&w=400',
+      'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510219/Group_582_g80ue8.png?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808101/pexels-photo-3808101.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808102/pexels-photo-3808102.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808103/pexels-photo-3808103.jpeg?auto=compress&cs=tinysrgb&w=400',
@@ -138,6 +138,6 @@ export const mockCampaigns: Campaign[] = [
       'https://images.pexels.com/photos/3808107/pexels-photo-3808107.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3808108/pexels-photo-3808108.jpeg?auto=compress&cs=tinysrgb&w=400'
     ],
-    color: 'from-blue-500 to-blue-600'
+    color: 'from-orange-500 to-orange-600'
   }
 ];

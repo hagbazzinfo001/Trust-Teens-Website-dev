@@ -1,11 +1,11 @@
 "use client"; // ← Add this at the very top
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckSquare } from "lucide-react";
-import "aos/dist/aos.css";
+// import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import AOS from "aos";
-import "aos/dist/aos.css";
+// import "aos/dist/aos.css";
 import Image from "next/image";
 
 export default function AboutPage() {

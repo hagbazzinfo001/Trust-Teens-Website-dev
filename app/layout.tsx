@@ -13,14 +13,14 @@ const baloo = Baloo_2({
 });
 
 // Product Sans (body text)
-const productSans = localFont({
-  src: [
-    { path: "./fonts/ProductSans-Regular.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/ProductSans-Bold.ttf", weight: "700", style: "normal" },
-    { path: "./fonts/ProductSans-Italic.ttf", weight: "400", style: "italic" },
-  ],
-  variable: "--font-product-sans",
-});
+// const productSans = localFont({
+//   src: [
+//     { path: "./fonts/ProductSans-Regular.ttf", weight: "400", style: "normal" },
+//     { path: "./fonts/ProductSans-Bold.ttf", weight: "700", style: "normal" },
+//     { path: "./fonts/ProductSans-Italic.ttf", weight: "400", style: "italic" },
+//   ],
+//   variable: "--font-product-sans",
+// });
 
 export const metadata: Metadata = {
   title: "Trust Teens - Empowering African Teenagers",
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${productSans.variable} ${baloo.variable}`}>
-      <body className="font-productSans ">
+    <html lang="en" className={`${baloo.variable}`}>
+      <body className="font-baloo ">
         <Header />
         <main>{children}</main>
         <Footer />

@@ -26,8 +26,8 @@ export default function CampaignDetailsModal({ campaign, onClose }: CampaignDeta
 
             <div className={`bg-gradient-to-r ${campaign.color} text-white p-8 md:p-12`}>
               <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
-                <p className="text-lg opacity-90">{campaign.fullDescription}</p>
+                <h1 className="text-4xl md:text-5xl font-bold text-black">{campaign.name}</h1>
+                <p className="text-lg opacity-90 text-black">{campaign.fullDescription}</p>
               </div>
             </div>
 
@@ -63,7 +63,7 @@ export default function CampaignDetailsModal({ campaign, onClose }: CampaignDeta
                   <div className={`w-1 h-8 bg-gradient-to-b ${campaign.color}`}></div>
                   <h2 className="text-2xl font-bold text-gray-900">IMPACT</h2>
                 </div>
-                <div className={`bg-gradient-to-r ${campaign.color} text-white rounded-2xl p-8`}>
+                <div className={`bg-gradient-to-r ${campaign.color} text-black rounded-2xl p-8`}>
                   <h3 className="text-2xl font-bold mb-8">Impact of this campaign</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {campaign.impact.map((stat, index) => (

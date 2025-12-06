@@ -12,7 +12,7 @@ import icon4 from "@/public/icon4.svg";
 import icon2 from "@/public/icon2.svg";
 import icon5 from "@/public/icon5.svg";
 import icon6 from "@/public/icon6.svg";
-import { Users, GraduationCap, BookOpen, Package } from "lucide-react";
+// import { Users, GraduationCap, BookOpen, Package } from "lucide-react";
 import Image from "next/image";
 
 export default function Home() {

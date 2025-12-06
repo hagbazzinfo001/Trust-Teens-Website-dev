@@ -23,8 +23,7 @@ const config: Config = {
 
       fontFamily: {
         baloo: ['var(--font-baloo)'],
-        product: ['var(--font-product-sans)'],
-      },
+       },
       
       colors: {
         background: 'hsl(var(--background))',
@@ -87,10 +86,7 @@ const config: Config = {
           '50%': { transform: 'translateY(-12px)' },
           '100%': { transform: 'translateY(0)' },
         },
-        shine: {
-          '0%': { transform: 'translateX(-150%) rotate(20deg)' },
-          '100%': { transform: 'translateX(300%) rotate(20deg)' },
-        },
+        
         'accordion-down': {
           from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
