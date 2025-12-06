@@ -41,7 +41,7 @@ export default function AboutPage() {
     },
     {
       name: "Alex Oyebanji",
-      role: "Founder, Paperback",
+      role: "Founder, Peercheck",
       image:
         "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764440281/alex_dbug1a.png?auto=compress&cs=tinysrgb&w=400",
     },

@@ -6,6 +6,16 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --font-product-sans: "Product Sans", sans-serif;
+  --font-baloo: "Baloo 2", cursive;
+}
+body {
+  font-family: var(--font-product-sans);
+}
+
+/* Headings use Baloo */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-baloo);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -14,6 +24,96 @@
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
   }
+}
+/* floating image animation */
+.float-animation {
+  animation: floatUpDown 4s ease-in-out infinite;
+}
+
+@keyframes floatUpDown {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
+/* shine button effect */
+.shine-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  transform: skewX(-20deg);
+  transition: 0.7s;
+}
+
+.shine-btn:hover::before {
+  left: 150%;
+}
+/* ---------------------------------- */
+/* Shine Animation */
+/* ---------------------------------- */
+
+/* .shine {
+  pointer-events: none;
+}
+
+.shine-animate {
+  animation: shineMove 0.8s ease forwards;
+} */
+.partner-shine {
+  pointer-events: none;
+}
+
+.partner-shine.partner-shine-animate {
+  animation: shineMove 0.8s ease forwards;
+}
+
+@keyframes shineMove {
+  0% {
+    left: -150%;
+  }
+  50% {
+    left: 50%;
+  }
+  100% {
+    left: 150%;
+  }
+}
+
+/* ---------------------------------- */
+/* Button Click Scale Animation */
+/* ---------------------------------- */
+
+.btn-click-animate {
+  animation: clickScale 0.25s ease-out;
+}
+
+@keyframes clickScale {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1.03);
+  }
+}
+@font-face {
+  font-family: "ProductSans";
+  src: url("/fonts/ProductSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ProductSans";
+  src: url("/fonts/ProductSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
 }
 
 @layer base {

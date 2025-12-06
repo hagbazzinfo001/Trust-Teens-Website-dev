@@ -1,31 +1,37 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Baloo_2 } from "next/font/google";
-// import { inter } from "next/font/google";
-
+import localFont from "next/font/local";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-// const inter = Inter({ subsets: ["latin"] });
+// Baloo (for headings)
 const baloo = Baloo_2({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+  variable: "--font-baloo",
+});
+
+// Product Sans (body text)
+const productSans = localFont({
+  src: [
+    { path: "./fonts/ProductSans-Regular.ttf", weight: "400", style: "normal" },
+    { path: "./fonts/ProductSans-Bold.ttf", weight: "700", style: "normal" },
+    { path: "./fonts/ProductSans-Italic.ttf", weight: "400", style: "italic" },
+  ],
+  variable: "--font-product-sans",
 });
 
 export const metadata: Metadata = {
   title: "Trust Teens - Empowering African Teenagers",
   description:
-    "We create value-based communities, learning experiences, and environments that help young people discover who they are, what they're capable of, and how they can shape the world around them.",
+    "We create value-based communities, learning experiences, and environments that help young people discover who they are and what they can become.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={baloo.className}>
+    <html lang="en" className={`${productSans.variable} ${baloo.variable}`}>
+      <body className="font-productSans ">
         <Header />
         <main>{children}</main>
         <Footer />
