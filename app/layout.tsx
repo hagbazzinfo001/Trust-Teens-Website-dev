@@ -1,8 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Baloo_2 } from "next/font/google";
-import localFont from "next/font/local";
-import Header from "@/components/Header";
+ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 // Baloo (for headings)
@@ -12,15 +11,7 @@ const baloo = Baloo_2({
   variable: "--font-baloo",
 });
 
-// Product Sans (body text)
-// const productSans = localFont({
-//   src: [
-//     { path: "./fonts/ProductSans-Regular.ttf", weight: "400", style: "normal" },
-//     { path: "./fonts/ProductSans-Bold.ttf", weight: "700", style: "normal" },
-//     { path: "./fonts/ProductSans-Italic.ttf", weight: "400", style: "italic" },
-//   ],
-//   variable: "--font-product-sans",
-// });
+ 
 
 export const metadata: Metadata = {
   title: "Trust Teens - Empowering African Teenagers",
