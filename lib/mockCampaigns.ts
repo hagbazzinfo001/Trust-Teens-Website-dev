@@ -42,14 +42,14 @@ export const mockCampaigns: Campaign[] = [
       { label: 'Advocacy Stations', value: 6 }
     ],
     partners: [
-      { name: 'Airbnb', logo: '🏠' },
-      { name: 'Amazon', logo: '📦' },
-      { name: 'FedEx', logo: '🚚' },
-      { name: 'Microsoft', logo: '💻' },
-      { name: 'Google', logo: '🔍' },
-      { name: 'OLA', logo: '🚗' },
-      { name: 'Walmart', logo: '🛒' },
-      { name: 'OYO', logo: '🏨' }
+      { name: 'Airbnb', logo: '/Airbnb Logo.svg' },
+      { name: 'Amazon', logo: '/Amazon Logo.svg' },
+      { name: 'FedEx', logo: '/FedEx Logo.svg' },
+      { name: 'Microsoft', logo: '/Microsoft Logo.svg' },
+      { name: 'Google', logo: '/Google Logo.svg' },
+      { name: 'OLA', logo: '/OLA logo.svg' },
+      { name: 'Walmart', logo: '/Walmart Logo.svg' },
+      { name: 'OYO', logo: '/OYO Logo.svg' }
     ],
     gallery: [
       'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765054416/Rectangle_17_uzmndm.png?auto=compress&cs=tinysrgb&w=400',

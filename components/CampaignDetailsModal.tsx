@@ -11,6 +11,15 @@ interface CampaignDetailsModalProps {
 
 export default function CampaignDetailsModal({ campaign, onClose }: CampaignDetailsModalProps) {
   if (!campaign) return null;
+const listicons = {
+  'Icon1': '/icon1.svg',
+  'Icon2': '/icon2.svg',
+  'Icon3': '/icon3.svg',
+  'Icon4': '/icon4.svg',
+  'Icon5': '/icon5.svg', 
+  'Icon6': '/icon6.svg',
+}
+const iconsArray = Object.values(listicons);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
@@ -24,47 +33,67 @@ export default function CampaignDetailsModal({ campaign, onClose }: CampaignDeta
               <X size={24} />
             </button>
 
-            <div className={`bg-gradient-to-r ${campaign.color} text-white p-8 md:p-12`}>
+            <div className='bg-orange-600 text-white p-8 md:p-12' >
               <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl font-bold text-black">{campaign.name}</h1>
-                <p className="text-lg opacity-90 text-black">{campaign.fullDescription}</p>
+                <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
+                <p className="text-lg opacity-90 ">{campaign.fullDescription}</p>
               </div>
-            </div>
-
-            <div className="h-64 md:h-96 overflow-hidden bg-gray-200">
+                      <div className="h-64 md:h-96 overflow-hidden bg-gray-200 mt-5 rounded-lg">
               <img
                 src={campaign.headerImage}
                 alt={campaign.name}
                 className="w-full h-full object-cover"
               />
             </div>
+            </div>
 
-            <div className="p-8 md:p-12 space-y-12">
+    
+
+            <div className="p-8 md:p-10 space-y-12">
               <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={`w-1 h-8 bg-gradient-to-b ${campaign.color}`}></div>
-                  <h2 className="text-2xl font-bold text-gray-900">ABOUT EVENT</h2>
+                <div className="flex items-center gap-3 mb-2">
+                   <h2 className="text-2xl font text-gray-900">ABOUT EVENT</h2>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">{campaign.objective}</h3>
+<div className="flex flex-col lg:flex-row items-start gap-8">
+<div className="w-full lg:w-3/5">
+  <h3 className="text-xl font-bold text-gray-900 mb-4">{campaign.objective}</h3>
                   <ul className="space-y-3">
                     {campaign.objectives.map((objective, index) => (
                       <li key={index} className="flex items-start gap-3 text-gray-600">
-                        <div className={`w-2 h-2 rounded-full mt-2 bg-gradient-to-r ${campaign.color}`}></div>
+                             <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${campaign.color}`}>
+        <img 
+          src={iconsArray[index % iconsArray.length]} 
+          alt="icon" 
+          className="w-5 h-5"
+        />
+      </div>
+    
                         <span>{objective}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
+                <div className="w-full lg:w-2/5">
+    <img
+      src={campaign.featuredImage}
+      alt={campaign.name}
+      className="w-full h-auto rounded-lg object-cover"
+    />
+  </div>
+                </div>
+               
               </div>
 
               <div>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className={`w-1 h-8 bg-gradient-to-b ${campaign.color}`}></div>
-                  <h2 className="text-2xl font-bold text-gray-900">IMPACT</h2>
-                </div>
-                <div className={`bg-gradient-to-r ${campaign.color} text-black rounded-2xl p-8`}>
-                  <h3 className="text-2xl font-bold mb-8">Impact of this campaign</h3>
+                
+                <div className={`bg-gradient-to-r ${campaign.color} text-white rounded-2xl p-8 `}
+                  style={{
+                    backgroundImage: `url('/Background.svg')`,
+                    backgroundSize: "contain",
+                    // backgroundRepeat: "no-repeat",
+                    backgroundPosition: "center",
+                  }}>
+                  <h3 className="text-2xl font-bold mb-8 text-center">Impact of this campaign</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {campaign.impact.map((stat, index) => (
                       <div key={index} className="text-center">
@@ -76,30 +105,39 @@ export default function CampaignDetailsModal({ campaign, onClose }: CampaignDeta
                 </div>
               </div>
 
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <div className={`w-1 h-8 bg-gradient-to-b ${campaign.color}`}></div>
-                  <h2 className="text-2xl font-bold text-gray-900">OUR PARTNERS</h2>
-                </div>
-                <p className="text-gray-600 mb-8">
-                  These partners supported this campaign through resources, expertise, and vision to reach more teenagers and deliver stronger impact.
-                </p>
-                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
-                  {campaign.partners.map((partner, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors text-2xl"
-                    >
-                      {partner.logo}
-                    </div>
-                  ))}
-                </div>
-              </div>
+  <div className="flex flex-row gap-4 flex-wrap lg:flex-nowrap">
+  {/* LEFT SECTION */}
+  <div className="flex flex-col items-start gap-3 mb-2 w-full lg:w-auto">
+     <h2 className="text-2xl font-bold text-gray-900">OUR PARTNERS</h2>
+    <p className="text-gray-600 mb-8">
+      These partners supported this campaign through resources, expertise, and vision
+      to reach more teenagers and deliver stronger impact.
+    </p>
+  </div>
+
+  {/* RIGHT SECTION - 60% width on large screens */}
+  <div className="w-full lg:w-[140%] grid grid-cols-2 md:grid-cols-4 gap-4">
+    {campaign.partners.map((partner, index) => (
+      <div
+        key={index}
+        className="flex items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
+      >
+        <img
+          src={partner.logo}
+          alt={partner.name}
+          width={150}
+          height={150}
+          className="w-full h-auto object-contain"
+        />
+      </div>
+    ))}
+  </div>
+</div>
+
 
               <div>
-                <div className="flex items-center gap-3 mb-8">
-                  <div className={`w-1 h-8 bg-gradient-to-b ${campaign.color}`}></div>
-                  <h2 className="text-2xl font-bold text-gray-900">GALLERY</h2>
+                <div className="flex items-center gap-3 mb-2">
+                   <h2 className="text-2xl font text-gray-900">GALLERY</h2>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-6">Moments from the Event</h3>

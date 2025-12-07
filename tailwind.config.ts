@@ -23,6 +23,8 @@ const config: Config = {
 
       fontFamily: {
         baloo: ['var(--font-baloo)'],
+              inter: ["var(--font-inter)"],
+
        },
       
       colors: {

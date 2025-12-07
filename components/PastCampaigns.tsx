@@ -74,7 +74,7 @@ export default function PastCampaigns() {
 
                 <button
                   onClick={() => setSelectedCampaign(featuredCampaign)}
-                  className={`w-full bg-gradient-to-r ${featuredCampaign.color} text-black font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group bg-red-500`}
+                  className={`w-full bg-gradient-to-r ${featuredCampaign.color} text-black font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group bg-green-500`}
                 >
                   <span className='text-white'>View Full Campaign Details</span>
                   <ChevronRight size={30} className="group-hover:translate-x-1 transition-transform " />

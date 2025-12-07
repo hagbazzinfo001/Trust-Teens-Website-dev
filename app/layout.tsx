@@ -3,12 +3,17 @@ import type { Metadata } from "next";
 import { Baloo_2 } from "next/font/google";
  import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { Inter } from "next/font/google";
 
 // Baloo (for headings)
 const baloo = Baloo_2({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-baloo",
+});
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
  
@@ -21,8 +26,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${baloo.variable}`}>
-      <body className="font-baloo ">
+<html lang="en" className={`${baloo.variable} ${inter.variable}`}>
+      {/* <body className="font-baloo "> */}
+      <body className="font-inter">
+
         <Header />
         <main>{children}</main>
         <Footer />
