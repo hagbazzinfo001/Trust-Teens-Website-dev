@@ -40,7 +40,7 @@ export default function AboutPage() {
         "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764436920/deborah_yw4azn.png?auto=compress&cs=tinysrgb&w=400",
     },
     {
-      name: "Alex Oyebanji",
+      name: "Alex Oyebade",
       role: "Founder, Peercheck",
       image:
         "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764440281/alex_dbug1a.png?auto=compress&cs=tinysrgb&w=400",
@@ -60,52 +60,38 @@ export default function AboutPage() {
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
-        <section className="relative overflow-hidden bg-purple-700 text-white py-12 md:py-20 rounded-[3rem]">
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-10 right-10 w-32 h-32">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <circle cx="20" cy="20" r="5" fill="orange" />
-                <circle cx="50" cy="30" r="8" fill="orange" />
-                <circle cx="70" cy="50" r="6" fill="orange" />
-                <path
-                  d="M 10 80 Q 40 60, 70 80"
-                  stroke="orange"
-                  strokeWidth="3"
-                  fill="none"
-                />
-              </svg>
-            </div>
-            <div className="absolute top-20 right-20 w-40 h-40">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                <path d="M 50 10 L 70 40 L 50 70 L 30 40 Z" fill="brown" />
-                <circle cx="50" cy="50" r="15" fill="brown" />
-              </svg>
-            </div>
-          </div>
+      <section
+  className="
+    relative overflow-hidden 
+    text-white py-12 md:py-20 rounded-[3rem]
+    bg-no-repeat bg-center bg-cover
+    bg-[url('/bluestar_bg.svg')]
+  "
+>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="mb-8 flex justify-left gap-6">
-              <div className="opacity-0 md:opacity-100 transition-opacity duration-300">
-                {" "}
-                <Image
-                  src="/visionimage.svg"
-                  width={150}
-                  height={150}
-                  alt="Picture of the author"
-                />
-              </div>
-              <div className="max-w-2xl mb-8 ">
-                <h1 className="text-4xl md:text-6xl font-bold mb-6">
+
+           
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+             <div className="mb-8  gap-6">
+<div
+className="
+  max-w-3xl mb-8
+  ml-0                        /* Mobile: no shifting */
+  md:ml-[49%] md:-translate-x-1/2   /* Desktop: center-left shifting */
+  transform
+"
+>
+               <h1 className="text-4xl md:text-6xl font-bold mb-6">
                   Our Vision Statement
                 </h1>
-                <p className="text-lg md:text-xl leading-relaxed">
+                <p className="text-lg md:text-xl leading-relaxed ">
                   We envision a world where African teenagers become the spark
                   for generational cycles of wholeness, leadership, and societal
                   transformation.
                 </p>
               </div>
             </div>
-
+ 
             <div className="rounded-3xl overflow-hidden border-white">
               <Image
                 src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764439753/Image_3_p6utdj.png?auto=compress&cs=tinysrgb&w=1200"
@@ -116,7 +102,8 @@ export default function AboutPage() {
               />
             </div>
           </div>
-        </section>
+        </section> 
+
 
         <section className="py-12 md:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

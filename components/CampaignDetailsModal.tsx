@@ -24,7 +24,7 @@ const iconsArray = Object.values(listicons);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
       <div className="min-h-screen py-8 px-4">
-        <div className="max-w-4xl mx-auto bg-white rounded-2xl overflow-hidden">
+        <div className="max-w-6xl mx-auto bg-white rounded-2xl overflow-hidden">
           <div className="relative">
             <button
               onClick={onClose}
@@ -33,21 +33,23 @@ const iconsArray = Object.values(listicons);
               <X size={24} />
             </button>
 
-            <div className='bg-orange-600 text-white p-8 md:p-12' >
-              <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
-                <p className="text-lg opacity-90 ">{campaign.fullDescription}</p>
-              </div>
-                      <div className="h-64 md:h-96 overflow-hidden bg-gray-200 mt-5 rounded-lg">
-              <img
-                src={campaign.headerImage}
-                alt={campaign.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            </div>
+ 
 
-    
+<div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/orange_bg.svg)]">
+  <div className="space-y-4 ml-0 md:ml-[50%] tranform md:-translate-x-1/2 w-full md:w-3/5 text-center md:text-left">
+    <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
+    <p className="text-lg opacity-90">{campaign.fullDescription}</p>
+  </div>
+
+  <div className="h-64 md:h-96 overflow-hidden bg-gray-200 mt-5 rounded-lg">
+    <img
+      src={campaign.headerImage}
+      alt={campaign.name}
+      className="w-full h-full object-cover"
+    />
+  </div>
+</div>
+
 
             <div className="p-8 md:p-10 space-y-12">
               <div>

@@ -2,7 +2,7 @@
 
 import StatsSection from "@/components/ui/statsection";
 import { motion } from "framer-motion";
-
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import CountUpOnView from "@/components/ui/countup";
@@ -115,12 +115,15 @@ export default function Home() {
                 Trust Teens
               </h2>
 
-              <Button
-                variant="outline"
-                className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white"
-              >
-                There&#39;s more to tell
-              </Button>
+              <Link href="/about">
+  <Button
+    variant="outline"
+    className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white"
+  >
+    There&apos;s more to tell
+  </Button>
+</Link>
+
             </div>
             <div className="relative">
               <p className="text-gray-700 mb-6 leading-relaxed">
@@ -135,7 +138,8 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <section className="py-12 md:py-20 bg-blue-600 text-white">
+      <section className="py-12 md:py-20  bg-no-repeat bg-center bg-cover
+    bg-[url('/blue_bg.svg')] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
