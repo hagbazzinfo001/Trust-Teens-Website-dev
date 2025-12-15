@@ -16,20 +16,15 @@ import icon6 from "@/public/icon6.svg";
 
 const missionItems = [
   { name: 'TT Campaigns', slug: 'campaigns', icon: icon1 },
-  { name: 'TT Summits', slug: 'summits', icon: icon2 },
+  { name: 'TT Summits', slug: 'summit', icon: icon2 },
   { name: 'TT Conference', slug: 'conference', icon: icon3 },
-  { name: 'TT School Club', slug: 'school-club', icon: icon4 },
-  { name: 'TT Community Clubs', slug: 'community-clubs', icon: icon5 },
-];
+  ];
 
 const communityItems = [
-  { name: 'TT Community', slug: 'community', icon: icon6 },
-  { name: 'TT Curriculum', slug: 'curriculum', icon: icon5 },
+   { name: 'TT Curriculum', slug: 'curriculum', icon: icon5 },
   { name: 'TT Community Service', slug: 'community-service', icon: icon3 },
   { name: 'TT Hangout', slug: 'hangout', icon: icon4 },
-  { name: 'TT Blogs', slug: 'blogs', icon: icon2 },
-  { name: 'TT TV', slug: 'tv', icon: icon1 },
-];
+  ];
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -173,8 +168,8 @@ export default function Header() {
                         className="flex items-center gap-3 p-2 text-sm text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-colors rounded"
                       >
                         <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-lg">
-                          {item.icon}
-                        </div>
+      <Image src={item.icon} alt={item.name} width={32} height={32} />
+      </div>
                         <span className="font-medium">{item.name}</span>
                       </Link>
                     ))}
@@ -203,8 +198,8 @@ export default function Header() {
                         className="flex items-center gap-3 p-2 text-sm text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-colors rounded"
                       >
                         <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-lg">
-                          {item.icon}
-                        </div>
+      <Image src={item.icon} alt={item.name} width={32} height={32} />
+      </div>
                         <span className="font-medium">{item.name}</span>
                       </Link>
                     ))}

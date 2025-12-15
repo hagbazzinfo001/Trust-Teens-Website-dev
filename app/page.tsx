@@ -22,36 +22,42 @@ export default function Home() {
       description:
         "Intentionally crafted around clear and action goals to deepen community connections, shape social perspectives that uphold values that better us.",
       icon: icon4,
+      href: "/missions/campaigns",
     },
     {
       title: "TT Conference",
       description:
         'Widely known as the "Biggest Teenagers\' Conference in Africa." This is our annual flagship gathering of teenagers from all over the world. With teenagers life with purpose.',
       icon: icon6,
+      href: "/mission/conference",
     },
     {
       title: "TT Community Service",
       description:
         "Purpose-driven civic engagements to inspire social responsibility for the greater good through our Community Service and Social Empowerment outreach programs.",
       icon: icon5,
+      href: "/missions/community-service",
     },
     {
       title: "TT Curriculum",
       description:
         "Each month, the community explores a specific theme, a life-building purpose that fosters personal growth, leadership, values, and real-world responsibility.",
       icon: icon3,
+      href: "/missions/curriculum",
     },
     {
       title: "TT School Clubs",
       description:
         "Personal development platform for secondary school students. Each club promotes academic excellence, mentorship, and practical activities that strengthen character.",
       icon: icon2,
+      href: "/missions/school-clubs",
     },
     {
       title: "TT Hangouts",
       description:
         "Special gatherings held throughout the year. These events are all about building a sense of belonging and genuine connections within the community.",
       icon: icon1,
+      href: "/missions/hangouts",
     },
   ];
 
@@ -162,7 +168,7 @@ export default function Home() {
               },
             }}
           >
-            {programs.map((program, index) => (
+            {/* {programs.map((program, index) => (
               <motion.div
                 key={index}
                 variants={{
@@ -206,7 +212,83 @@ export default function Home() {
                   </CardContent>
                 </Card>
               </motion.div>
-            ))}
+            ))} */}
+
+{programs.map((program, index) => (
+  <motion.div
+    key={index}
+    variants={{
+      hidden: {
+        opacity: 0,
+        x: index % 2 === 0 ? -80 : 80,
+      },
+      show: {
+        opacity: 1,
+        x: 0,
+        transition: {
+          duration: 0.7,
+          ease: "easeOut",
+        },
+      },
+    }}
+  >
+    <Link href={program.href} className="block h-full">
+      <motion.div
+        whileHover={{
+          y: -6,
+          scale: 1.02,
+        }}
+        whileTap={{
+          scale: 0.97,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 20,
+        }}
+        className="h-full"
+      >
+        <Card className="bg-white text-gray-900 border-0 h-full cursor-pointer hover:shadow-2xl transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                {typeof program.icon === "string" ? (
+                  <span className="text-3xl">{program.icon}</span>
+                ) : (
+                  <Image
+                    src={program.icon.src}
+                    width={40}
+                    height={40}
+                    alt={program.title}
+                  />
+                )}
+              </div>
+
+              {/* Arrow animation */}
+              <motion.div
+                className="text-gray-400"
+                whileHover={{ x: 6 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Image  src="/arrowvector.svg" alt="Arrow Right" width={24} height={24} />
+                
+              </motion.div>
+            </div>
+
+            <h3 className="text-xl font-bold mb-3">
+              {program.title}
+            </h3>
+
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {program.description}
+            </p>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </Link>
+  </motion.div>
+))}
+
           </motion.div>
         </div>
       </section>

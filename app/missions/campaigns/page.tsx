@@ -191,7 +191,7 @@ const displayedFeatures = features.slice(
   />
                     {/* <feature.icon className="w-6 h-6 text-orange-600" /> */}
                   </div>
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
+                  {/* <ArrowRight className="w-5 h-5 text-gray-400" /> */}
                 </div>
 
                 <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
@@ -228,9 +228,11 @@ Campaigns’ impact            </h2>
           </div>
 
 <section
-  className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat"
- 
+  // className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat"
+  className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
+
 >
+  
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
       {stats.map((stat, index) => {
