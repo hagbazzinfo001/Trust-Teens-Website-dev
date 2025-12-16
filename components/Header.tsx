@@ -17,7 +17,7 @@ import icon6 from "@/public/icon6.svg";
 const missionItems = [
   { name: 'TT Campaigns', slug: 'campaigns', icon: icon1 },
   { name: 'TT Summits', slug: 'summit', icon: icon2 },
-  { name: 'TT Conference', slug: 'conference', icon: icon3 },
+  { name: 'TT Conference', slug: 'conferences', icon: icon3 },
   ];
 
 const communityItems = [

@@ -35,7 +35,7 @@ import { use } from "react";
 
 
 
-export default function MissionsPage() {
+export default function summitPage() {
 //  const res = await fetch("https://your-api.com/campaign", {
 //     next: { revalidate: 10 }, // optional caching
 //   });
