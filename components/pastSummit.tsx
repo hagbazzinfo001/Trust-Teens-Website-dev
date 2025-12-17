@@ -1,13 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { mockCampaigns, Campaign } from '@/lib/mockSummit';
+import { mockSummit, Summit } from '@/lib/mockSummit';
 import SubmitDetailsModal from '@/components/SubmitDetailedModal';
 import { ChevronRight } from 'lucide-react';
 
 export default function PastSummit() {
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
-  const [featuredCampaign, setFeaturedCampaign] = useState<Campaign>(mockCampaigns[0]);
+  const [selectedSummit, setSelectedSummit] = useState<Summit | null>(null);
+  const [featuredSummit, setFeaturedSummit ] = useState<Summit>(mockSummit[0]);
 
   return (
     <>
@@ -21,13 +21,13 @@ export default function PastSummit() {
 
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-1 space-y-3">
-              {mockCampaigns.map((campaign) => (
+              {mockSummit.map((summit) => (
                 <button
-                  key={campaign.id}
-                  onClick={() => setFeaturedCampaign(campaign)}
+                  key={summit.id}
+                  onClick={() => setFeaturedSummit(summit)}
                   className={`w-full p-4 rounded-xl text-left transition-all duration-200 group ${
-                    featuredCampaign.id === campaign.id
-                      // ? `bg-gradient-to-r ${campaign.color} text-black shadow-lg`
+                    featuredSummit.id === summit.id
+                      // ? `bg-gradient-to-r ${summit.color} text-black shadow-lg`
                       ? `bg-orange-300 text-black shadow-lg`
 
                       : 'bg-white-500 text-gray-900 hover:bg-orange-500'
@@ -35,16 +35,16 @@ export default function PastSummit() {
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-bold text-lg text-black">{campaign.name}</h3>
+                      <h3 className="font-bold text-lg text-black">{summit.name}</h3>
                       <p className={`text-sm ${
-                        featuredCampaign.id === campaign.id
+                        featuredSummit.id === summit.id
                           ? 'opacity-90'
                           : 'text-gray-600'
                       }`}>
-                        {campaign.date}
+                        {summit.date}
                       </p>
                     </div>
-                    {featuredCampaign.id === campaign.id && (
+                    {featuredSummit.id === summit.id && (
                       <ChevronRight size={20} />
                     )}
                   </div>
@@ -54,26 +54,26 @@ export default function PastSummit() {
 
             <div className="lg:col-span-2">
               <div className="space-y-4">
-                <div className={`bg-gradient-to-r ${featuredCampaign.color} text-black rounded-2xl p-6 md:p-8`}>
-                  <h3 className="text-2xl md:text-3xl font-bold mb-3">{featuredCampaign.name}</h3>
+                <div className={`bg-gradient-to-r ${featuredSummit.color} text-black rounded-2xl p-6 md:p-8`}>
+                  <h3 className="text-2xl md:text-3xl font-bold mb-3">{featuredSummit.name}</h3>
                   <p className="opacity-90 text-sm md:text-base leading-relaxed">
-                    {featuredCampaign.description}
+                    {featuredSummit.description}
                   </p>
                 </div>
 
                 <div className="aspect-video md:aspect-auto md:h-96 rounded-2xl overflow-hidden bg-gray-200 cursor-pointer hover:shadow-lg transition-shadow group"
-                  onClick={() => setSelectedCampaign(featuredCampaign)}
+                  onClick={() => setSelectedSummit(featuredSummit)}
                 >
                   <img
-                    src={featuredCampaign.featuredImage}
-                    alt={featuredCampaign.name}
+                    src={featuredSummit.featuredImage}
+                    alt={featuredSummit.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
 
                 <button
-                  onClick={() => setSelectedCampaign(featuredCampaign)}
-                  className={`w-full bg-gradient-to-r ${featuredCampaign.color} text-black font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group bg-green-500`}
+                  onClick={() => setSelectedSummit(featuredSummit)}
+                  className={`w-full bg-gradient-to-r ${featuredSummit.color} text-black font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group bg-green-500`}
                 >
                   <span className='text-white'>View Full Summit Details</span>
                   <ChevronRight size={30} className="group-hover:translate-x-1 transition-transform " />
@@ -85,8 +85,8 @@ export default function PastSummit() {
       </section>
 
       <SubmitDetailsModal
-        campaign={selectedCampaign}
-        onClose={() => setSelectedCampaign(null)}
+        campaign={selectedSummit}
+        onClose={() => setSelectedSummit(null)}
       />
     </>
   );

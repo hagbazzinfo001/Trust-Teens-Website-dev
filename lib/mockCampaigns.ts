@@ -52,7 +52,7 @@ export const mockCampaigns: Campaign[] = [
       { name: 'OYO', logo: '/OYO Logo.svg' }
     ],
     gallery: [
-      'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765054416/Rectangle_17_uzmndm.png?auto=compress&cs=tinysrgb&w=400',
+      'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510689/Group_516_bplvj3.png?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3807518/pexels-photo-3807518.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3807519/pexels-photo-3807519.jpeg?auto=compress&cs=tinysrgb&w=400',
       'https://images.pexels.com/photos/3807520/pexels-photo-3807520.jpeg?auto=compress&cs=tinysrgb&w=400',

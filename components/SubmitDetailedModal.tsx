@@ -98,6 +98,7 @@ export default function SummitDetailsModal({
 <div className="flex flex-col lg:flex-row items-start gap-8">
 <div className="w-full lg:w-3/5">
   <h3 className="text-xl font-bold text-gray-900 mb-4">{campaign.objective}</h3>
+  {/* <p className="text-gray-600 mb-6">{campaign.objectiveDetails}</p> */}
                   <ul className="space-y-3">
                     {campaign.objectives.map((objective, index) => (
                       <li key={index} className="flex items-start gap-3 text-gray-600">

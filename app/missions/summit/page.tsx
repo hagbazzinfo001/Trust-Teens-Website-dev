@@ -147,38 +147,46 @@ const displayedFeatures = features.slice(
 <section className="w-full bg-white py-20 px-6 lg:px-20">
       <div className="max-w-7xl mx-auto relative">
         
-        {/* TEXT CONTENT */}
-        <div className="max-w-3xl">
-          <p className="tracking-[0.3em] text-sm font-medium text-gray-700 mb-4">
-            TRUST TEENS SUMMITS
-          </p>
+     
+<div className="relative overflow-hidden">
+  {/* Background Image */}
+  <img
+    src="/dots-bg.svg" // replace with your actual image path
+    alt=""
+    className="
+      pointer-events-none
+      absolute
+      bottom-0
+      right-0
+      w-40
+      md:w-56
+      lg:w-72
+      opacity-90
+    "
+  />
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
-            Space for Teenagers to <br />
-            Think, Share, and Become
-          </h1>
+  {/* Content */}
+  <div className="max-w-3xl relative z-10">
+    <p className="tracking-[0.3em] text-sm font-medium text-gray-700 mb-4">
+      TRUST TEENS SUMMITS
+    </p>
 
-          <p className="text-gray-600 text-lg leading-relaxed">
-            Smaller, focused gatherings where teenagers explore purpose,
-            values, identity, and life skills in an intimate, safe, and
-            interactive environment.
-          </p>
-        </div>
+    <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+      Space for Teenagers to <br />
+      Think, Share, and Become
+    </h1>
+
+    <p className="text-gray-600 text-lg leading-relaxed">
+      Smaller, focused gatherings where teenagers explore purpose,
+      values, identity, and life skills in an intimate, safe, and
+      interactive environment.
+    </p>
+  </div>
+</div>
 
         {/* DOT PATTERNS */}
-        <div className="hidden lg:block absolute top-0 right-0">
-          <div className="grid grid-cols-7 gap-3 mb-10">
-            {Array.from({ length: 21 }).map((_, i) => (
-              <span key={i} className="w-2 h-2 bg-green-400 rounded-full" />
-            ))}
-          </div>
-
-          <div className="grid grid-cols-7 gap-3 ml-10">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <span key={i} className="w-2 h-2 bg-pink-500 rounded-full" />
-            ))}
-          </div>
-        </div>
+      
+      
 
         {/* IMAGES */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">

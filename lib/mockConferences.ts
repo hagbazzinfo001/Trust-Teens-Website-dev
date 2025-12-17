@@ -1,14 +1,14 @@
-
-export interface Summit {
+export interface Conference {
     id: string;
     name: string;
     date: string;
     description: string;
     fullDescription: string;
     objective: string;
-    objectiveDetails?: string;
     objectives: string[];
+    objectiveDetails?: string;
     featuredImage: string;
+    aboutImage?: string;
     headerImage: string;
     impact: {
       label: string;
@@ -22,13 +22,13 @@ export interface Summit {
     color: string;
   }
   
-  export const mockSummit: Summit[] = [
+  export const mockConference: Conference[] = [
     {
       id: '1',
-      name: 'Planted in Purpose Summit',
+      name: 'Trust Teens Conference 20XX',
       date: 'Sept 24',
       description: 'Awareness about the significance of hygiene practices and provision of essential hygiene products and knowledge to teenagers.',
-      fullDescription: 'Awareness about the significance of hygiene practices and provision of essential hygiene products and knowledge to teenagers',
+      fullDescription: 'The Trust Teens Conference 2024 held on April 26th at the June 12 Cultural Centre in Abeokuta was a monumental success, bringing together over 1500 attendees, including parents, teachers, and teenagers, for a day filled with inspiration, empowerment, and learning.',
       objective: 'What we did',
       objectiveDetails: 'On September 26, 2024, Trust Teens launched its first program in Oyo State with the Hygiene Awareness Exhibition held at Mokola, the event themed Rise and Shine helped raise awareness about the significance of hygiene practices and provided over 200 teenagers with essential hygiene products and knowledge to support their well-being.',
       objectives: [
@@ -36,8 +36,9 @@ export interface Summit {
         'To provide teenagers with essential hygiene products and knowledge to support their well-being',
         'Foster a sense of empowerment and responsibility among teenagers towards their own health and well-being'
       ],
-      featuredImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765756818/Rectangle_17_ihmhki.png?auto=compress&cs=tinysrgb&w=400',
-      headerImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765756818/Rectangle_17_ihmhki.png?auto=compress&cs=tinysrgb&w=800',
+      featuredImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765925226/Image_3_y5biod.png?auto=compress&cs=tinysrgb&w=400',
+      headerImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765925226/Image_3_y5biod.png?auto=compress&cs=tinysrgb&w=800',
+      aboutImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765926909/Image_1_dtgwta.png?auto=compress&cs=tinysrgb&w=300&h=100',
       impact: [
         { label: 'Teenagers Reached', value: 210 },
         { label: 'Communities Engaged', value: 4 },
@@ -55,7 +56,7 @@ export interface Summit {
         { name: 'OYO', logo: '/OYO Logo.svg' }
       ],
       gallery: [
-        'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765756818/Rectangle_17_ihmhki.png?auto=compress&cs=tinysrgb&w=400',
+        'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510689/Group_516_bplvj3.png?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/3807518/pexels-photo-3807518.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/3807519/pexels-photo-3807519.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/3807520/pexels-photo-3807520.jpeg?auto=compress&cs=tinysrgb&w=400',

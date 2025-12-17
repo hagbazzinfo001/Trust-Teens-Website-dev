@@ -74,13 +74,51 @@ const features = [
     icon: icon6,
   },
 ];
- 
+const coreComponents = [
+  {
+    title: "Large Audience",
+    description:
+      "Thousands of teenagers gather from schools and communities.",
+      icon: icon1, 
+  },
+  {
+    title: "Keynote Sessions",
+    description:
+      "Impactful talks from experienced leaders and professionals.",
+      icon: icon2, 
+  },
+  {
+    title: "Competitions & Awards",
+    description:
+      "Debates, spelling challenges, business pitches and more.",
+      icon: icon3, 
+  },
+  {
+    title: "Innovation & Creativity",
+    description:
+      "Idea pitching, talent showcases, and problem-solving moments.",
+      icon: icon4, 
+  },
+  {
+    title: "Teen Panels",
+    description:
+      "Peer-led conversations that give teenagers a voice in the room.",
+      icon: icon5, 
+  },
+  {
+    title: "Networking & Connection",
+    description:
+      "Teens meet new friends, mentors, and opportunities.",
+      icon: icon6, 
+  },
+];
+
 
   const stats = [
-    { icon: gg, label: "Campaign Activities Delivered", value: "6+" },
-    { icon: oo, label: "Schools & Communities Engaged", value: "15+" },
-    { icon: bb, label: "Volunteers Mobilised", value: "30+" },
-    { icon: pp, label: "Teenagers Reached", value: "1000+" },
+    { icon: icon1, label: "Teenagers Attended", value: "4,000+" },
+    { icon: icon2, label: "Schools Mobilised", value: "29+" },
+    { icon: icon3, label: "Speakers and Guests", value: "30+" },
+    { icon: icon4, label: "Volunteers Deployed", value: "50+" },
   ];
 const [activeSet, setActiveSet] = useState(0);
 const featuresPerPage = 3;
@@ -101,110 +139,159 @@ const displayedFeatures = features.slice(
 
   return (
     <>
-      <section className="py-12 md:py-18 bg-white mx-12 mt-8 mb-12">
-      <div className="h-[70vh] w-full rounded-3xl overflow-hidden">
-                <motion.img
-                  src="/conferenceheader.svg"
-                  alt="Left visual"
-                  className="w-full h-full object-cover"
-                  initial={{ opacity: 0, x: -80 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                />
-              </div>
-              <div className=" flex flex-row justify-between mt-8 gap-4 w-full align-middle">
-                <h1 className="text-3xl md:text-5xl font-bold">The Biggest teenage conference in Africa</h1>
-                <p className=" text-gray-600 max-w-2xl">
-                Our annual conference brings together thousands of teenagers for a full day of inspiration, learning, creativity, and values-driven leadership.</p>
-              </div>
+      <section className="pb-4 pt-4 md:py-10 bg-white mx-3 lg:mx-12 mb-12">
+      <div
+  className="
+    w-full
+    rounded-3xl
+    overflow-hidden
+    h-auto
+    sm:h-[50vh]
+    lg:h-[70vh]
+  "
+>
+  <motion.img
+    src="/conferenceheader.svg"
+    alt="Conference Header"
+    className="
+      w-full
+      h-auto
+      sm:h-full
+      object-contain
+      sm:object-cover
+    "
+    initial={{ opacity: 0, x: -80 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.8, ease: 'easeOut' }}
+  />
+</div>
+
+ 
+  <div className="
+  flex
+  flex-col
+  lg:flex-row
+  gap-8
+  w-full
+  mt-8
+  items-start
+  lg:items-center
+ ">
+  <h1 className="text-3xl md:text-5xl font-bold lg:w-[50%]">
+    The Biggest Teenage Conference in Africa
+  </h1>
+
+  <p className="text-gray-600 max-w-2xl lg:w-[40%]">
+    Our annual conference brings together thousands of teenagers for a full day of inspiration,
+    learning, creativity, and values-driven leadership.
+  </p>
+</div>
+
       </section>
 
-  
-      <section className="py-12 md:py-20 bg-gray-50">
+      <section className="pb-8 md:py-20 bg-white">
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="text-center mb-12">
-      <h2 className="text-3xl md:text-5xl font-bold mb-4">
-        Our Campaign Sectors
-      </h2>
-      <p className="text-gray-600 max-w-2xl mx-auto">
-        This Privacy Policy becomes effective upon your first use of the service.
-        Understood and agreed to be bound thereby.
-      </p>
-    </div>
+    <div className="relative flex flex-col lg:flex-row items-center lg:items-stretch">
+      
+      {/* TEXT CARD */}
+      <div className="
+        bg-yellow-400
+        rounded-3xl
+        p-5 md:p-12
+        z-10
+      ">
+        <div className="lg:w-[45%]">
 
-    {/* 🔥 Animated Cards */}
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={activeSet} // triggers animation on click
-        initial={{ opacity: 0, x: 60 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -60 }}
-        transition={{ duration: 0.45 }}
-        className="grid md:grid-cols-3 gap-6 mb-12"
-      >
-        {displayedFeatures.map((feature, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.15 }}
-          >
-            <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-              <CardContent className="p-8">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                     <Image
-    src={feature.icon}
-    alt={feature.title}
-    width={30}
-    height={30}
-    className="w-6 h-6 object-contain"
-  />
-                    {/* <feature.icon className="w-6 h-6 text-orange-600" /> */}
-                  </div>
-                  {/* <ArrowRight className="w-5 h-5 text-gray-400" /> */}
-                </div>
+                <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
+          Why Trust Teens Conference
+        </h2>
 
-                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+        <p className="text-black/80 leading-relaxed mb-4">
+          The Trust Teens Conference is our largest annual gathering for
+          teenagers across Africa. It brings together students, teachers,
+          mentors and community leaders for a powerful, high-energy
+          experience built around one theme each year.
+        </p>
 
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  {feature.description}
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
-    </AnimatePresence>
+        <p className="text-black/80 leading-relaxed">
+          Every edition is designed to give young people the tools, stories,
+          and opportunities they need to grow, influence, and make better
+          decisions in a rapidly changing world.
+        </p>
+      </div>
 
-    {/* Control Dots */}
-    <div className="flex justify-center gap-2">
-      {[0, 1].map((i) => (
-        <button
-          key={i}
-          onClick={() => setActiveSet(i)}
-          className={`h-2 rounded-full transition-all ${
-            activeSet === i ? "w-8 bg-orange-500" : "w-2 bg-gray-300"
-          }`}
-        ></button>
-      ))}
+  
+        <div className="overflow-hidden rounded-3xl  lg:absolute
+        lg:right-0
+        lg:top-1/2
+        lg:-translate-y-1/2
+        lg:w-[50%]
+        w-full
+        mt-6 lg:mt-0">
+          <img
+            src="/yellowImage.svg" // replace with your image path
+            alt="Trust Teens Conference"
+            className="w-full h-full object-cover lg:p-9 p-0"
+          />
+        </div>
+       </div>
+
     </div>
   </div>
 </section>
 
-  <div className="text-center mb-8 mt-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-Campaigns’ impact            </h2>
-             
+<section className="py-12 md:py-20 bg-white">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    {/* Heading */}
+    <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-12">
+      Core Components <br /> of the conference
+    </h2>
+
+    {/* Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {coreComponents.map((item, index) => (
+        <div key={index} className="flex items-start gap-4">
+          
+          {/* Icon */}
+          <div className="flex gap-1 mt-1">
+          <Image
+    src={item.icon}
+    alt={item.title}
+    width={30}
+    height={30}
+    className="w-8 h-8 object-contain"
+  />
           </div>
 
+          {/* Text */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-900 mb-1">
+              {item.title}
+            </h3>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              {item.description}
+            </p>
+          </div>
+
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+
+ 
 <section
   // className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat"
   className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
 
 >
-  
+
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white text-left px-4 sm:px-6 lg:px-8">
+            Big Impact Metrics          </h2>
     <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
       {stats.map((stat, index) => {
         const isLast = index === stats.length - 1;
@@ -229,24 +316,19 @@ Campaigns’ impact            </h2>
               <CardContent className="p-2 text-center bg-transparent text-white rounded-none">
                 {/* Icon */}
                {/* Icon */}
-<div className="inline-flex p-4 rounded-full mb-4">
+               <div className="flex flex-row items-center justify-center gap-4">
+               {/* <div className="inline-flex p-4 rounded-full mb-4"> */}
   <Image
     src={stat.icon}
     alt={stat.label}
-    width={60}
-    height={60}
-    className="w-16 h-16 object-contain"
+    width={30}
+    height={30}
+    className="w-8 h-8 object-contain"
   />
-</div>
-
-
+{/* </div> */}
                 {/* Label */}
-                <div className="text-sm mb-2 text-white/80">
-                  {stat.label}
-                </div>
-
-                {/* CountUp */}
-                <div className="text-3xl font-bold text-white">
+             <div className="text-left">
+             <div className="text-3xl font-bold text-white">
                   {inView ? (
                     <CountUp
                       end={parseInt(stat.value.replace("+", ""))}
@@ -258,6 +340,15 @@ Campaigns’ impact            </h2>
                   )}
                   +
                 </div>
+                <div className="text-sm mb-2 text-white/80">
+                  {stat.label}
+                </div>
+             </div>
+               </div>
+
+
+                {/* CountUp */}
+           
               </CardContent>
             </Card>
           </motion.div>
