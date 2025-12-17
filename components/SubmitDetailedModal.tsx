@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useInView } from "react-intersection-observer";
 import CountUp from "react-countup";
 import { useState } from "react";
-import { Campaign } from '@/lib/mockCampaigns';
+import { Summit } from '@/lib/mockSummit';
 import { X } from 'lucide-react';
 import icon1 from '@/public/icon1.svg';
 import icon2 from '@/public/icon2.svg';
@@ -14,22 +14,22 @@ import icon3 from '@/public/icon3.svg';
 import icon4 from '@/public/icon4.svg';
 import icon5 from '@/public/icon5.svg';
 import icon6 from '@/public/icon6.svg';
+import volunteerIcon from '@/public/volunteerIcon.svg'
+import sessionIcon from '@/public/sessionIcon.svg'
+import teenagerIcon from '@/public/teenagersIcon.svg'
+import schoolIcon from '@/public/schoolIcon.svg'
+ 
 
-import bb from '@/public/bb.svg';
-import gg from '@/public/gg.svg';
-import oo from '@/public/oo.svg';
-import pp from '@/public/pp.svg';
-
-interface CampaignDetailsModalProps {
-  campaign: Campaign | null;
+interface SummitDetailsModalProps {
+  Summit: Summit | null;
   onClose: () => void;
 }
 
 const stats = [
-  { icon: gg, label: "Campaign Activities Delivered", value: "6+" },
-  { icon: oo, label: "Schools & Communities Engaged", value: "15+" },
-  { icon: bb, label: "Volunteers Mobilised", value: "30+" },
-  { icon: pp, label: "Teenagers Reached", value: "1000+" },
+  { icon: sessionIcon, label: "Campaign Activities Delivered", value: "6+" },
+  { icon: schoolIcon, label: "Schools & Communities Engaged", value: "15+" },
+  { icon: volunteerIcon, label: "Volunteers Mobilised", value: "30+" },
+  { icon: teenagerIcon, label: "Teenagers Reached", value: "1000+" },
 ];
 
   const iconsArray = [
@@ -46,9 +46,9 @@ const itemVariants = {
 };
 
 export default function SummitDetailsModal({
-  campaign,
+  Summit,
   onClose,
-}: CampaignDetailsModalProps) {
+}: SummitDetailsModalProps) {
 
   // ✅ HOOKS BELONG HERE
   const [activeSet, setActiveSet] = useState(0);
@@ -58,11 +58,11 @@ export default function SummitDetailsModal({
     threshold: 0.3,
   });
 
-  if (!campaign) return null;
+  if (!Summit) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
-       <div className="min-h-screen py-8 px-4">
+       <div className="min-h-screen py-8 ">
         <div className="max-w-6xl mx-auto bg-white rounded-2xl overflow-hidden">
           <div className="relative">
             <button
@@ -74,35 +74,63 @@ export default function SummitDetailsModal({
 
  
 
-<div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/orange_bg.svg)]">
+<div className="text-white py-8 md:py-12 bg-no-repeat bg-center bg-cover bg-[url(/orange_bg.svg)]">
   <div className="space-y-4 ml-0 md:ml-[50%] tranform md:-translate-x-1/2 w-full md:w-3/5 text-center md:text-left">
-    <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
-    <p className="text-lg opacity-90">{campaign.fullDescription}</p>
+    <h1 className="text-4xl md:text-5xl font-bold">{Summit.name}</h1>
+    <p className="text-lg opacity-90">{Summit.fullDescription}</p>
+    <button
+  className="
+    rounded-xl
+    bg-white
+    px-6
+    py-3
+    font-semibold
+    text-black
+    shadow-md
+    animate-pulse
+    hover:animate-none
+    hover:scale-105
+    transition
+  "
+>
+  Watch Highlight
+  <span
+  className="
+    inline-block
+    transition-transform
+    duration-300
+    group-hover:translate-x-1
+  "
+>
+  →
+</span>
+</button>
+
   </div>
 
   <div className="h-64 md:h-96 overflow-hidden bg-gray-200 mt-5 rounded-lg">
     <img
-      src={campaign.headerImage}
-      alt={campaign.name}
+      src={Summit.headerImage}
+      alt={Summit.name}
       className="w-full h-full object-cover"
     />
   </div>
 </div>
 
 
-            <div className="p-8 md:p-10 space-y-12">
-              <div>
+            <div className="py-8 md:py-10 space-y-12">
+              <div className="p-8">
                 <div className="flex items-center gap-3 mb-2">
                    <h2 className="text-2xl font text-gray-900">ABOUT EVENT</h2>
                 </div>
 <div className="flex flex-col lg:flex-row items-start gap-8">
 <div className="w-full lg:w-3/5">
-  <h3 className="text-xl font-bold text-gray-900 mb-4">{campaign.objective}</h3>
-  {/* <p className="text-gray-600 mb-6">{campaign.objectiveDetails}</p> */}
-                  <ul className="space-y-3">
-                    {campaign.objectives.map((objective, index) => (
+  <h3 className="text-xl font-bold text-gray-900 mb-4">{Summit.objective}</h3>
+  <p>{Summit.objectiveDetails}</p>
+                   <ul className="space-y-3">
+                    {Summit.objectives.map((objective, index) => (
                       <li key={index} className="flex items-start gap-3 text-gray-600">
-                             <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${campaign.color}`}>
+                             <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${Summit.color}`}>
         <img 
           src={iconsArray[index % iconsArray.length]} 
           alt="icon" 
@@ -117,8 +145,8 @@ export default function SummitDetailsModal({
                 </div>
                 <div className="w-full lg:w-2/5">
     <img
-      src={campaign.featuredImage}
-      alt={campaign.name}
+      src={Summit.aboutImage}
+      alt={Summit.name}
       className="w-full h-auto rounded-lg object-cover"
     />
   </div>
@@ -126,36 +154,11 @@ export default function SummitDetailsModal({
                
               </div>
 
-              <div>
-                
-                <div className={`bg-gradient-to-r ${campaign.color} text-white rounded-2xl p-8 `}
-                  style={{
-                    backgroundImage: `url('/Background.svg')`,
-                    backgroundSize: "contain",
-                    // backgroundRepeat: "no-repeat",
-                    backgroundPosition: "center",
-                  }}>
-                  <h3 className="text-2xl font-bold mb-8 text-center">Impact of this Summit</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {campaign.impact.map((stat, index) => (
-                      <div key={index} className="text-center">
-                        <div className="text-3xl md:text-4xl font-bold mb-2">{stat.value}</div>
-                        <div className="text-sm opacity-90">{stat.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-  <div className="text-center mb-8 mt-12">
-            {/* <h2 className="text-3xl md:text-5xl font-bold mb-4">
-Campaigns’ impact            </h2> */}
-             
-          </div>
+           
+ 
 
 <section
-  // className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat"
-  className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
+   className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
 
 >
   
@@ -221,7 +224,7 @@ Campaigns’ impact            </h2> */}
     </div>
   </div>
 </section>
-  <div className="flex flex-row gap-4 flex-wrap lg:flex-nowrap">
+  <div className="flex flex-row gap-4 flex-wrap lg:flex-nowrap p-8">
   {/* LEFT SECTION */}
   <div className="flex flex-col items-start gap-3 mb-2 w-full lg:w-auto">
      <h2 className="text-2xl font-bold text-gray-900">OUR PARTNERS</h2>
@@ -233,7 +236,7 @@ Campaigns’ impact            </h2> */}
 
   {/* RIGHT SECTION - 60% width on large screens */}
   <div className="w-full lg:w-[140%] grid grid-cols-2 md:grid-cols-4 gap-4">
-    {campaign.partners.map((partner, index) => (
+    {Summit.partners.map((partner, index) => (
       <div
         key={index}
         className="flex items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
@@ -253,14 +256,14 @@ Campaigns’ impact            </h2> */}
 
 </section>
 
-              <div>
+              <div className="p-8">
                 <div className="flex items-center gap-3 mb-2">
                    <h2 className="text-2xl font text-gray-900">GALLERY</h2>
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-6">Moments from the Event</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {campaign.gallery.map((image, index) => (
+                    {Summit.gallery.map((image, index) => (
                       <div
                         key={index}
                         className="aspect-square rounded-lg overflow-hidden bg-gray-200 hover:shadow-lg transition-shadow"

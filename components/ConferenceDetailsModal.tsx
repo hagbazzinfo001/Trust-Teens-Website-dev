@@ -14,7 +14,10 @@ import icon3 from '@/public/icon3.svg';
 import icon4 from '@/public/icon4.svg';
 import icon5 from '@/public/icon5.svg';
 import icon6 from '@/public/icon6.svg';
-
+import volunteerIcon from '@/public/volunteerIcon.svg'
+import sessionIcon from '@/public/sessionIcon.svg'
+import teenagerIcon from '@/public/teenagersIcon.svg'
+import schoolIcon from '@/public/schoolIcon.svg'
 import bb from '@/public/bb.svg';
 import gg from '@/public/gg.svg';
 import oo from '@/public/oo.svg';
@@ -26,10 +29,10 @@ interface ConferenceDetailsModalProps {
 }
 
 const stats = [
-  { icon: gg, label: "Campaign Activities Delivered", value: "6+" },
-  { icon: oo, label: "Schools & Communities Engaged", value: "15+" },
-  { icon: bb, label: "Volunteers Mobilised", value: "30+" },
-  { icon: pp, label: "Teenagers Reached", value: "1000+" },
+  { icon: sessionIcon, label: "Sessions Delivered", value: "6+" },
+  { icon: schoolIcon, label: "Schools & Communities Engaged", value: "15+" },
+  { icon: volunteerIcon, label: "Volunteers Mobilised", value: "30+" },
+  { icon: teenagerIcon, label: "Teenagers Reached", value: "1000+" },
 ];
 
   const iconsArray = [
@@ -363,7 +366,7 @@ export default function ConferenceDetailsModal({
 </section>
 
  {/* Speakers Section */}
-    <section className="relative py-20 bg-[url('/speakersblue.svg')]     bg-no-repeat
+    <section className="relative py-20 bg-[url('/speakersBlue.svg')]     bg-no-repeat
     bg-center
      overflow-hidden mb-12 bg-cover ">
       {/* Decorative background shapes */}

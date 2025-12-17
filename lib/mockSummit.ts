@@ -10,6 +10,7 @@ export interface Summit {
     objectives: string[];
     featuredImage: string;
     headerImage: string;
+    aboutImage?:string;
     impact: {
       label: string;
       value: number;
@@ -38,6 +39,7 @@ export interface Summit {
       ],
       featuredImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765756818/Rectangle_17_ihmhki.png?auto=compress&cs=tinysrgb&w=400',
       headerImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765756818/Rectangle_17_ihmhki.png?auto=compress&cs=tinysrgb&w=800',
+      aboutImage: 'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765950567/Image_1_1_jubx9i.png',
       impact: [
         { label: 'Teenagers Reached', value: 210 },
         { label: 'Communities Engaged', value: 4 },

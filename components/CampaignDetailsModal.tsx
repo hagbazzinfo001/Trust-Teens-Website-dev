@@ -39,6 +39,34 @@ const iconsArray = Object.values(listicons);
   <div className="space-y-4 ml-0 md:ml-[50%] tranform md:-translate-x-1/2 w-full md:w-3/5 text-center md:text-left">
     <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
     <p className="text-lg opacity-90">{campaign.fullDescription}</p>
+    <button
+  className="
+    rounded-xl
+    bg-white
+    px-6
+    py-3
+    font-semibold
+    text-black
+    shadow-md
+    animate-pulse
+    hover:animate-none
+    hover:scale-105
+    transition
+  "
+>
+  Watch Highlight
+  <span
+  className="
+    inline-block
+    transition-transform
+    duration-300
+    group-hover:translate-x-1
+  "
+>
+  →
+</span>
+</button>
+
   </div>
 
   <div className="h-64 md:h-96 overflow-hidden bg-gray-200 mt-5 rounded-lg">
