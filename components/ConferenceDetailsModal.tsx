@@ -18,10 +18,7 @@ import volunteerIcon from '@/public/volunteerIcon.svg'
 import sessionIcon from '@/public/sessionIcon.svg'
 import teenagerIcon from '@/public/teenagersIcon.svg'
 import schoolIcon from '@/public/schoolIcon.svg'
-import bb from '@/public/bb.svg';
-import gg from '@/public/gg.svg';
-import oo from '@/public/oo.svg';
-import pp from '@/public/pp.svg';
+ 
 
 interface ConferenceDetailsModalProps {
   conference: Conference | null;
@@ -201,18 +198,20 @@ export default function ConferenceDetailsModal({
 <div className="flex flex-col lg:flex-row justify-between items-start gap-8 p-8">
  <div className="w-full lg:w-3/5">
  <h2 className="text-2xl font text-gray-900">ABOUT EVENT</h2>
-
   <h3 className="text-xl font-bold text-gray-900 mb-4">{conference.objective}</h3>
   <p className="text-lg opacity-95 pb-3">{conference.objectiveDetails}</p>
                   <ul className="space-y-3 pl-8">
                     {conference.objectives.map((objective, index) => (
                       <li key={index} className="flex items-start gap-3 text-gray-600">
                              <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${conference.color}`}>
-        <img 
-          src={iconsArray[index % iconsArray.length]} 
-          alt="icon" 
-          className="w-5 h-5"
-        />
+<Image
+src={iconsArray[index % iconsArray.length]}
+alt="icon"
+width={20}
+height={20}
+className="object-contain"
+/>
+
       </div>
     
                         <span>{objective}</span>
@@ -238,9 +237,6 @@ export default function ConferenceDetailsModal({
     <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
       {stats.map((stat, index) => {
         const isLast = index === stats.length - 1;
-
-        
-
         return (
           <motion.div
             key={index}

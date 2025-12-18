@@ -74,8 +74,15 @@ export default function SummitDetailsModal({
 
  
 
-<div className="text-white py-8 md:py-12 bg-no-repeat bg-center bg-cover bg-[url(/orange_bg.svg)]">
-  <div className="space-y-4 ml-0 md:ml-[50%] tranform md:-translate-x-1/2 w-full md:w-3/5 text-center md:text-left">
+<div className="text-white py-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/summitBlueBg.svg)]">
+  <div className="h-64 md:h-96 overflow-hidden bg-white mt-5 rounded-3xl p-2">
+    <img
+      src={Summit.headerImage}
+      alt={Summit.name}
+      className="w-full h-full object-cover rounded-3xl"
+    />
+  </div>
+  <div className="space-y-4 pt-4 w-full md:w-3/5 text-center md:text-left">
     <h1 className="text-4xl md:text-5xl font-bold">{Summit.name}</h1>
     <p className="text-lg opacity-90">{Summit.fullDescription}</p>
     <button
@@ -108,13 +115,7 @@ export default function SummitDetailsModal({
 
   </div>
 
-  <div className="h-64 md:h-96 overflow-hidden bg-gray-200 mt-5 rounded-lg">
-    <img
-      src={Summit.headerImage}
-      alt={Summit.name}
-      className="w-full h-full object-cover"
-    />
-  </div>
+
 </div>
 
 
@@ -127,18 +128,17 @@ export default function SummitDetailsModal({
 <div className="w-full lg:w-3/5">
   <h3 className="text-xl font-bold text-gray-900 mb-4">{Summit.objective}</h3>
   <p>{Summit.objectiveDetails}</p>
-                   <ul className="space-y-3">
+                   <ul className="space-y-3 pl-8">
                     {Summit.objectives.map((objective, index) => (
                       <li key={index} className="flex items-start gap-3 text-gray-600">
                              <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${Summit.color}`}>
-        <img 
+        <Image 
           src={iconsArray[index % iconsArray.length]} 
           alt="icon" 
           className="w-5 h-5"
         />
       </div>
-    
-                        <span>{objective}</span>
+                            <span>{objective}</span>
                       </li>
                     ))}
                   </ul>
@@ -147,7 +147,7 @@ export default function SummitDetailsModal({
     <img
       src={Summit.aboutImage}
       alt={Summit.name}
-      className="w-full h-auto rounded-lg object-cover"
+      className=" w-full lg:w-[50%] h-auto rounded-lg object-cover lg:float-right"
     />
   </div>
                 </div>

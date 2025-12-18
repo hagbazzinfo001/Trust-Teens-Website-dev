@@ -27,7 +27,9 @@ BookOpen,
 Package,
 } from "lucide-react";
 import { use } from "react";
-
+ import cleanCummunity from '@/public/cleanCummunity.svg'
+ import projectCommunity from '@/public/projectCommunity.svg'
+ import teenagerCommunity from '@/public/teenagerCommunitty.svg'
 
 
 export default function CommunityServicePage() {
@@ -78,10 +80,10 @@ const features = [
 
 
 const stats = [
-  { icon: gg, label: "Campaign Activities Delivered", value: "6+" },
-  { icon: oo, label: "Schools & Communities Engaged", value: "15+" },
-  { icon: bb, label: "Volunteers Mobilised", value: "30+" },
-  { icon: pp, label: "Teenagers Reached", value: "1000+" },
+  { icon: teenagerCommunity, label: "Teenagers actively participating in service projects", value: "25" },
+  { icon: cleanCummunity, label: "Cleaner, safer community spaces", value: "3" },
+  { icon: projectCommunity, label: "Community Projects Delivered", value: "2" },
+ 
 ];
 const [activeSet, setActiveSet] = useState(0);
 const featuresPerPage = 3;
@@ -102,128 +104,130 @@ const itemVariants = {
 
 return (
   <>
-    <section className="py-12 md:py-18 bg-white">
-      <div className="max-w-7xl mx-auto px-1 sm:px-3 lg:px-8">
-        <div className="flex flex-col md:flex-row items-start gap-6 md:gap-12">
-          {/* Left Image (40% width, 70vh height) */}
-          <div className="rounded-3xl overflow-hidden w-full md:w-[40%]">
-            <div className="h-[70vh] w-full rounded-3xl overflow-hidden">
-              <motion.img
-                src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510219/Group_582_g80ue8.png?auto=compress&cs=tinysrgb&w=500"
-                alt="Left visual"
-                className="w-full h-full object-cover"
-                initial={{ opacity: 0, x: -80 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-              />
-            </div>
-          </div>
+   <section className="relative bg-white py-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
+      <div className="hidden lg:block relative w-full h-[560px]">
 
-          {/* Right Section (60% width) */}
-          <div className="w-full md:w-[60%]">
-            <div className="mb-4 px-0 md:pl-10">
-              <p className="text-sm font-semibold text-gray-500 mb-2">
-                TRUST TEENS CAMPAIGNS
-              </p>
-              <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                Where We Drive Impact
-              </h1>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                We run focused campaigns that help teenagers grow, serve their
-                communities, and lead with purpose.
-              </p>
-            </div>
+        {/* LEFT: Images collage */}
+        <div className="relative w-full h-[560px] ">
 
-            <div className="rounded-3xl overflow-hidden">
-              <Image
-                src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764510689/Group_516_bplvj3.png?auto=compress&cs=tinysrgb&w=1200"
-                alt="Large event"
-                width={800}
-                height={400}
-                className="w-full h-64 md:h-96 object-cover"
-              />
-            </div>
-          </div>
+{/* Image 1 – Top Left */}
+<div className=" absolute top-0 left-0 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
+  <Image
+    src="/communityImage1.svg"
+    alt="Community service"
+    fill
+    className="object-cover"
+  />
+</div>
+
+{/* Image 2 – Middle (diagonal down + right) */}
+<div className="absolute top-28 left-40 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
+  <Image
+    src="/communityImage2.svg"
+    alt="Teen volunteers"
+    fill
+    className="object-cover"
+  />
+</div>
+
+{/* Image 3 – Bottom Right */}
+<div className="absolute top-[360px] left-20 w-80 h-72 rounded-2xl overflow-hidden shadow-xl">
+  <Image
+    src="/communityImage1.svg"
+    alt="Street cleanup"
+    fill
+    className="object-cover"
+  />
+</div>
+
+</div>
+</div>
+
+        {/* RIGHT: Text content */}
+        <div className="relative">
+
+          <p className="text-gray-600 max-w-lg leading-relaxed mb-10">
+            We believe leadership is not taught only through words, but through action.
+            Our community service initiatives give teenagers practical opportunities
+            to serve, lead, and take responsibility for their environment.
+          </p>
+
+          <h2 className="text-5xl font-extrabold leading-tight mb-8">
+            <span className="text-gray-900">Community</span>{" "}
+            <span className="text-orange-500">Service</span>
+          </h2>
+
+          <button className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition">
+            Join our Teens Community
+          </button>
         </div>
       </div>
     </section>
 
+    <section className="py-16 md:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
-    <section className="py-12 md:py-20 bg-gray-50">
-<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div className="text-center mb-12">
-    <h2 className="text-3xl md:text-5xl font-bold mb-4">
-      Our Campaign Sectors
-    </h2>
-    <p className="text-gray-600 max-w-2xl mx-auto">
-      This Privacy Policy becomes effective upon your first use of the service.
-      Understood and agreed to be bound thereby.
-    </p>
-  </div>
+        {/* LEFT — Image */}
+        <div className="relative w-full h-[420px] md:h-[520px] rounded-2xl overflow-hidden">
+          <Image
+            src="/communityImage4.svg" // replace with your image path
+            alt="Community service in action"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
 
-  {/* 🔥 Animated Cards */}
-  <AnimatePresence mode="wait">
-    <motion.div
-      key={activeSet} // triggers animation on click
-      initial={{ opacity: 0, x: 60 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -60 }}
-      transition={{ duration: 0.45 }}
-      className="grid md:grid-cols-3 gap-6 mb-12"
-    >
-      {displayedFeatures.map((feature, index) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.15 }}
-        >
-          <Card className="border-0 shadow-lg hover:shadow-xl transition-shadow">
-            <CardContent className="p-8">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                   <Image
-  src={feature.icon}
-  alt={feature.title}
-  width={30}
-  height={30}
-  className="w-6 h-6 object-contain"
-/>
-                  {/* <feature.icon className="w-6 h-6 text-orange-600" /> */}
-                </div>
-                {/* <ArrowRight className="w-5 h-5 text-gray-400" /> */}
-              </div>
+        {/* RIGHT — Content */}
+        <div className="space-y-6">
+          
+          {/* Eyebrow */}
+          <p className="text-sm tracking-[0.3em] text-gray-700 uppercase">
+            Leadership Through Action
+          </p>
 
-              <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+          {/* Heading */}
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+            Our Approach
+          </h2>
 
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {feature.description}
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
-      ))}
-    </motion.div>
-  </AnimatePresence>
+          {/* Description */}
+          <p className="text-gray-700 leading-relaxed max-w-xl">
+            Our community service projects are simple, practical, and
+            intentional. We focus on activities that allow teenagers to
+            engage directly with real community needs while learning
+            leadership and collaboration.
+          </p>
 
-  {/* Control Dots */}
-  <div className="flex justify-center gap-2">
-    {[0, 1].map((i) => (
-      <button
-        key={i}
-        onClick={() => setActiveSet(i)}
-        className={`h-2 rounded-full transition-all ${
-          activeSet === i ? "w-8 bg-orange-500" : "w-2 bg-gray-300"
-        }`}
-      ></button>
-    ))}
-  </div>
-</div>
-</section>
+          {/* Sub-text */}
+          <div className="space-y-4">
+            <p className="font-medium text-gray-900">
+              Each project is designed to:
+            </p>
+
+            <ul className="list-disc list-inside space-y-2 text-gray-700 pl-4">
+              <li>Encourage responsibility and initiative</li>
+              <li>Build teamwork and leadership skills</li>
+              <li>Promote environmental and social awareness</li>
+              <li>Strengthen relationships with local communities</li>
+            </ul>
+          </div>
+
+          {/* Closing */}
+          <p className="text-gray-700 leading-relaxed max-w-xl">
+            Community service is not treated as an add-on. It is a learning
+            experience that reinforces the values we teach across our
+            programs.
+          </p>
+
+        </div>
+      </div>
+    </section>
 
 <div className="text-center mb-8 mt-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-Campaigns’ impact            </h2>
+          Impact of Our Community Service            </h2>
            
         </div>
 
@@ -234,7 +238,7 @@ className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-n
 >
 
 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-  <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
+  <div ref={ref} className="grid grid-cols-2 md:grid-cols-3 gap-6">
     {stats.map((stat, index) => {
       const isLast = index === stats.length - 1;
 

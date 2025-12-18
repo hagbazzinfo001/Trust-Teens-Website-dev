@@ -85,7 +85,7 @@ export default function PastSummit() {
       </section>
 
       <SubmitDetailsModal
-        campaign={selectedSummit}
+        Summit={selectedSummit}
         onClose={() => setSelectedSummit(null)}
       />
     </>

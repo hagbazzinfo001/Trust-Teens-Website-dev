@@ -8,10 +8,7 @@ import CountUp from "react-countup";
  import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
  import PastConferences from '@/components/PastConferences';
- import bb from '@/public/bb.svg'
- import gg from '@/public/gg.svg'
- import oo from '@/public/oo.svg'
- import pp from '@/public/pp.svg'
+ 
 import icon1 from "@/public/icon1.svg";
 import icon3 from "@/public/icon3.svg";
 import icon4 from "@/public/icon4.svg";
