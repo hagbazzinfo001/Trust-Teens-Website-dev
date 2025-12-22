@@ -112,7 +112,7 @@ const coreComponents = [
 
 
   const stats = [
-    { icon: icon1, label: "Teenagers Attended", value: "4,000+" },
+    { icon: icon1, label: "Teenagers Attended", value: "4000+" },
     { icon: icon2, label: "Schools Mobilised", value: "29+" },
     { icon: icon3, label: "Speakers and Guests", value: "30+" },
     { icon: icon4, label: "Volunteers Deployed", value: "50+" },

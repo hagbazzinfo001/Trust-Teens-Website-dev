@@ -117,8 +117,6 @@ export default function SummitDetailsModal({
 
 
 </div>
-
-
             <div className="py-8 md:py-10 space-y-12">
               <div className="p-8">
                 <div className="flex items-center gap-3 mb-2">
@@ -154,12 +152,9 @@ export default function SummitDetailsModal({
                
               </div>
 
-           
- 
-
 <section
    className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
-
+ 
 >
   
   <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
