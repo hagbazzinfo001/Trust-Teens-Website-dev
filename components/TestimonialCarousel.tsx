@@ -17,11 +17,11 @@ const testimonials: Testimonial[] = [
     name: 'Jane Cooper',
     age: '14 year’s old',
     avatars: [
-      '/avatar1.jpg',
-      '/avatar2.jpg',
-      '/avatar3.jpg',
-      '/avatar4.jpg',
-      '/avatar5.jpg',
+      '/testimonia1.svg',
+      '/testimonia2.svg',
+      '/testimonia3.svg',
+      '/testimonia4.svg',
+      '/testimonia5.svg',
     ],
   },
   {
@@ -30,11 +30,37 @@ const testimonials: Testimonial[] = [
     name: 'Samuel Ade',
     age: '16 year’s old',
     avatars: [
-      '/avatar2.jpg',
-      '/avatar3.jpg',
-      '/avatar4.jpg',
-      '/avatar5.jpg',
-      '/avatar1.jpg',
+      '/testimonia1.svg',
+      '/testimonia2.svg',
+      '/testimonia3.svg',
+      '/testimonia4.svg',
+      '/testimonia5.svg',
+    ],
+  },
+  {
+    quote:
+      'This program helped me build confidence, leadership skills, and gave me a voice in my community.',
+    name: 'Owolabi Agbabiaka',
+    age: '30 year’s old',
+    avatars: [
+      '/testimonia1.svg',
+      '/testimonia2.svg',
+      '/testimonia3.svg',
+      '/testimonia4.svg',
+      '/testimonia5.svg',
+    ],
+  },
+  {
+    quote:
+      'This program helped me build confidence, leadership skills, and gave me a voice in my community.',
+    name: 'Afis Olaranwaju',
+    age: '28 year’s old',
+    avatars: [
+      '/testimonia1.svg',
+      '/testimonia2.svg',
+      '/testimonia3.svg',
+      '/testimonia4.svg',
+      '/testimonia5.svg',
     ],
   },
 ];

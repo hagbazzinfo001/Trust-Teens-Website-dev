@@ -3,6 +3,8 @@
 
 'use client';
 import Image from "next/image";
+import { usePathname } from 'next/navigation';
+
 import Link from 'next/link';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
@@ -25,15 +27,27 @@ const communityItems = [
   { name: 'TT Community Service', slug: 'community-service', icon: icon3 },
   { name: 'TT Hangout', slug: 'hangout', icon: icon4 },
   ];
+  const   teamItems = [
+    { name: 'Core Team', slug: 'Core Team', icon: icon5 },
+   { name: 'Volunteers', slug: 'Volunteers', icon: icon3 },
+   { name: 'Mentors', slug: 'Mentors', icon: icon4 },
+   { name: 'Ambassadors', slug: 'Ambassadors', icon: icon4 },
 
+   ];
+ 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mobileDropdowns, setMobileDropdowns] = useState({
     missions: false,
     community: false,
+    team: false,
   });
+  const pathname = usePathname();
 
-  const toggleMobileDropdown = (section: 'missions' | 'community') => {
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
+  
+  const toggleMobileDropdown = (section: 'missions' | 'community' | 'team') => {
     setMobileDropdowns(prev => ({
       ...prev,
       [section]: !prev[section],
@@ -56,15 +70,29 @@ export default function Header() {
           </Link>
 
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/about" className="text-sm hover:text-orange-500 transition-colors">
+            <Link href="/about"  className={`text-sm transition-colors ${
+    isActive('/about')
+      ? 'text-orange-500 font-medium'
+      : 'hover:text-orange-500'
+  }`}>
               About us
             </Link>
-            <Link href="/impact" className="text-sm hover:text-orange-500 transition-colors">
+            <Link href="/impact" className={`text-sm transition-colors ${
+    isActive('/impact')
+      ? 'text-orange-500 font-medium'
+      : 'hover:text-orange-500'
+  }`}
+>
               Our impact
             </Link>
 
             <div className="relative group">
-              <button className="flex items-center gap-1 text-sm hover:text-orange-500 transition-colors py-2">
+              <button   className={`flex items-center gap-1 text-sm transition-colors py-2 ${
+    isActive('/missions')
+      ? 'text-orange-500 font-medium'
+      : 'hover:text-orange-500'
+  }`}
+>
                 Missions
                 <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
               </button>
@@ -90,7 +118,11 @@ export default function Header() {
             </div>
 
             <div className="relative group">
-              <button className="flex items-center gap-1 text-sm hover:text-orange-500 transition-colors py-2">
+              <button  className={`flex items-center gap-1 text-sm transition-colors py-2 ${
+    isActive('/community')
+      ? 'text-orange-500 font-medium'
+      : 'hover:text-orange-500'
+  }`}>
                 Community
                 <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
               </button>
@@ -114,10 +146,36 @@ export default function Header() {
                 </div>
               </div>
             </div>
+            <div className="relative group">
+  <button   className={`flex items-center gap-1 text-sm transition-colors py-2 ${
+    isActive('/team')
+      ? 'text-orange-500 font-medium'
+      : 'hover:text-orange-500'
+  }`}>
+    Team
+    <ChevronDown size={16} className="group-hover:rotate-180 transition-transform" />
+  </button>
 
-            <Link href="/team" className="text-sm hover:text-orange-500 transition-colors">
-              Team
-            </Link>
+  <div className="absolute left-0 mt-0 w-80 bg-white border border-gray-200 rounded-lg shadow-lg
+                  opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                  transition-all duration-200 py-4 px-4 z-50">
+    <div className="grid grid-cols-1 gap-3">
+      {teamItems.map((item) => (
+        <Link
+          key={item.slug}
+          href={`/team/${item.slug}`}
+          className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors group/item"
+        >
+          <Image src={item.icon} alt={item.name} width={40} height={40} />
+          <span className="text-sm font-medium group-hover/item:text-orange-600">
+            {item.name}
+          </span>
+        </Link>
+      ))}
+    </div>
+  </div>
+</div>
+
             <Button className="bg-pink-600 hover:bg-pink-700 text-white rounded-md px-6">
               Upcoming Events
             </Button>
@@ -207,12 +265,35 @@ export default function Header() {
                 )}
               </div>
 
-              <Link
-                href="/team"
-                className="block px-4 py-2 text-sm hover:bg-orange-50 hover:text-orange-600 transition-colors rounded"
-              >
-                Team
-              </Link>
+              <div>
+                <button
+                  onClick={() => toggleMobileDropdown('team')}
+                  className="w-full flex items-center justify-between px-4 py-2 text-sm hover:bg-orange-50 hover:text-orange-600 transition-colors rounded"
+                >
+                  Team
+                  <ChevronDown
+                    size={16}
+                    className={`transition-transform ${mobileDropdowns.team ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {mobileDropdowns.team  && (
+                  <div className="mt-2 space-y-2 bg-gray-50 rounded-lg p-3">
+                    {teamItems.map((item) => (
+                      <Link
+                        key={item.slug}
+                        href={`/Team/${item.slug}`}
+                        onClick={() => setIsMenuOpen(false)}
+                        className="flex items-center gap-3 p-2 text-sm text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-colors rounded"
+                      >
+                        <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-lg">
+      <Image src={item.icon} alt={item.name} width={32} height={32} />
+      </div>
+                        <span className="font-medium">{item.name}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
               <Button className="bg-pink-600 hover:bg-pink-700 text-white rounded-md w-full mt-4">
                 Upcoming Events
               </Button>
