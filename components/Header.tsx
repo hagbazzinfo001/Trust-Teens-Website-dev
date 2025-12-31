@@ -28,7 +28,7 @@ const communityItems = [
   { name: 'TT Hangout', slug: 'hangout', icon: icon4 },
   ];
   const   teamItems = [
-    { name: 'Core Team', slug: 'Core Team', icon: icon5 },
+    { name: 'Core Team', slug: 'CoreTeam', icon: icon5 },
    { name: 'Volunteers', slug: 'Volunteers', icon: icon3 },
    { name: 'Mentors', slug: 'Mentors', icon: icon4 },
    { name: 'Ambassadors', slug: 'Ambassadors', icon: icon4 },
