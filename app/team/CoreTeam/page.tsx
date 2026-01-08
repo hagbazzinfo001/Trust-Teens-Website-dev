@@ -48,7 +48,7 @@ export default function CoreTeamPage() {
   return (
     <main>
       {/* HERO SECTION */}
-      <section className="w-full px-10 py-20  grid md:grid-cols-3 gap-12 items-center bg-[#FAFAFA]">
+      <section className="w-full px-10 py-20  grid md:grid-cols-3 gap-12 items-start bg-[#FAFAFA]">
   <FadeUp>
     <div>
       <h1 className="text-4xl font-bold mb-6">The Core Team</h1>
@@ -76,8 +76,9 @@ export default function CoreTeamPage() {
     <div>
       
       <p className="text-gray-600 leading-relaxed">
-      The people stewarding the vision, building the systems, and delivering the work behind Trust Teens. This team leads strategy, programs, partnerships, and daily execution with purpose and care.
-      </p>
+The Core Team operates with clear roles, shared accountability, and a commitment to excellence. <br /> <br /> 
+We prioritize structure, communication, and follow-through to ensure every program reflects the values Trust Teens stands for. <br /> <br />
+Our work is guided by purpose-driven leadership, clear ownership of roles, collaboration across teams and long-term thinking over short-term wins      </p>
     </div>
   </FadeUp>
 </section>

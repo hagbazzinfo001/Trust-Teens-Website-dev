@@ -334,7 +334,7 @@ export default function VolunteersPage() {
   return (
     <main className="bg-white overflow-hidden">
       {/* ================= HERO ================= */}
-      <section className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center">
+      <section className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-start">
         {/* Masonry */}
         <motion.div
           variants={fadeUp}
@@ -489,13 +489,13 @@ export default function VolunteersPage() {
       </section>
 
       {/* ================= CTA ================= */}
-      <section className="bg-gray-900 text-white py-20">
+      <section className="bg-white-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
           {loading ? (
             <SkeletonImage />
           ) : (
             <Image
-              src="/join-volunteer.jpg"
+              src="/volunteersbg.svg"
               alt="Join Volunteer"
               width={600}
               height={400}
@@ -509,13 +509,13 @@ export default function VolunteersPage() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <p className="uppercase text-sm text-orange-400">
+            <p className="uppercase text-sm text-black">
               Join as a volunteer
             </p>
-            <h3 className="text-3xl font-bold mt-2">Volunteer With Us</h3>
-            <p className="text-gray-300 mt-4">
-              We welcome individuals who are willing to serve, learn, and
-              contribute to meaningful youth-focused work.
+            <h3 className="text-3xl text-black font-bold mt-2">Volunteer With Us</h3>
+            <p className="text-black mt-4">
+            We welcome individuals who are willing to serve, learn, and contribute to meaningful youth-focused work. Volunteer opportunities are available across events, campaigns, and ongoing community initiatives.
+Some roles are one-day commitments, while others span longer periods depending on the program.
             </p>
 
             <motion.button
