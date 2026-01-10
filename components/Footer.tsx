@@ -263,13 +263,14 @@ export default function Footer() {
                   <Link href="https://facebook.com">Facebook</Link>
                 </li>
                 <li>
-                  <Link href="https://twitter.com">Twitter</Link>
+                  <Link href="https://x.com/trustteens_?s=21">Twitter</Link>
+                  {/* 𝕏 */}
                 </li>
                 <li>
-                  <Link href="https://instagram.com">Instagram</Link>
+                  <Link href="https://www.instagram.com/trustteens_?igsh=MWFnZ3IyN3Ixd2lhYQ==">Instagram</Link>
                 </li>
                 <li>
-                  <Link href="https://linkedin.com">LinkedIn</Link>
+                  <Link href="https://www.linkedin.com/company/trust-teens-community/">LinkedIn</Link>
                 </li>
               </ul>
             </div>

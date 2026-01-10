@@ -23,8 +23,8 @@ export default function TeamCard({ name, role, description, image }: any) {
           alt={name}
           width={300}
           height={300}
-          className="rounded-lg object-cover mx-auto"
-        />
+          className="rounded-lg object-cover mx-auto h-full w-full"
+         />
       </motion.div>
 
       <h3 className="mt-4 text-lg font-semibold">{name}</h3>
