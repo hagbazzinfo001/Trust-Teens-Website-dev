@@ -78,7 +78,7 @@ const MentorPage = () => {
         {/* Top Two Featured Images */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-[2rem] overflow-hidden h-[350px] relative shadow-lg">
-            <Image src="mentorhero2.svg" alt="Conference" fill className="object-cover" />
+            <Image src="/mentorhero2.svg" alt="Conference" fill className="object-cover" />
           </div>
           <div className="rounded-[2rem] overflow-hidden h-[350px] relative shadow-lg">
             <Image src="/mentorhero1.svg " alt="Meeting" fill className="object-cover" />
