@@ -109,7 +109,11 @@ export default function TestimonialCarousel() {
   return (
     <section className="relative py-24 px-4 overflow-hidden text-white">
       {/* 🔁 Replace background later */}
-      <div className="absolute inset-0 -z-10 bg-blue-600" />
+      <img
+  src="/impactBlue.svg"
+  alt="impact background"
+  className="absolute inset-0 -z-10 h-full w-full object-cover"
+/>
 
       {/* Heading */}
       <div className="text-center max-w-3xl mx-auto mb-16">

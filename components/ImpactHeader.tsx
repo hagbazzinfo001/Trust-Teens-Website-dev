@@ -176,14 +176,13 @@ export default function AutoScrollImages() {
           <p className="tracking-widest text-sm mb-6">TEENAGERS IMPACTED</p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-            Through every conference hall filled, every campaign walked, and every
-            conversation held, one thing has remained consistent: teenagers show up
-            ready.
+          Through every conference hall filled, every small room gathered, every campaign walked, and every conversation held, one thing has remained consistent. Teenagers show up ready. Ready to learn. Ready to grow. Ready to lead, if given the right environment. Since 2024, Trust Teens has reached thousands of teenagers across conferences, summits, campaigns, community service, and small group hangouts. 
+
           </p>
 
           <p className="text-gray-600 leading-relaxed">
-            Beyond the numbers, what we have witnessed is resilience, curiosity,
-            courage, and a deep hunger for direction.
+          But beyond the numbers, what we have witnessed is resilience, curiosity, courage, and a deep hunger for direction.And this is only the beginning.
+.
           </p>
         </motion.div>
 
