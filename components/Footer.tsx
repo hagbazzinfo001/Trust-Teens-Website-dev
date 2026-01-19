@@ -47,7 +47,7 @@ export default function Footer() {
               <h3 className="font-semibold mb-4 text-blue-400">Community</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="/https://glacier-dogsled-9b5.notion.site/Trust-Teens-Curriculum-209a6df594508026a95af038b05e4da5?source=copy_link">Curriculum</a>
+                  <Link href="https://glacier-dogsled-9b5.notion.site/Trust-Teens-Curriculum-209a6df594508026a95af038b05e4da5?source=copy_link">Curriculum</Link>
                 </li>
                 <li>
                   <Link href="/community/community-service">Community Service</Link>
@@ -185,7 +185,7 @@ export default function Footer() {
               <h3 className="font-semibold mb-4 text-blue-400">Community</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="https://glacier-dogsled-9b5.notion.site/Trust-Teens-Curriculum-209a6df594508026a95af038b05e4da5?source=copy_link">Curriculum</a>
+                  <Link href="https://glacier-dogsled-9b5.notion.site/Trust-Teens-Curriculum-209a6df594508026a95af038b05e4da5?source=copy_link">Curriculum</Link>
                 </li>
                 <li>
                   <Link href="/community/community-service">Community Service</Link>
@@ -217,10 +217,10 @@ export default function Footer() {
               <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="/team/coreTeam">Core Team</Link>
+                  <Link href="/team/CoreTeam">Core Team</Link>
                 </li>
                 <li>
-                  <Link href="/team/volunteers">Volunteers</Link>
+                  <Link href="/team/Volunteers">Volunteers</Link>
                 </li>
                 <li>
                   <Link href="/team/Ambassadors">Ambassadors</Link>

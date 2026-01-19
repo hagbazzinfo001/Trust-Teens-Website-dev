@@ -1,4 +1,5 @@
  "use client";
+ import { useRouter } from "next/navigation";
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -147,28 +148,29 @@ function SkeletonImage() {
 ----------------------------------*/
 export default function VolunteersPage() {
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 900);
     return () => clearTimeout(t);
   }, []);
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
+  // const [open, setOpen] = useState(false);
+  // useEffect(() => {
+  //   if (open) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "auto";
+  //   }
   
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [open]);
+  //   return () => {
+  //     document.body.style.overflow = "auto";
+  //   };
+  // }, [open]);
   
   return (
     <div>
 
-    <AnimatePresence>
+    {/* <AnimatePresence>
       {open && (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
@@ -184,7 +186,7 @@ export default function VolunteersPage() {
             exit={{ scale: 0.9, opacity: 0, y: 40 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            {/* Close button */}
+            {/* Close button 
             <button
               onClick={() => setOpen(false)}
               className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
@@ -228,7 +230,7 @@ export default function VolunteersPage() {
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence> */}
     <main className="bg-white overflow-hidden">
   
 <section className="flex flex-col md:flex-row items-start justify-between gap-12 p-8 max-w-7xl mx-auto bg-[#fdfdfd]">
@@ -319,15 +321,14 @@ export default function VolunteersPage() {
             </motion.div>
           ))}
     </div>
-
     <motion.button
-      whileHover={{ scale: 1.05 }}
-      className="mt-4 bg-orange-500 text-white px-6 py-3 rounded-lg"
-      onClick={() => setOpen(true)}
+  whileHover={{ scale: 1.05 }}
+  className="mt-4 bg-orange-500 text-white px-6 py-3 rounded-lg"
+  onClick={() => router.push("/team/Volunteers/allVolunteers")}
+>
+  See all Volunteers
+</motion.button>
 
-    >
-      See all Volunteers
-    </motion.button>
   </motion.div>
 </section>
 
