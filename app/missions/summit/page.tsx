@@ -270,7 +270,7 @@ const displayedFeatures = features.slice(
    
 <section className="
 p-12 md:py-20
-bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat
+bg-[url(/impactsolidblack.png)] bg-contain bg-center bg-no-repeat
 flex flex-col md:flex-row
 justify-center md:justify-between
 items-center
