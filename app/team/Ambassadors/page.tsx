@@ -1,5 +1,6 @@
 
 "use client";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -8,6 +9,8 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function TeenAmbassadorsPage() {
+    const router = useRouter();
+  
   const ambassadors = [
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
@@ -30,23 +33,12 @@ export default function TeenAmbassadorsPage() {
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
   ];
-  const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [open]);
+ 
   
   return (
 
   <div>
-<AnimatePresence>
+{/* <AnimatePresence>
   {open && (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
@@ -62,7 +54,7 @@ export default function TeenAmbassadorsPage() {
         exit={{ scale: 0.9, opacity: 0, y: 40 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
       >
-        {/* Close button */}
+        {/* Close button
         <button
           onClick={() => setOpen(false)}
           className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
@@ -98,7 +90,7 @@ export default function TeenAmbassadorsPage() {
       </motion.div>
     </motion.div>
   )}
-</AnimatePresence>
+</AnimatePresence> */}
 
     <main className="bg-white text-black">
       {/* Header */}
@@ -147,12 +139,14 @@ export default function TeenAmbassadorsPage() {
             ))}
           </div>
 
-          <Button
-            onClick={() => setOpen(true)}
-            className="bg-orange-500 hover:bg-orange-600 rounded-xl px-8"
-          >
-            See all Ambassadors
-          </Button>
+    <motion.button
+  whileHover={{ scale: 1.05 }}
+  className="mt-4 bg-orange-500 text-white px-6 py-3 rounded-lg"
+  onClick={() => router.push("/team/Ambassador/allAmbassadoor")}
+>
+  See all Volunteers
+</motion.button>
+
         </div>
       </section>
 

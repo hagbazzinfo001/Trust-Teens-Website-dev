@@ -154,83 +154,11 @@ export default function VolunteersPage() {
     const t = setTimeout(() => setLoading(false), 900);
     return () => clearTimeout(t);
   }, []);
-  // const [open, setOpen] = useState(false);
-  // useEffect(() => {
-  //   if (open) {
-  //     document.body.style.overflow = "hidden";
-  //   } else {
-  //     document.body.style.overflow = "auto";
-  //   }
-  
-  //   return () => {
-  //     document.body.style.overflow = "auto";
-  //   };
-  // }, [open]);
-  
+ 
   return (
     <div>
 
-    {/* <AnimatePresence>
-      {open && (
-        <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-           className="bg-white max-w-6xl w-full mx-6 rounded-3xl p-8 relative 
-           max-h-[90vh] overflow-y-auto scrollbar-hide"
-             initial={{ scale: 0.9, opacity: 0, y: 40 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 40 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-          >
-            {/* Close button 
-            <button
-              onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 text-gray-500 hover:text-black text-xl"
-            >
-              ✕
-            </button>
     
-            <h3 className="text-2xl font-semibold mb-6 text-center">
-            Ambassador Community        </h3>
-            <p className="mb-6 text-center px-2 md:px-12">Our ambassadors are young leaders who embody purpose, responsibility, and influence. They help create awareness, encourage participation, and support peer-to-peer growth within their environments.</p>
-            
-    
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {ambassadors2.map((a, i) => (
-                <div
-                  key={i}
-                  className="rounded-2xl shadow-sm border p-4"
-                >
-                  <Image
-                    src="/coreteam2.svg"
-                    alt="Ambassador"
-                    width={200}
-                    height={200}
-                    className="h-26 w-full rounded-xl mb-4 object-cover"
-                  />
-    
-                  <h4 className="font-semibold">{a.name}</h4>
-                  <p className="text-sm text-orange-500">{a.school}</p>
-                   <p className="text-gray-500 text-sm mt-2 w-2/3 ">{a.bio}</p>
-                 <motion.div
-                      className="flex justify-start gap-4 mt-4 text-gray-400"
-                      whileHover={{ color: '#7c3aed' }}
-                    >
-                      <Facebook size={18} />
-                      <Instagram size={18} />
-                      <Linkedin size={18} />
-                    </motion.div>
-                 </div>
-              ))}
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence> */}
     <main className="bg-white overflow-hidden">
   
 <section className="flex flex-col md:flex-row items-start justify-between gap-12 p-8 max-w-7xl mx-auto bg-[#fdfdfd]">
