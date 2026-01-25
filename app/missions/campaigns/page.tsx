@@ -8,16 +8,16 @@ import CountUp from "react-countup";
  import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
  import PastCampaigns from '@/components/PastCampaigns';
- import bb from '@/public/bb.svg'
- import gg from '@/public/gg.svg'
- import oo from '@/public/oo.svg'
- import pp from '@/public/pp.svg'
-import icon1 from "@/public/icon1.svg";
-import icon3 from "@/public/icon3.svg";
-import icon4 from "@/public/icon4.svg";
-import icon2 from "@/public/icon2.svg";
-import icon5 from "@/public/icon5.svg";
-import icon6 from "@/public/icon6.svg";
+ import bb from '@/public/images/bb.svg'
+ import gg from '@/public/images/gg.svg'
+ import oo from '@/public/images/oo.svg'
+ import pp from '@/public/images/pp.svg'
+import icon1 from "@/public/images/icon1.svg";
+import icon3 from "@/public/images/icon3.svg";
+import icon4 from "@/public/images/icon4.svg";
+import icon2 from "@/public/images/icon2.svg";
+import icon5 from "@/public/images/icon5.svg";
+import icon6 from "@/public/images/icon6.svg";
  import UpcomingCampaigns from "@/components/ui/UpcomingCampaigns";
 import {
   ArrowRight,

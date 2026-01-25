@@ -3,9 +3,9 @@
 import { Hangout } from '@/lib/mockHangout';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import cleanCummunity from '@/public/cleanCummunity.svg'
- import projectCommunity from '@/public/projectCommunity.svg'
- import teenagerCommunity from '@/public/teenagerCommunitty.svg'
+import cleanCummunity from '@/public/images/cleanCummunity.svg'
+ import projectCommunity from '@/public/images/projectCommunity.svg'
+ import teenagerCommunity from '@/public/images/teenagerCommunitty.svg'
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";

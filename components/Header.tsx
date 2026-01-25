@@ -9,12 +9,12 @@ import Link from 'next/link';
 import { Menu, X, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import icon1 from "@/public/icon1.svg";
-import icon3 from "@/public/icon3.svg";
-import icon4 from "@/public/icon4.svg";
-import icon2 from "@/public/icon2.svg";
-import icon5 from "@/public/icon5.svg";
-import icon6 from "@/public/icon6.svg";
+import icon1 from "@/public/images/icon1.svg";
+import icon3 from "@/public/images/icon3.svg";
+import icon4 from "@/public/images/icon4.svg";
+import icon2 from "@/public/images/icon2.svg";
+import icon5 from "@/public/images/icon5.svg";
+import icon6 from "@/public/images/icon6.svg";
 
 const missionItems = [
   { name: 'TT Campaigns', slug: 'campaigns', icon: icon1 },

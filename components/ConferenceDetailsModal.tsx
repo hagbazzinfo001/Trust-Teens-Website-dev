@@ -8,16 +8,16 @@ import CountUp from "react-countup";
 import { useState } from "react";
 import { Conference } from '@/lib/mockConferences';
 import { X } from 'lucide-react';
-import icon1 from '@/public/icon1.svg';
-import icon2 from '@/public/icon2.svg';
-import icon3 from '@/public/icon3.svg';
-import icon4 from '@/public/icon4.svg';
-import icon5 from '@/public/icon5.svg';
-import icon6 from '@/public/icon6.svg';
-import volunteerIcon from '@/public/volunteerIcon.svg'
-import sessionIcon from '@/public/sessionIcon.svg'
-import teenagerIcon from '@/public/teenagersIcon.svg'
-import schoolIcon from '@/public/schoolIcon.svg'
+import icon1 from '@/public/images/icon1.svg';
+import icon2 from '@/public/images/icon2.svg';
+import icon3 from '@/public/images/icon3.svg';
+import icon4 from '@/public/images/icon4.svg';
+import icon5 from '@/public/images/icon5.svg';
+import icon6 from '@/public/images/icon6.svg';
+import volunteerIcon from '@/public/images/volunteerIcon.svg'
+import sessionIcon from '@/public/images/sessionIcon.svg'
+import teenagerIcon from '@/public/images/teenagersIcon.svg'
+import schoolIcon from '@/public/images/schoolIcon.svg'
  
 
 interface ConferenceDetailsModalProps {
