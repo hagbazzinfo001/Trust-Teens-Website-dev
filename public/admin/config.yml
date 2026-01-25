@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: your-username/your-repo
+  repo: hagbazzinfo001/trustteen
   branch: main
 
 media_folder: "public/uploads"
