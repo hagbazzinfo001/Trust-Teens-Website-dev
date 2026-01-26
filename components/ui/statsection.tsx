@@ -57,17 +57,17 @@ export default function StatsSection() {
   const stats: StatCard[] = [
     {
       type: "image",
-      img: "/schchild.svg",
+      img: "/images/schchild.svg",
     },
     {
       type: "stat",
-      bg: "/oran.svg",
+      bg: "/images/oran.svg",
       value: 25,
       label: "Purpose driven initiatives executed",
     },
     {
       type: "stat",
-      bg: "/yel.svg",
+      bg: "/images/yel.svg",
       value: 8500,
       label:
         "Direct beneficiaries of our programs and continuous learning efforts.",
@@ -79,7 +79,7 @@ export default function StatsSection() {
     },
     {
       type: "stat",
-      bg: "/bluestar.svg",
+      bg: "/images/bluestar.svg",
       value: 12,
       label:
         "Communities in Africa, expanding presence across cities and schools.",

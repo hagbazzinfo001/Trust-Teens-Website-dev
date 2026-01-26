@@ -11,7 +11,7 @@ export default function Footer() {
           {/* Logo centered */}
           <div className="mb-10 flex justify-center">
             <Image
-              src="/logowhite.svg"
+              src="/images/logowhite.svg"
               width={150}
               height={150}
               alt="Trust Teens Logo"
@@ -110,7 +110,7 @@ export default function Footer() {
           {/* Logo */}
           <div>
             <Image
-              src="/logowhite.svg"
+              src="/images/logowhite.svg"
               width={150}
               height={150}
               alt="Trust Teens Logo"

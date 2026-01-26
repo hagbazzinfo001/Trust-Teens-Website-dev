@@ -4,10 +4,10 @@
 
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import icon1 from "@/public/sdg4.png";
-import icon2 from "@/public/sdg8.png";
-import icon3 from "@/public/sdg5.png";
-import icon4 from "@/public/sdg17.png";
+import icon1 from "@/public/images/sdg4.png";
+import icon2 from "@/public/images/sdg8.png";
+import icon3 from "@/public/images/sdg5.png";
+import icon4 from "@/public/images/sdg17.png";
 
 const sdgs = [
   {

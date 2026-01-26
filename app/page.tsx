@@ -6,12 +6,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import CountUpOnView from "@/components/ui/countup";
-import icon1 from "@/public/icon1.svg";
-import icon3 from "@/public/icon3.svg";
-import icon4 from "@/public/icon4.svg";
-import icon2 from "@/public/icon2.svg";
-import icon5 from "@/public/icon5.svg";
-import icon6 from "@/public/icon6.svg";
+import icon1 from "@/public/images/icon1.svg";
+import icon3 from "@/public/images/icon3.svg";
+import icon4 from "@/public/images/icon4.svg";
+import icon2 from "@/public/images/icon2.svg";
+import icon5 from "@/public/images/icon5.svg";
+import icon6 from "@/public/images/icon6.svg";
 // import { Users, GraduationCap, BookOpen, Package } from "lucide-react";
 import Image from "next/image";
 
@@ -270,7 +270,7 @@ export default function Home() {
                 whileHover={{ x: 6 }}
                 transition={{ duration: 0.2 }}
               >
-                <Image  src="/arrowvector.svg" alt="Arrow Right" width={24} height={24} />
+                <Image  src="/images/arrowvector.svg" alt="Arrow Right" width={24} height={24} />
                 
               </motion.div>
             </div>

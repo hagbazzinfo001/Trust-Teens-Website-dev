@@ -4,14 +4,14 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, type Variants } from "framer-motion";
-import icon1 from "@/public/icon1.svg";
-import icon3 from "@/public/icon3.svg";
-import icon4 from "@/public/icon4.svg";
+import icon1 from "@/public/images/icon1.svg";
+import icon3 from "@/public/images/icon3.svg";
+import icon4 from "@/public/images/icon4.svg";
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
 import { AnimatePresence} from "framer-motion";
- import icon2 from "@/public/icon2.svg";
-import icon5 from "@/public/icon5.svg";
-import icon6 from "@/public/icon6.svg";
+ import icon2 from "@/public/images/icon2.svg";
+import icon5 from "@/public/images/icon5.svg";
+import icon6 from "@/public/images/icon6.svg";
 /* ---------------------------------
    Animation Variants (TS Safe)
 ----------------------------------*/
