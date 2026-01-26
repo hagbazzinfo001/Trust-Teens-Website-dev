@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "export": "npm run build && next export"
+    "export": "next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
