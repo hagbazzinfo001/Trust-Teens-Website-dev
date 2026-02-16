@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Facebook, Instagram, Linkedin } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from "next/link";
 
 export default function TeamCard({ name, role, description, image }: any) {
   return (
@@ -36,9 +37,18 @@ export default function TeamCard({ name, role, description, image }: any) {
         className="flex justify-center gap-4 mt-4 text-gray-400"
         whileHover={{ color: '#7c3aed' }}
       >
-        <Facebook size={18} />
-        <Instagram size={18} />
-        <Linkedin size={18} />
+         <Link href="/volunteers">
+    <Facebook size={18} className="cursor-pointer hover:text-blue-600 transition" />
+  </Link>
+
+  <Link href="/volunteers">
+    <Instagram size={18} className="cursor-pointer hover:text-pink-600 transition" />
+  </Link>
+
+  <Link href="/volunteers">
+    <Linkedin size={18} className="cursor-pointer hover:text-blue-700 transition" />
+  </Link>
+
       </motion.div>
     </motion.div>
   );

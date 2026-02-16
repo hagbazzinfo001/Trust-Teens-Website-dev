@@ -69,19 +69,19 @@ const volunteers = [
     name: "Deborah Dada",
     role: "Founder & Lead",
     bio: "Enjoys adventurous travel and new cultures.",
-    image: "/coreteam1.svg",
+    image: "/images/coreteam1.svg",
   },
   {
     name: "Iyanoluwa Sonde-Ikokoh",
     role: "Programs Manager",
     bio: "Empowering young people to lead change.",
-    image: "/coreteam2.svg",
+    image: "/images/coreteam2.svg",
   },
   {
     name: "Oluwadunni Akihnami",
     role: "Media Manager",
     bio: "5+ years in media & marketing.",
-    image: "/coreteam3.svg",
+    image: "/images/coreteam3.svg",
   },
 ];
 
@@ -96,31 +96,31 @@ const roles = [
 const volunteerImages = [
   {
     id: 1,
-    src: "/volunteer1.svg",
+    src: "/images/volunteer1.svg",
     alt: "Volunteers posing",
     // Custom margin to handle the staggered look
     containerStyles: "mt-0" 
   },
   {
     id: 2,
-    src: "/volunteer2.svg",
+    src: "/images/volunteer2.svg",
     alt: "Volunteers in green shirts",
     containerStyles: "mt-12"
   },
   {
     id: 3,
-    src: "/volunteer3.svg",
+    src: "/images/volunteer3.svg",
     alt: "Volunteers walking",
     containerStyles: "-mt-6"
   },
   {
     id: 4,
-    src: "/volunteer4.svg",
+    src: "/images/volunteer4.svg",
     alt: "Group of teens",
     containerStyles: "mt-0"
   }
 ];
-const masonryImages = ["/volunteer1.svg", "/volunteer2.svg", "/volunteer3.svg", "/volunteer4.svg"];
+const masonryImages = ["/images/volunteer1.svg", "/images/volunteer2.svg", "/images/volunteer3.svg", "/images/volunteer4.svg"];
 
 /* ---------------------------------
    Skeleton Components
@@ -303,7 +303,7 @@ export default function VolunteersPage() {
       <SkeletonImage />
     ) : (
       <Image
-        src="/rolevolunteer.svg"
+        src="/images/rolevolunteer.svg"
         alt="Volunteer Action"
         width={600}
         height={400}
@@ -319,7 +319,7 @@ export default function VolunteersPage() {
             <SkeletonImage />
           ) : (
             <Image
-              src="/volunteersbg.svg"
+              src="/images/volunteersbg.svg"
               alt="Join Volunteer"
               width={600}
               height={400}

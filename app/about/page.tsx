@@ -7,28 +7,28 @@ import { motion } from "framer-motion";
 import AOS from "aos";
 // import "aos/dist/aos.css";
 import Image from "next/image";
-
+import CountUp from "@/components/ui/CountUp2";
 export default function AboutPage() {
   const values = [
-    { title: "Influence", image: "/bluebg.svg" },
-    { title: "Impact", image: "/greenbg.svg" },
-    { title: "Identity", image: "/redbg.svg" },
-    { title: "Excellence", image: "/purplebg.svg" },
-    { title: "Legacy", image: "/yellowbg.svg" },
+    { title: "Influence", image: "/images/bluebg.svg" },
+    { title: "Impact", image: "/images/greenbg.svg" },
+    { title: "Identity", image: "/images/redbg.svg" },
+    { title: "Excellence", image: "/images/purplebg.svg" },
+    { title: "Legacy", image: "/images/yellowbg.svg" },
   ];
   const howWeDoIt = [
-    { text: "We leverage community to shape character.", icon: "/icon1.svg" },
+    { text: "We leverage community to shape character.", icon: "/images/icon1.svg" },
     {
       text: "We share structured resources through a defined curriculum.",
-      icon: "/icon2.svg",
+      icon: "/images/icon2.svg",
     },
     {
       text: "We host campaigns across all areas of life (e.g., Personal hygiene, Valentines etc.)",
-      icon: "/icon3.svg",
+      icon: "/images/icon3.svg",
     },
     {
       text: "We organize summits, conferences, and school clubs.",
-      icon: "/icon4.svg",
+      icon: "/images/icon4.svg",
     },
   ];
 
@@ -65,7 +65,7 @@ export default function AboutPage() {
     relative overflow-hidden 
     text-white py-12 md:py-20 rounded-[3rem]
     bg-no-repeat bg-center bg-cover
-    bg-[url('/bluestar_bg.svg')]
+    bg-[url('/images/bluestar_bg.svg')]
   "
 >
 
@@ -150,15 +150,17 @@ className="
                   />
                 </div>
                 <div className="flex flex-col gap-4">
-                  <div className="rounded-3xl overflow-hidden">
-                    <Image
-                      src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764462357/Frame_1000003523_fdhxmr.png?auto=compress&cs=tinysrgb&w=400"
-                      alt="Community"
-                      className="w-full h-full object-cover"
-                      width={400}
-                      height={400}
-                    />
-                  </div>
+                <div
+  className="rounded-3xl overflow-hidden h-[300px] flex items-center justify-center bg-cover bg-center"
+  style={{ backgroundImage: "url('/images/aboutusOrange_bg.png')" }}
+>
+  <div className="text-white text-center">
+    <h2 className="text-5xl font-bold">      <CountUp value={25} />+
+</h2>
+    <p className="text-lg mt-2">Purpose driven initiatives executed</p>
+  </div>
+</div>
+
                   <div className="rounded-3xl overflow-hidden">
                     <Image
                       src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764462349/Image_2_ckefa5.png?auto=compress&cs=tinysrgb&w=400"

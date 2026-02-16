@@ -148,7 +148,7 @@ const displayedFeatures = features.slice(
   "
 >
   <motion.img
-    src="/conferenceheader.svg"
+    src="/images/conferenceheader.svg"
     alt="Conference Header"
     className="
       w-full
@@ -226,7 +226,7 @@ const displayedFeatures = features.slice(
         w-full
         mt-6 lg:mt-0">
           <img
-            src="/yellowImage.svg" // replace with your image path
+            src="/images/yellowImage.svg" // replace with your image path
             alt="Trust Teens Conference"
             className="w-full h-full object-cover lg:p-9 p-0"
           />

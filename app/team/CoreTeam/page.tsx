@@ -10,37 +10,37 @@ const teamMembers = [
     name: "Deborah Dada",
     role: "Founder & Lead",
     description: "Enjoys adventurous travel, seeks new cultures and offbeat destinations",
-    image: "/coreteam1.svg",
+    image: "/images/coreteam1.svg",
   },
   {
     name: "Iyanoluwa Sonde-Ikokoh",
     role: "Programs Manager",
     description: "Over a decade of experience empowering young people to lead change",
-    image: "/coreteam2.svg",
+    image: "/images/coreteam2.svg",
   },
   {
     name: "Oluwadunni Akinhanmi",
     role: "Media Manager",
     description: "5+ years hands-on experience in Media & Marketing",
-    image: "/coreteam3.svg",
+    image: "/images/coreteam3.svg",
   },
   {
     name: "Samuel Dada",
     role: "Events Manager",
     description: "Creative painter capturing beauty with imaginative artwork",
-    image: "/coreteam4.svg",
+    image: "/images/coreteam4.svg",
   },
   {
     name: "Favour Ikediashi",
     role: "Community Manager",
     description: "Football enthusiast, enjoys movie nights with friends",
-    image: "/coreteam1.svg",
+    image: "/images/coreteam1.svg",
   },
   {
     name: "Esther Ogunyemi",
     role: "Assistant Programs Manager",
     description: "Culinary artist, explores diverse flavors",
-    image: "/coreteam2.svg",
+    image: "/images/coreteam2.svg",
   },
 ];
 
@@ -65,7 +65,7 @@ export default function CoreTeamPage() {
     transition={{ duration: 0.7, ease: 'easeOut' }}
   >
     <Image
-      src="/maincoreteam1.svg"
+      src="/images/maincoreteam1.svg"
       alt="Core Team"
       width={600}
       height={400}

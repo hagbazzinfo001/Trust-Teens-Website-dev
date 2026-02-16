@@ -12,12 +12,12 @@ interface CampaignDetailsModalProps {
 export default function CampaignDetailsModal({ campaign, onClose }: CampaignDetailsModalProps) {
   if (!campaign) return null;
 const listicons = {
-  'Icon1': '/icon1.svg',
-  'Icon2': '/icon2.svg',
-  'Icon3': '/icon3.svg',
-  'Icon4': '/icon4.svg',
-  'Icon5': '/icon5.svg', 
-  'Icon6': '/icon6.svg',
+  'Icon1': '/images/icon1.svg',
+  'Icon2': '/images/icon2.svg',
+  'Icon3': '/images/icon3.svg',
+  'Icon4': '/images/icon4.svg',
+  'Icon5': '/images/icon5.svg', 
+  'Icon6': '/images/icon6.svg',
 }
 const iconsArray = Object.values(listicons);
 
@@ -35,7 +35,7 @@ const iconsArray = Object.values(listicons);
 
  
 
-<div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/orange_bg.svg)]">
+<div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/images/orange_bg.svg)]">
   <div className="space-y-4 ml-0 md:ml-[50%] tranform md:-translate-x-1/2 w-full md:w-3/5 text-center md:text-left">
     <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
     <p className="text-lg opacity-90">{campaign.fullDescription}</p>
@@ -118,7 +118,7 @@ const iconsArray = Object.values(listicons);
                 
                 <div className={`bg-gradient-to-r ${campaign.color} text-white rounded-2xl p-8 `}
                   style={{
-                    backgroundImage: `url('/Background.svg')`,
+                    backgroundImage: `url('/images/Background.svg')`,
                     backgroundSize: "contain",
                     // backgroundRepeat: "no-repeat",
                     backgroundPosition: "center",

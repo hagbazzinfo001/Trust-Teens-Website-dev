@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import { motion, type Variants } from "framer-motion";
-
+import Link from "next/link"
 const ambassadors = [
   { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
   { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
@@ -71,7 +71,7 @@ animate="visible"
             className="rounded-2xl border p-4 shadow-sm bg-white"
           >
            <Image
-                src="/coreteam2.svg"
+                src="/images/coreteam2.svg"
                 alt="Ambassador"
                 width={200}
                 height={200}
@@ -82,9 +82,18 @@ animate="visible"
               <p className="text-sm text-orange-500">{a.school}</p>
               <p className="text-sm text-gray-500">{a.location}</p>
             <div className="flex gap-4 mt-4 text-gray-400">
-              <Facebook size={18} />
-              <Instagram size={18} />
-              <Linkedin size={18} />
+            <Link href="/volunteers">
+    <Facebook size={18} className="cursor-pointer hover:text-blue-600 transition" />
+  </Link>
+
+  <Link href="/volunteers">
+    <Instagram size={18} className="cursor-pointer hover:text-pink-600 transition" />
+  </Link>
+
+  <Link href="/volunteers">
+    <Linkedin size={18} className="cursor-pointer hover:text-blue-700 transition" />
+  </Link>
+
             </div>
           </motion.div>
         ))}

@@ -47,14 +47,14 @@ export interface Summit {
         { label: 'Advocacy Stations', value: 6 }
       ],
       partners: [
-        { name: 'Airbnb', logo: '/Airbnb Logo.svg' },
-        { name: 'Amazon', logo: '/Amazon Logo.svg' },
-        { name: 'FedEx', logo: '/FedEx Logo.svg' },
-        { name: 'Microsoft', logo: '/Microsoft Logo.svg' },
-        { name: 'Google', logo: '/Google Logo.svg' },
-        { name: 'OLA', logo: '/OLA logo.svg' },
-        { name: 'Walmart', logo: '/Walmart Logo.svg' },
-        { name: 'OYO', logo: '/OYO Logo.svg' }
+        { name: 'Airbnb', logo: '/images/Airbnb Logo.svg' },
+        { name: 'Amazon', logo: '/images/Amazon Logo.svg' },
+        { name: 'FedEx', logo: '/images/FedEx Logo.svg' },
+        { name: 'Microsoft', logo: '/images/Microsoft Logo.svg' },
+        { name: 'Google', logo: '/images/Google Logo.svg' },
+        { name: 'OLA', logo: '/images/OLA logo.svg' },
+        { name: 'Walmart', logo: '/images/Walmart Logo.svg' },
+        { name: 'OYO', logo: '/images/OYO Logo.svg' }
       ],
       gallery: [
         'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765756818/Rectangle_17_ihmhki.png?auto=compress&cs=tinysrgb&w=400',

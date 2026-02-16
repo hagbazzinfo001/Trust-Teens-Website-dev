@@ -104,7 +104,7 @@ export default function TeenAmbassadorsPage() {
       {/* Group Image */}
       <section className="max-w-7xl mx-auto px-6 mb-20">
          <Image
-          src="/ambassadors-hero.svg"
+          src="/images/ambassadors-hero.svg"
           alt="Teen Ambassadors Group"
           width={1200}
           height={400}  
@@ -125,7 +125,7 @@ export default function TeenAmbassadorsPage() {
               <Card key={i} className="rounded-2xl shadow-sm">
                 <CardContent className="p-6 text-left">
                   <Image
-                    src="/coreteam2.svg"
+                    src="/images/coreteam2.svg"
                     alt="Ambassador"  
                     width={200}
                     height={200}
@@ -153,7 +153,7 @@ export default function TeenAmbassadorsPage() {
       {/* Become Ambassador */}
       <section className="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
          <Image 
-          src="/ctaAmbassador.svg"
+          src="/images/ctaAmbassador.svg"
           alt="Become an Ambassador"
           width={600}
           height={400}

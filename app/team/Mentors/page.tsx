@@ -10,37 +10,37 @@ const teamMembers = [
     name: "Deborah Dada",
     role: "Founder & Lead",
     description: "Enjoys adventurous travel, seeks new cultures and offbeat destinations",
-    image: "/coreteam1.svg",
+    image: "/images/coreteam1.svg",
   },
   {
     name: "Iyanoluwa Sonde-Ikokoh",
     role: "Programs Manager",
     description: "Over a decade of experience empowering young people to lead change",
-    image: "/coreteam2.svg",
+    image: "/images/coreteam2.svg",
   },
   {
     name: "Oluwadunni Akinhanmi",
     role: "Media Manager",
     description: "5+ years hands-on experience in Media & Marketing",
-    image: "/coreteam3.svg",
+    image: "/images/coreteam3.svg",
   },
   {
     name: "Samuel Dada",
     role: "Events Manager",
     description: "Creative painter capturing beauty with imaginative artwork",
-    image: "/coreteam4.svg",
+    image: "/images/coreteam4.svg",
   },
   {
     name: "Favour Ikediashi",
     role: "Community Manager",
     description: "Football enthusiast, enjoys movie nights with friends",
-    image: "/coreteam1.svg",
+    image: "/images/coreteam1.svg",
   },
   {
     name: "Esther Ogunyemi",
     role: "Assistant Programs Manager",
     description: "Culinary artist, explores diverse flavors",
-    image: "/coreteam2.svg",
+    image: "/images/coreteam2.svg",
   },
 ];
 const MentorPage = () => {
@@ -50,12 +50,12 @@ const MentorPage = () => {
   };
 
   const mentors = [
-    { name: "Deborah Dada", role: "Founder & Lead", bio: "Enjoys adventurous travel, seeks new cultures and offbeat destinations", img: "/coreteam1.svg" },
-    { name: "Iyanuoluwa Sonde-Ikokoh", role: "Programs Manager", bio: "Over a decade of experience empowering young people to lead change in their communities.", img: "/coreteam2.svg" },
-    { name: "Oluwadunni Akinhanmi", role: "Media Manager", bio: "Has 5 years & counting hands-on experience in the Media & Marketing Industry.", img: "/coreteam3.svg" },
-    { name: "Samuel Dada", role: "Events Manager", bio: "Creative painter capturing beauty with imaginative artwork", img: "/coreteam4.svg" },
+    { name: "Deborah Dada", role: "Founder & Lead", bio: "Enjoys adventurous travel, seeks new cultures and offbeat destinations", img: "/images/coreteam1.svg" },
+    { name: "Iyanuoluwa Sonde-Ikokoh", role: "Programs Manager", bio: "Over a decade of experience empowering young people to lead change in their communities.", img: "/images/coreteam2.svg" },
+    { name: "Oluwadunni Akinhanmi", role: "Media Manager", bio: "Has 5 years & counting hands-on experience in the Media & Marketing Industry.", img: "/images/coreteam3.svg" },
+    { name: "Samuel Dada", role: "Events Manager", bio: "Creative painter capturing beauty with imaginative artwork", img: "/images/coreteam4.svg" },
     { name: "Favour Ikedishi", role: "Community Manager", bio: "Football enthusiast, enjoys movie nights with friends", img: "/coreteam1.svg" },
-    { name: "Esther Ogunyemi", role: "Assistant Programs Manager", bio: "Culinary artist, explores diverse flavors, skilled in cooking", img: "/coreteam2.svg" },
+    { name: "Esther Ogunyemi", role: "Assistant Programs Manager", bio: "Culinary artist, explores diverse flavors, skilled in cooking", img: "/images/coreteam2.svg" },
   ];
 
   return (
@@ -78,10 +78,10 @@ const MentorPage = () => {
         {/* Top Two Featured Images */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-[2rem] overflow-hidden h-[350px] relative shadow-lg">
-            <Image src="/mentorhero2.svg" alt="Conference" fill className="object-cover" />
+            <Image src="/images/mentorhero2.svg" alt="Conference" fill className="object-cover" />
           </div>
           <div className="rounded-[2rem] overflow-hidden h-[350px] relative shadow-lg">
-            <Image src="/mentorhero1.svg " alt="Meeting" fill className="object-cover" />
+            <Image src="/images/mentorhero1.svg " alt="Meeting" fill className="object-cover" />
           </div>
         </div>
       </section>
@@ -140,7 +140,7 @@ const MentorPage = () => {
 
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" className="lg:col-span-4">
           <div className="rounded-[2.5rem] overflow-hidden shadow-2xl relative aspect-[4/5]">
-            <Image src="/mentorrole.svg" alt="Mentoring" fill className="object-cover" />
+            <Image src="/images/mentorrole.svg" alt="Mentoring" fill className="object-cover" />
           </div>
         </motion.div>
       </section>
@@ -148,7 +148,7 @@ const MentorPage = () => {
       {/* SECTION 4: BECOME A MENTOR FOOTER */}
       <section className="max-w-7xl mx-auto px-6 pb-24">
         <div className="rounded-[2.5rem] overflow-hidden h-[400px] relative mb-12">
-          <Image src="/mentorfooter.svg" alt="Team" fill className="object-cover" />
+          <Image src="/images/mentorfooter.svg" alt="Team" fill className="object-cover" />
         </div>
         <div className="flex flex-col md:flex-row justify-between gap-12">
           <div className="md:w-1/3">

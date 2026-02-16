@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 
 import Image from "next/image";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
@@ -71,7 +72,7 @@ animate="visible"
             className="rounded-2xl border p-4 shadow-sm bg-white"
           >
             <Image
-              src="/coreteam2.svg"
+              src="/images/coreteam2.svg"
               alt={a.name}
               width={300}
               height={300}
@@ -83,10 +84,19 @@ animate="visible"
             <p className="text-gray-500 text-sm mt-2">{a.bio}</p>
 
             <div className="flex gap-4 mt-4 text-gray-400">
-              <Facebook size={18} />
-              <Instagram size={18} />
-              <Linkedin size={18} />
-            </div>
+  <Link href="/volunteers">
+    <Facebook size={18} className="cursor-pointer hover:text-blue-600 transition" />
+  </Link>
+
+  <Link href="/volunteers">
+    <Instagram size={18} className="cursor-pointer hover:text-pink-600 transition" />
+  </Link>
+
+  <Link href="/volunteers">
+    <Linkedin size={18} className="cursor-pointer hover:text-blue-700 transition" />
+  </Link>
+</div>
+
           </motion.div>
         ))}
     </motion.div>

@@ -17,11 +17,11 @@ const testimonials: Testimonial[] = [
     name: 'Jane Cooper',
     age: '14 year’s old',
     avatars: [
-      '/testimonia1.svg',
-      '/testimonia2.svg',
-      '/testimonia3.svg',
-      '/testimonia4.svg',
-      '/testimonia5.svg',
+      '/images/testimonia1.svg',
+      '/images/testimonia2.svg',
+      '/images/testimonia3.svg',
+      '/images/testimonia4.svg',
+      '/images/testimonia5.svg',
     ],
   },
   {
@@ -30,11 +30,11 @@ const testimonials: Testimonial[] = [
     name: 'Samuel Ade',
     age: '16 year’s old',
     avatars: [
-      '/testimonia1.svg',
-      '/testimonia2.svg',
-      '/testimonia3.svg',
-      '/testimonia4.svg',
-      '/testimonia5.svg',
+      '/images/testimonia1.svg',
+      '/images/testimonia2.svg',
+      '/images/testimonia3.svg',
+      '/images/testimonia4.svg',
+      '/images /testimonia5.svg',
     ],
   },
   {
@@ -43,11 +43,11 @@ const testimonials: Testimonial[] = [
     name: 'Owolabi Agbabiaka',
     age: '30 year’s old',
     avatars: [
-      '/testimonia1.svg',
-      '/testimonia2.svg',
-      '/testimonia3.svg',
-      '/testimonia4.svg',
-      '/testimonia5.svg',
+      '/images/testimonia1.svg',
+      '/images/testimonia2.svg',
+      '/images/testimonia3.svg',
+      '/images/testimonia4.svg',
+      '/images /testimonia5.svg',
     ],
   },
   {
@@ -56,11 +56,11 @@ const testimonials: Testimonial[] = [
     name: 'Afis Olaranwaju',
     age: '28 year’s old',
     avatars: [
-      '/testimonia1.svg',
-      '/testimonia2.svg',
-      '/testimonia3.svg',
-      '/testimonia4.svg',
-      '/testimonia5.svg',
+      '/images/testimonia1.svg',
+      '/images/testimonia2.svg',
+      '/images/testimonia3.svg',
+      '/images/testimonia4.svg',
+      '/images /testimonia5.svg',
     ],
   },
 ];
@@ -110,7 +110,7 @@ export default function TestimonialCarousel() {
     <section className="relative py-24 px-4 overflow-hidden text-white">
       {/* 🔁 Replace background later */}
       <img
-  src="/impactBlue.svg"
+  src="/images/impactBlue.svg"
   alt="impact background"
   className="absolute inset-0 -z-10 h-full w-full object-cover"
 />

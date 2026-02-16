@@ -54,7 +54,7 @@ export default function SDGSection() {
               transition={{ duration: 0.4, ease: 'easeOut' }}
             >
               <Image
-                src="/impactsdg.jpg"
+                src="/images/impactsdg.jpg"
                 alt="Community impact"
                 width={900}
                 height={500}
@@ -123,7 +123,7 @@ export default function SDGSection() {
       </div>
 <section
 className="relative overflow-hidden text-white py-20 px-6 mt-12 bg-contain  bg-center"
-style={{ backgroundImage: "url('/impactPartnerbg.png')" }}
+style={{ backgroundImage: "url('/images/impactPartnerbg.png')" }}
 >
     {/* Background texture (use your own URL) */}
       {/* <Image

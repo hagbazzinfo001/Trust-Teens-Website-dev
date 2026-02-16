@@ -152,7 +152,7 @@ export default function ConferenceDetailsModal({
       className="w-full h-full object-cover"
     />
   </div>
-<div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/conferenceblue.png)] rounded-3xl">
+<div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/images/conferenceblue.png)] rounded-3xl">
   <div className="space-y-4  w-full text-center md:text-left">
     <h1 className="text-4xl md:text-5xl font-bold">{conference.name}</h1>
     <p className="text-lg opacity-90">{conference.fullDescription}</p>

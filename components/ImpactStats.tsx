@@ -7,32 +7,32 @@ const stats = [
     {
       value: 17,
       label: 'Events Organised',
-      bgImage: '/ImpactPurple.svg',
+      bgImage: '/images/ImpactPurple.svg',
     },
     {
       value: 54,
       label: 'Activities Set Up',
-      bgImage: '/ImpactGreen.svg',
+      bgImage: '/images/ImpactGreen.svg',
     },
     {
       value: 19,
       label: 'Communities Engaged',
-      bgImage: '/ImpactYellow.svg',
+      bgImage: '/images/ImpactYellow.svg',
     },
     {
       value: 200,
       label: 'Members',
-      bgImage: '/ImpactRed.svg',
+      bgImage: '/images/ImpactRed.svg',
     },
     {
       value: 30,
       label: 'Speakers / Mentors',
-      bgImage: '/ImpactBlue.svg',
+      bgImage: '/images/ImpactBlue.svg',
     },
     {
       value: 105,
       label: 'Volunteers',
-      bgImage: '/ImpactOrange.svg',
+      bgImage: '/images/ImpactOrange.svg',
     },
   ];
   

@@ -114,7 +114,7 @@ return (
 {/* Image 1 – Top Left */}
 <div className=" absolute top-0 left-0 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
   <Image
-    src="/communityImage1.svg"
+    src="/images/communityImage1.svg"
     alt="Community service"
     fill
     className="object-cover"
@@ -124,7 +124,7 @@ return (
 {/* Image 2 – Middle (diagonal down + right) */}
 <div className="absolute top-28 left-40 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
   <Image
-    src="/communityImage2.svg"
+    src="/images/communityImage2.svg"
     alt="Teen volunteers"
     fill
     className="object-cover"
@@ -134,7 +134,7 @@ return (
 {/* Image 3 – Bottom Right */}
 <div className="absolute top-[360px] left-20 w-80 h-72 rounded-2xl overflow-hidden shadow-xl">
   <Image
-    src="/communityImage1.svg"
+    src="/images/communityImage1.svg"
     alt="Street cleanup"
     fill
     className="object-cover"
@@ -171,7 +171,7 @@ return (
         {/* LEFT — Image */}
         <div className="relative w-full h-[420px] md:h-[520px] rounded-2xl overflow-hidden">
           <Image
-            src="/communityImage4.svg" // replace with your image path
+            src="/images/communityImage4.svg" // replace with your image path
             alt="Community service in action"
             fill
             className="object-cover"
@@ -233,7 +233,7 @@ return (
 
 <section
 // className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat"
-className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
+className="py-12 md:py-20 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
 
 >
 

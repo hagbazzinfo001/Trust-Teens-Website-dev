@@ -99,11 +99,11 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 
 const images = [
-  '/ImpactImage_1.svg',
-  '/ImpactImage_2.svg',
-  '/ImpactImage_3.svg',
-  '/ImpactImage_4.svg',
-  '/ImpactImage_5.svg',
+  '/images/ImpactImage_1.svg',
+  '/images/ImpactImage_2.svg',
+  '/images/ImpactImage_3.svg',
+  '/images/ImpactImage_4.svg',
+  '/images/ImpactImage_5.svg',
 ];
 
 export default function AutoScrollImages() {
@@ -203,7 +203,7 @@ export default function AutoScrollImages() {
           </p>
 
           <Image
-            src="/ImpactImage_6.svg"
+            src="/images/ImpactImage_6.svg"
             alt="Group"
             width={900}
             height={400}

@@ -151,7 +151,7 @@ const displayedFeatures = features.slice(
 <div className="relative overflow-hidden">
   {/* Background Image */}
   <img
-    src="/dots-bg.svg" // replace with your actual image path
+    src="/images/dots-bg.svg" // replace with your actual image path
     alt=""
     className="
       pointer-events-none
@@ -192,7 +192,7 @@ const displayedFeatures = features.slice(
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="rounded-3xl overflow-hidden">
             <Image
-              src="/fsummit.svg"
+              src="/images/fsummit.svg"
               alt="Summit audience"
               width={500}
               height={350}
@@ -202,7 +202,7 @@ const displayedFeatures = features.slice(
 
           <div className="rounded-3xl overflow-hidden">
             <Image
-              src="/msummit.svg"
+              src="/images/msummit.svg"
               alt="Workshop session"
               width={500}
               height={350}
@@ -212,7 +212,7 @@ const displayedFeatures = features.slice(
 
           <div className="rounded-3xl overflow-hidden">
             <Image
-              src="/Ssummit.svg"
+              src="/images/Ssummit.svg"
               alt="Group celebration"
               width={500}
               height={350}
@@ -270,7 +270,7 @@ const displayedFeatures = features.slice(
    
 <section className="
 p-12 md:py-20
-bg-[url(/impactsolidblack.png)] bg-contain bg-center bg-no-repeat
+bg-[url(/images/impactsolidblack.png)] bg-contain bg-center bg-no-repeat
 flex flex-col md:flex-row
 justify-center md:justify-between
 items-center
