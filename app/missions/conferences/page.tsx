@@ -400,7 +400,7 @@ const displayedFeatures = features.slice(
 
         {/* CTA button */}
         <motion.a
-          href="#contact"
+          href="mailto:info@trustteens.com"
           whileHover={{ scale: 1.05 }}
           className="relative inline-block px-8 py-4 bg-orange-500 rounded-lg text-lg font-semibold overflow-hidden"
         >

@@ -345,8 +345,8 @@ className="py-12 md:py-20 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-cent
 
       {/* CTA button */}
       <motion.a
-        href="#contact"
-        whileHover={{ scale: 1.05 }}
+          href="mailto:info@trustteens.com"
+          whileHover={{ scale: 1.05 }}
         className="relative inline-block px-8 py-4 bg-orange-500 rounded-lg text-lg font-semibold overflow-hidden"
       >
         {/* Shine effect */}

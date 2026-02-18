@@ -3,7 +3,7 @@
 import { Campaign } from '@/lib/mockCampaigns';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import Link from 'next/link';
 interface CampaignDetailsModalProps {
   campaign: Campaign | null;
   onClose: () => void;
@@ -39,6 +39,8 @@ const iconsArray = Object.values(listicons);
   <div className="space-y-4 ml-0 md:ml-[50%] tranform md:-translate-x-1/2 w-full md:w-3/5 text-center md:text-left">
     <h1 className="text-4xl md:text-5xl font-bold">{campaign.name}</h1>
     <p className="text-lg opacity-90">{campaign.fullDescription}</p>
+
+    <Link href="https://youtu.be/L_9xVmM4cqI?si=6G9jpe3LtL0-Z72k">
     <button
   className="
     rounded-xl
@@ -66,7 +68,7 @@ const iconsArray = Object.values(listicons);
   →
 </span>
 </button>
-  
+</Link>
   </div>
 
   <div className="h-64 md:h-96 overflow-hidden bg-gray-200 mt-5 rounded-lg">
