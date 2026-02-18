@@ -25,14 +25,15 @@ const missionItems = [
    { name: 'TT Curriculum', slug: 'curriculum', icon: icon5 },
   { name: 'TT Community Service', slug: 'community-service', icon: icon3 },
   { name: 'TT Hangout', slug: 'hangout', icon: icon4 },
-  ];      
-  const   teamItems = [
-    { name: 'Core Team', slug: 'CoreTeam', icon: icon5 },
-   { name: 'Volunteers', slug: 'Volunteers', icon: icon3 },
-   { name: 'Mentors', slug: 'Mentors', icon: icon4 },
-   { name: 'Ambassadors', slug: 'Ambassadors', icon: icon4 },
+  ];   
+  // working on the team items, need to confirm the icons and slugs with the team before finalizing   
+  // const   teamItems = [
+  //   { name: 'Core Team', slug: 'CoreTeam', icon: icon5 },
+  //  { name: 'Volunteers', slug: 'Volunteers', icon: icon3 },
+  //  { name: 'Mentors', slug: 'Mentors', icon: icon4 },
+  //  { name: 'Ambassadors', slug: 'Ambassadors', icon: icon4 },
 
-  ];
+  // ];
  
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -157,7 +158,7 @@ export default function Header() {
         <div className="absolute left-0 mt-0 w-80 bg-white border border-gray-200 rounded-lg shadow-lg
                         opacity-0 invisible group-hover:opacity-100 group-hover:visible
                         transition-all duration-200 py-4 px-4 z-50">
-          <div className="grid grid-cols-1 gap-3">
+          {/* <div className="grid grid-cols-1 gap-3">
             {teamItems.map((item) => (
               <Link
                 key={item.slug}
@@ -170,7 +171,7 @@ export default function Header() {
                 </span>
               </Link>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -273,7 +274,9 @@ export default function Header() {
                     className={`transition-transform ${mobileDropdowns.team ? 'rotate-180' : ''}`}
                   />
                 </button>
-                {mobileDropdowns.team  && (
+{/* will work on the team dropdown once we confirm the icons and slugs with the team, commenting out for now to avoid confusion */}
+
+                {/* {mobileDropdowns.team  && (
                   <div className="mt-2 space-y-2 bg-gray-50 rounded-lg p-3">
                     {teamItems.map((item) => (
                       <Link
@@ -289,7 +292,7 @@ export default function Header() {
                       </Link>
                     ))}
                   </div>
-                )}
+                )} */}
               </div> 
               <Button className="bg-pink-600 hover:bg-pink-700 text-white rounded-md w-full mt-4">
                 Upcoming Events
