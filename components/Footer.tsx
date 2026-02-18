@@ -62,7 +62,7 @@ export default function Footer() {
             </div>
 
             {/* Team */}
-            <div>
+            {/* <div>
               <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
               <ul className="space-y-2 text-sm">
                 <li>
@@ -75,7 +75,24 @@ export default function Footer() {
                   <Link href="/team/Ambassadors">Ambassadors</Link>
                 </li>
               </ul>
-            </div>
+            </div> */}
+ 
+   <div>
+              <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
+              <ul className="space-y-2 text-sm">
+                <li>
+                  
+                   <Link href="/team/coming">Core Team</Link>
+
+                </li>
+                <li>
+                  <Link href="/team/coming">Volunteers</Link>
+                </li>
+                <li>
+                  <Link href="/team/coming">Ambassadors</Link>
+                </li>
+              </ul>
+            </div>  
 
             {/* Follow Us */}
             <div>
@@ -198,53 +215,23 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
-          {/* Team */}
-          {/* <div>
-            <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="/core-team">Core Team</Link>
-              </li>
-              <li>
-                <Link href="/volunteers">Volunteers</Link>
-              </li>
-              <li>
-                <Link href="/ambassadors">Ambassadors</Link>
-              </li>
-            </ul>
-          </div> */}
-  <div>
+ 
+   <div>
               <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <Link href="/team/CoreTeam">Core Team</Link>
+                  
+                   <Link href="/team/coming">Core Team</Link>
+
                 </li>
                 <li>
-                  <Link href="/team/Volunteers">Volunteers</Link>
+                  <Link href="/team/coming">Volunteers</Link>
                 </li>
                 <li>
-                  <Link href="/team/Ambassadors">Ambassadors</Link>
+                  <Link href="/team/coming">Ambassadors</Link>
                 </li>
               </ul>
-            </div>
-          {/* Follow Us */}
-          {/* <div>
-            <h3 className="font-semibold mb-4 text-blue-400">Follow us</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <Link href="https://facebook.com">Facebook</Link>
-              </li>
-              <li>
-                <Link href="https://twitter.com">Twitter</Link>
-              </li>
-              <li>
-                <Link href="https://instagram.com">Instagram</Link>
-              </li>
-              <li>
-                <Link href="https://linkedin.com">LinkedIn</Link>
-              </li>
-            </ul>
-          </div> */}
+            </div>  
                  <div>
               <h3 className="font-semibold mb-4 text-blue-400">Follow us</h3>
               <ul className="space-y-2 text-sm">

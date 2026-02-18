@@ -32,9 +32,12 @@ const missionItems = [
   //  { name: 'Volunteers', slug: 'Volunteers', icon: icon3 },
   //  { name: 'Mentors', slug: 'Mentors', icon: icon4 },
   //  { name: 'Ambassadors', slug: 'Ambassadors', icon: icon4 },
-
   // ];
- 
+  const   teamItemsT = [
+       { name: 'Core Team', slug: 'coming', icon: icon5 },
+      { name: 'Volunteers', slug: 'coming', icon: icon3 },
+      { name: 'Mentors', slug: 'coming', icon: icon4 },
+      { name: 'Ambassadors', slug: 'coming', icon: icon4 },];
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mobileDropdowns, setMobileDropdowns] = useState({
@@ -172,6 +175,20 @@ export default function Header() {
               </Link>
             ))}
           </div> */}
+          <div className="grid grid-cols-1 gap-3">
+            {teamItemsT.map((item) => (
+              <Link
+                key={item.slug}
+                href={`/team/${item.slug}`}
+                className="flex items-center gap-3 p-3 rounded-lg hover:bg-orange-50 transition-colors group/item"
+              >
+                <Image src={item.icon} alt={item.name} width={40} height={40} />
+                <span className="text-sm font-medium group-hover/item:text-orange-600">
+                  {item.name}
+                </span>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -263,7 +280,7 @@ export default function Header() {
                   </div>
                 )}
               </div>
-              <div>
+                <div>
                 <button
                   onClick={() => toggleMobileDropdown('team')}
                   className="w-full flex items-center justify-between px-4 py-2 text-sm hover:bg-orange-50 hover:text-orange-600 transition-colors rounded"
@@ -274,11 +291,11 @@ export default function Header() {
                     className={`transition-transform ${mobileDropdowns.team ? 'rotate-180' : ''}`}
                   />
                 </button>
-{/* will work on the team dropdown once we confirm the icons and slugs with the team, commenting out for now to avoid confusion */}
+{/* will work on the team dropdown once we confirm the icons and slugs with the team, commenting out for now to avoid confusion  */}
 
-                {/* {mobileDropdowns.team  && (
+              {mobileDropdowns.team  && (
                   <div className="mt-2 space-y-2 bg-gray-50 rounded-lg p-3">
-                    {teamItems.map((item) => (
+                    {teamItemsT.map((item) => (
                       <Link
                         key={item.slug}
                         href={`/Team/${item.slug}`}
@@ -292,7 +309,7 @@ export default function Header() {
                       </Link>
                     ))}
                   </div>
-                )} */}
+                )} 
               </div> 
               <Button className="bg-pink-600 hover:bg-pink-700 text-white rounded-md w-full mt-4">
                 Upcoming Events
