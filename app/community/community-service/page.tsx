@@ -157,10 +157,18 @@ return (
             <span className="text-gray-900">Community</span>{" "}
             <span className="text-orange-500">Service</span>
           </h2>
+          <a
+  href="https://chat.whatsapp.com/Cjg5iRW6pZ3Gd5i76oAQdQ"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-flex items-center justify-center rounded-lg bg-green-600 px-6 py-3 text-white font-medium hover:bg-green-700 transition"
+>
+  Join our Teens Community
+</a>
 
-          <button className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition">
+          {/* <button className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition">
             Join our Teens Community
-          </button>
+          </button> */}
         </div>
       </div>
     </section>

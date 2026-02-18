@@ -5,7 +5,7 @@ import { useAdmin } from '@/contexts/AdminContext';
 import { Button } from '@/components/ui/button';
 import { LogOut, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+// import { supabase } from '@/lib/supabase';
 
 export default function AdminNav() {
   const { user, isAdmin } = useAdmin();
@@ -13,9 +13,9 @@ export default function AdminNav() {
 
   if (!user || !isAdmin) return null;
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-  };
+  // const handleLogout = async () => {
+  //   await supabase.auth.signOut();
+  // };
 
   return (
     <nav className="bg-gray-900 text-white border-b border-gray-700">
@@ -39,7 +39,7 @@ export default function AdminNav() {
             <Button
               variant="outline"
               size="sm"
-              onClick={handleLogout}
+              // onClick={handleLogout}
               className="gap-2"
             >
               <LogOut size={16} />
@@ -70,7 +70,7 @@ export default function AdminNav() {
             <Button
               variant="outline"
               size="sm"
-              onClick={handleLogout}
+              // onClick={handleLogout}
               className="gap-2 w-full"
             >
               <LogOut size={16} />

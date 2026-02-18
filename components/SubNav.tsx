@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { ContentCategory } from '@/types/database';
+ import { ContentCategory } from '@/types/database';
 import Link from 'next/link';
 
 interface SubNavProps {
@@ -13,21 +12,21 @@ export default function SubNav({ type }: SubNavProps) {
   const [categories, setCategories] = useState<ContentCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadCategories();
-  }, [type]);
+  // useEffect(() => {
+  //   loadCategories();
+  // }, [type]);
 
-  const loadCategories = async () => {
-    setLoading(true);
-    const { data } = await supabase
-      .from('content_categories')
-      .select('*')
-      .eq('type', type)
-      .order('order_index');
+  // const loadCategories = async () => {
+  //   setLoading(true);
+  //   const { data } = await supabase
+  //     .from('content_categories')
+  //     .select('*')
+  //     .eq('type', type)
+  //     .order('order_index');
 
-    setCategories(data || []);
-    setLoading(false);
-  };
+  //   setCategories(data || []);
+  //   setLoading(false);
+  // };
 
   if (loading) return null;
   if (categories.length === 0) return null;
