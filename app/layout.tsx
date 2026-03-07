@@ -1,9 +1,10 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Baloo_2 } from "next/font/google";
- import Header from "@/components/Header";
+import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Inter } from "next/font/google";
+import ConditionalLayout from "@/components/ConditionalLayout";
 
 // Baloo (for headings)
 const baloo = Baloo_2({
@@ -16,8 +17,6 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
- 
-
 export const metadata: Metadata = {
   title: "Trust Teens - Empowering African Teenagers",
   description:
@@ -26,14 +25,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-<html lang="en" className={`${baloo.variable} ${inter.variable}`}>
-      {/* <body className="font-baloo "> */}
+    <html lang="en" className={`${baloo.variable} ${inter.variable}`}>
       <body className="font-inter">
-
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <ConditionalLayout
+          header={<Header />}
+          footer={<Footer />}
+        >
+          {children}
+        </ConditionalLayout>
       </body>
     </html>
   );
 }
+

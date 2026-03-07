@@ -2,22 +2,41 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
+import { getImpactVideo } from '@/lib/adminData';
 
 export default function WatchOurImpact() {
   const videoRef = useRef(null);
   const isInView = useInView(videoRef, { once: true, margin: '-100px' });
   const [playVideo, setPlayVideo] = useState(false);
 
-  // Autoplay when in view
+  const [videoUrl, setVideoUrl] = useState('https://www.youtube.com/watch?v=ygXT6v59cTU');
+  const [videoDescription, setVideoDescription] = useState(
+    'See the moments, voices, and stories behind the numbers. Our impact videos capture teenagers learning, speaking, creating, and leading across conferences, summits, campaigns, and community activities.'
+  );
+
+  // Helper to extract YouTube embed URL
+  const getEmbedUrl = (url: string) => {
+    const match = url.match(/(?:watch\?v=|youtu\.be\/)([\w-]+)/);
+    return match ? `https://www.youtube.com/embed/${match[1]}?autoplay=1&mute=1` : url;
+  };
+
   useEffect(() => {
     if (isInView) {
       setPlayVideo(true);
     }
   }, [isInView]);
 
+  useEffect(() => {
+    const savedVideo = getImpactVideo();
+    if (savedVideo) {
+      setVideoUrl(savedVideo.video_url);
+      setVideoDescription(savedVideo.video_description);
+    }
+  }, []);
+
   return (
     <section className="relative py-24 overflow-hidden">
-      
+
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-blue-50 -z-10" />
 
@@ -35,16 +54,11 @@ export default function WatchOurImpact() {
           </h2>
 
           <p className="text-gray-600 leading-relaxed mb-8 max-w-xl">
-            See the moments, voices, and stories behind the numbers. Our impact
-            videos capture teenagers learning, speaking, creating, and leading
-            across conferences, summits, campaigns, and community activities.
-            <br /><br />
-            Watch real experiences. Hear real reflections. See the transformation
-            unfold.
+            {videoDescription}
           </p>
 
           <a
-            href="https://www.youtube.com/watch?v=ygXT6v59cTU"
+            href={videoUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="
@@ -93,10 +107,9 @@ export default function WatchOurImpact() {
               </div>
             </button>
           ) : (
-            /* YOUTUBE IFRAME */
             <iframe
               className="absolute inset-0 w-full h-full"
-              src="https://www.youtube.com/embed/ygXT6v59cTU?autoplay=1&mute=1"
+              src={getEmbedUrl(videoUrl)}
               title="Trust Teens Impact Video"
               frameBorder="0"
               allow="autoplay; encrypted-media; picture-in-picture"

@@ -41,7 +41,7 @@
 //       </motion.div>
 //     </div>
 //       <section className="max-w-7xl mx-auto px-6  grid lg:grid-cols-2 gap-16">
-      
+
 //       {/* LEFT */}
 //       <motion.div
 //         initial={{ opacity: 0, y: 40 }}
@@ -96,7 +96,8 @@
 
 import { motion, useAnimationControls } from 'framer-motion';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getImpactHero } from '@/lib/adminData';
 
 const images = [
   '/images/ImpactImage_1.svg',
@@ -109,8 +110,23 @@ const images = [
 export default function AutoScrollImages() {
   const controls = useAnimationControls();
 
+  const [impactNumber, setImpactNumber] = useState('8906');
+  const [bodyText, setBodyText] = useState(
+    'Through every conference hall filled, every small room gathered, every campaign walked, and every conversation held, one thing has remained consistent. Teenagers show up ready. Ready to learn. Ready to grow. Ready to lead, if given the right environment. Since 2024, Trust Teens has reached thousands of teenagers across conferences, summits, campaigns, community service, and small group hangouts.'
+  );
+  const [heroImages, setHeroImages] = useState(images);
+
   useEffect(() => {
     startAutoScroll();
+
+    const savedHero = getImpactHero();
+    if (savedHero) {
+      setImpactNumber(savedHero.total_impact_number);
+      setBodyText(savedHero.hero_body_text);
+      if (savedHero.hero_images.length > 0) {
+        setHeroImages(savedHero.hero_images);
+      }
+    }
   }, []);
 
   const startAutoScroll = () => {
@@ -137,7 +153,7 @@ export default function AutoScrollImages() {
           onPointerUp={startAutoScroll}
           onPointerLeave={startAutoScroll}
         >
-          {[...images, ...images].map((src, index) => (
+          {[...heroImages, ...heroImages].map((src, index) => (
             <div
               key={index}
               className="
@@ -164,7 +180,7 @@ export default function AutoScrollImages() {
 
       {/* CONTENT SECTION */}
       <section className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16">
-        
+
         {/* LEFT */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -172,17 +188,16 @@ export default function AutoScrollImages() {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <h2 className="text-6xl font-extrabold mb-4">8906</h2>
+          <h2 className="text-6xl font-extrabold mb-4">{impactNumber}</h2>
           <p className="tracking-widest text-sm mb-6">TEENAGERS IMPACTED</p>
 
           <p className="text-gray-600 leading-relaxed mb-6">
-          Through every conference hall filled, every small room gathered, every campaign walked, and every conversation held, one thing has remained consistent. Teenagers show up ready. Ready to learn. Ready to grow. Ready to lead, if given the right environment. Since 2024, Trust Teens has reached thousands of teenagers across conferences, summits, campaigns, community service, and small group hangouts. 
-
+            {bodyText}
           </p>
 
           <p className="text-gray-600 leading-relaxed">
-          But beyond the numbers, what we have witnessed is resilience, curiosity, courage, and a deep hunger for direction.And this is only the beginning.
-.
+            But beyond the numbers, what we have witnessed is resilience, curiosity, courage, and a deep hunger for direction.And this is only the beginning.
+            .
           </p>
         </motion.div>
 
@@ -194,12 +209,11 @@ export default function AutoScrollImages() {
           viewport={{ once: true }}
         >
           <p className="pb-8 text-gray-600 leading-relaxed">
-            We have watched teenagers step onto stages for the first time. We have listened
-            as they spoke about purpose, fear, identity, and dreams they had never said out
-            loud before.
+            We have watched teenagers step onto stages for the first time. We have listened as they spoke about purpose, fear, identity, and dreams they had never said out loud before. We have seen them move from silence to confidence, from confusion to clarity, from observation to participation.
+
             <br /><br />
-            As Trust Teens continues to grow, we hold one conviction firmly: impact is not
-            only about how many teenagers we reach, but how deeply they are shaped.
+            As Trust Teens continues to grow, we hold one conviction firmly: impact is not only about how many teenagers we reach, but how deeply they are shaped. The numbers matter. But the transformation matters more.
+
           </p>
 
           <Image

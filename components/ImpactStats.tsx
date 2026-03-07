@@ -2,41 +2,66 @@
 
 import { motion } from 'framer-motion';
 import CountUp from "@/components/ui/CountUp2"
+import { useEffect, useState } from 'react';
+import { getImpactMetrics } from '@/lib/adminData';
 
-const stats = [
-    {
-      value: 17,
-      label: 'Events Organised',
-      bgImage: '/images/ImpactPurple.svg',
-    },
-    {
-      value: 54,
-      label: 'Activities Set Up',
-      bgImage: '/images/ImpactGreen.svg',
-    },
-    {
-      value: 19,
-      label: 'Communities Engaged',
-      bgImage: '/images/ImpactYellow.svg',
-    },
-    {
-      value: 200,
-      label: 'Members',
-      bgImage: '/images/ImpactRed.svg',
-    },
-    {
-      value: 30,
-      label: 'Speakers / Mentors',
-      bgImage: '/images/ImpactBlue.svg',
-    },
-    {
-      value: 105,
-      label: 'Volunteers',
-      bgImage: '/images/ImpactOrange.svg',
-    },
-  ];
-  
+const DEFAULT_STATS = [
+  {
+    value: 17,
+    label: 'Events Organised',
+    bgImage: '/images/ImpactPurple.svg',
+  },
+  {
+    value: 54,
+    label: 'Activities Set Up',
+    bgImage: '/images/ImpactGreen.svg',
+  },
+  {
+    value: 19,
+    label: 'Communities Engaged',
+    bgImage: '/images/ImpactYellow.svg',
+  },
+  {
+    value: 200,
+    label: 'Members',
+    bgImage: '/images/ImpactRed.svg',
+  },
+  {
+    value: 30,
+    label: 'Speakers / Mentors',
+    bgImage: '/images/ImpactBlue.svg',
+  },
+  {
+    value: 105,
+    label: 'Volunteers',
+    bgImage: '/images/ImpactOrange.svg',
+  },
+];
+
+const BG_IMAGES = [
+  '/images/ImpactPurple.svg',
+  '/images/ImpactGreen.svg',
+  '/images/ImpactYellow.svg',
+  '/images/ImpactRed.svg',
+  '/images/ImpactBlue.svg',
+  '/images/ImpactOrange.svg',
+];
+
 export default function ImpactStats() {
+  const [stats, setStats] = useState(DEFAULT_STATS);
+
+  useEffect(() => {
+    const savedMetrics = getImpactMetrics();
+    if (savedMetrics) {
+      setStats(
+        savedMetrics.map((m, i) => ({
+          value: parseInt(m.metric_value) || 0,
+          label: m.metric_label,
+          bgImage: BG_IMAGES[i % BG_IMAGES.length],
+        }))
+      );
+    }
+  }, []);
   return (
     <section className="w-full mx-auto  py-24">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 overflow-hidden ">

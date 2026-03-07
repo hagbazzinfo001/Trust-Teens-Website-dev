@@ -1,13 +1,12 @@
-"use client"; // ← Add this at the very top
+"use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckSquare } from "lucide-react";
-// import "aos/dist/aos.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import AOS from "aos";
-// import "aos/dist/aos.css";
 import Image from "next/image";
 import CountUp from "@/components/ui/CountUp2";
+import { getAchievementMetric, getLeaders } from "@/lib/adminData";
 export default function AboutPage() {
   const values = [
     { title: "Influence", image: "/images/bluebg.svg" },
@@ -32,7 +31,7 @@ export default function AboutPage() {
     },
   ];
 
-  const leaders = [
+  const [leaders, setLeaders] = useState([
     {
       name: "Deborah Dada",
       role: "Founder, Trust Teens",
@@ -51,37 +50,57 @@ export default function AboutPage() {
       image:
         "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764440305/emeal_ec26gr.png?auto=compress&cs=tinysrgb&w=400",
     },
-  ];
+  ]);
+
+  const [achievementValue, setAchievementValue] = useState("25");
+  const [achievementLabel, setAchievementLabel] = useState("Purpose driven initiatives executed");
 
   useEffect(() => {
     AOS.init({ duration: 800, once: false });
+
+    const savedLeaders = getLeaders();
+    if (savedLeaders) {
+      setLeaders(
+        savedLeaders.map((l) => ({
+          name: l.leader_name,
+          role: l.leader_title,
+          image: l.leader_image,
+        }))
+      );
+    }
+
+    const savedAchievement = getAchievementMetric();
+    if (savedAchievement) {
+      setAchievementValue(savedAchievement.metric_value);
+      setAchievementLabel(savedAchievement.metric_label);
+    }
   }, []);
 
   return (
     <>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 ">
-      <section
-  className="
+        <section
+          className="
     relative overflow-hidden 
     text-white py-12 md:py-20 rounded-[3rem]
     bg-no-repeat bg-center bg-cover
     bg-[url('/images/bluestar_bg.svg')]
   "
->
+        >
 
 
-           
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-             <div className="mb-8  gap-6">
-<div
-className="
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="mb-8  gap-6">
+              <div
+                className="
   max-w-3xl mb-8
   ml-0                        /* Mobile: no shifting */
   md:ml-[49%] md:-translate-x-1/2   /* Desktop: center-left shifting */
   transform
 "
->
-               <h1 className="text-4xl md:text-6xl font-bold mb-6">
+              >
+                <h1 className="text-4xl md:text-6xl font-bold mb-6">
                   Our Vision Statement
                 </h1>
                 <p className="text-lg md:text-xl leading-relaxed ">
@@ -91,7 +110,7 @@ className="
                 </p>
               </div>
             </div>
- 
+
             <div className="rounded-3xl overflow-hidden border-white">
               <Image
                 src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764439753/Image_3_p6utdj.png?auto=compress&cs=tinysrgb&w=1200"
@@ -102,7 +121,7 @@ className="
               />
             </div>
           </div>
-        </section> 
+        </section>
 
 
         <section className="py-12 md:py-20 bg-white">
@@ -150,16 +169,16 @@ className="
                   />
                 </div>
                 <div className="flex flex-col gap-4">
-                <div
-  className="rounded-3xl overflow-hidden h-[300px] flex items-center justify-center bg-cover bg-center"
-  style={{ backgroundImage: "url('/images/aboutusOrange_bg.png')" }}
->
-  <div className="text-white text-center">
-    <h2 className="text-5xl font-bold">      <CountUp value={25} />+
-</h2>
-    <p className="text-lg mt-2">Purpose driven initiatives executed</p>
-  </div>
-</div>
+                  <div
+                    className="rounded-3xl overflow-hidden h-[300px] flex items-center justify-center bg-cover bg-center"
+                    style={{ backgroundImage: "url('/images/aboutusOrange_bg.png')" }}
+                  >
+                    <div className="text-white text-center">
+                      <h2 className="text-5xl font-bold">      <CountUp value={parseInt(achievementValue) || 0} />+
+                      </h2>
+                      <p className="text-lg mt-2">{achievementLabel}</p>
+                    </div>
+                  </div>
 
                   <div className="rounded-3xl overflow-hidden">
                     <Image

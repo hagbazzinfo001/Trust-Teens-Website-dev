@@ -1,6 +1,5 @@
 "use client";
-"use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StatsSection from "@/components/ui/statsection";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -13,92 +12,105 @@ import icon4 from "@/public/images/icon4.svg";
 import icon2 from "@/public/images/icon2.svg";
 import icon5 from "@/public/images/icon5.svg";
 import icon6 from "@/public/images/icon6.svg";
-// import { Users, GraduationCap, BookOpen, Package } from "lucide-react";
 import Image from "next/image";
+import { getImpactStats, getTestimonials } from "@/lib/adminData";
+
+const DEFAULT_TESTIMONIALS = [
+  {
+    quote: "We had an incredible experience working with Laundrify and were impressed they made such a big difference in only three weeks. Our team is so grateful for the wonderful improvements they made and their ability to get familiar with the product concept so quickly. It acted as a catalyst to take our design to the next level and get more eyes on our product.",
+    name: "Jane Cooper",
+    age: "18 year old",
+    image: "/images/testimonia4.svg",
+  },
+  {
+    quote: "This program changed my confidence completely. I now believe in my abilities and leadership skills.",
+    name: "David Smith",
+    age: "17 year old",
+    image: "/images/testimonia4.svg",
+  },
+  {
+    quote: "I learned teamwork, responsibility, and how to communicate better with others.",
+    name: "Esther Johnson",
+    age: "16 year old",
+    image: "/images/testimonia4.svg",
+  },
+  {
+    quote: "The mentorship and support helped me grow academically and personally.",
+    name: "Michael Brown",
+    age: "19 year old",
+    image: "/images/testimonia4.svg",
+  },
+];
+
+const DEFAULT_IMPACT_STATS = [
+  { value: 22, label: "Months of impact" },
+  { value: 100, label: "Volunteers", suffix: "+" },
+  { value: 8500, label: "Teens Reached" },
+  { value: 25, label: "Projects Executed" },
+];
 
 export default function Home() {
   const programs = [
     {
       title: "TT Campaigns",
-      description:
-        "Intentionally crafted around clear and action goals to deepen community connections, shape social perspectives that uphold values that better us.",
+      description: "Intentionally crafted around clear and certain goals to deepen community connections, expand our reach, or strengthen how the world perceives us",
       icon: icon4,
       href: "/missions/campaigns",
     },
     {
       title: "TT Conference",
-      description:
-        'Widely known as the "Biggest Teenagers\' Conference in Africa." This is our annual flagship gathering of teenagers from all over the world. With teenagers life with purpose.',
+      description: 'Widely known as the "Biggest Teenagers" Conference in Africa," This is our annual flagship gathering designed to inspire and empower teenagers to live with purpose',
       icon: icon6,
       href: "/missions/conferences",
     },
     {
       title: "TT Community Service",
-      description:
-        "Purpose-driven civic engagements to inspire social responsibility for the greater good through our Community Service and Social Empowerment outreach programs.",
+      description: "Designed to help teenagers step outside their comfort zones and take active responsibility for the world around them through guided outreach programs.",
       icon: icon5,
       href: "/community/community-service",
     },
     {
       title: "TT Curriculum",
-      description:
-        "Each month, the community explores a specific theme, a life-building purpose that fosters personal growth, leadership, values, and real-world responsibility.",
+      description: "Designed to help teenagers step outside their comfort zones and take active responsibility for the world around them through guided outreach programs.",
       icon: icon3,
       href: "/community/curriculum",
     },
     {
       title: "TT School Clubs",
-      description:
-        "Personal development platform for secondary school students. Each club promotes academic excellence, mentorship, and practical activities that strengthen character.",
+      description: "Personal development platform for secondary school students. Each meeting combines storytelling, peer mentorship, and practical activities that strengthen character.",
       icon: icon2,
       href: "/missions/school-clubs",
     },
     {
       title: "TT Hangouts",
-      description:
-        "Special gatherings held throughout the year. These events are all about building a sense of belonging and genuine connections within the community.",
+      description: "Special gatherings held throughout the year. These events are all about fun, relaxation, and fostering genuine connections within the community.",
       icon: icon1,
       href: "/community/hangout",
     },
   ];
-  const testimonials = [
-    {
-      quote:"We had an incredible experience working with Laundrify and were impressed they made such a big difference in only three weeks. Our team is so grateful for the wonderful improvements they made and their ability to get familiar with the product concept so quickly. It acted as a catalyst to take our design to the next level and get more eyes on our product.",
-       name: "Jane Cooper",
-      age: "18 year old",
-      image: "/images/testimonia4.svg",
-    },
-    {
-      quote:
-        "This program changed my confidence completely. I now believe in my abilities and leadership skills.",
-      name: "David Smith",
-      age: "17 year old",
-      image: "/images/testimonia4.svg",
-    },
-    {
-      quote:
-        "I learned teamwork, responsibility, and how to communicate better with others.",
-      name: "Esther Johnson",
-      age: "16 year old",
-      image: "/images/testimonia4.svg",
-    },
-    {
-      quote:
-        "The mentorship and support helped me grow academically and personally.",
-      name: "Michael Brown",
-      age: "19 year old",
-      image: "/images/testimonia4.svg",
-    },
-  ];
-  
-  const [activeIndex, setActiveIndex] = useState(0);
 
-  const impactStats = [
-    { value: 22, label: "Months of impact" },
-    { value: 100, label: "Volunteers", suffix: "+" },
-    { value: 8500, label: "Teens Reached" },
-    { value: 25, label: "Projects Executed" },
-  ];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState(DEFAULT_TESTIMONIALS);
+  const [impactStats, setImpactStats] = useState(DEFAULT_IMPACT_STATS);
+
+  useEffect(() => {
+    const savedTestimonials = getTestimonials();
+    if (savedTestimonials) {
+      setTestimonials(
+        savedTestimonials.map((t) => ({
+          quote: t.quote_text,
+          name: t.teen_name,
+          age: t.teen_age,
+          image: t.teen_image,
+        }))
+      );
+    }
+
+    const savedStats = getImpactStats();
+    if (savedStats) {
+      setImpactStats(savedStats);
+    }
+  }, []);
 
   return (
     <>
@@ -117,11 +129,11 @@ export default function Home() {
               them.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/impact">
-  <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg">
-    See our Impact
-  </Button>
-</Link>
+              <Link href="/impact">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 text-lg">
+                  See our Impact
+                </Button>
+              </Link>
               <Button
                 variant="outline"
                 className="border-2 border-gray-900 text-gray-900 px-8 py-6 text-lg hover:bg-gray-900 hover:text-white"
@@ -156,13 +168,13 @@ export default function Home() {
               </h2>
 
               <Link href="/about">
-  <Button
-    variant="outline"
-    className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white"
-  >
-    There&apos;s more to tell
-  </Button>
-</Link>
+                <Button
+                  variant="outline"
+                  className="border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white"
+                >
+                  There&apos;s more to tell
+                </Button>
+              </Link>
 
             </div>
             <div className="relative">
@@ -248,80 +260,80 @@ export default function Home() {
               </motion.div>
             ))} */}
 
-{programs.map((program, index) => (
-  <motion.div
-    key={index}
-    variants={{
-      hidden: {
-        opacity: 0,
-        x: index % 2 === 0 ? -80 : 80,
-      },
-      show: {
-        opacity: 1,
-        x: 0,
-        transition: {
-          duration: 0.7,
-          ease: "easeOut",
-        },
-      },
-    }}
-  >
-    <Link href={program.href} className="block h-full">
-      <motion.div
-        whileHover={{
-          y: -6,
-          scale: 1.02,
-        }}
-        whileTap={{
-          scale: 0.97,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 300,
-          damping: 20,
-        }}
-        className="h-full"
-      >
-        <Card className="bg-white text-gray-900 border-0 h-full cursor-pointer hover:shadow-2xl transition-shadow">
-          <CardContent className="p-6">
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                {typeof program.icon === "string" ? (
-                  <span className="text-3xl">{program.icon}</span>
-                ) : (
-                  <Image
-                    src={program.icon.src}
-                    width={40}
-                    height={40}
-                    alt={program.title}
-                  />
-                )}
-              </div>
-
-              {/* Arrow animation */}
+            {programs.map((program, index) => (
               <motion.div
-                className="text-gray-400"
-                whileHover={{ x: 6 }}
-                transition={{ duration: 0.2 }}
+                key={index}
+                variants={{
+                  hidden: {
+                    opacity: 0,
+                    x: index % 2 === 0 ? -80 : 80,
+                  },
+                  show: {
+                    opacity: 1,
+                    x: 0,
+                    transition: {
+                      duration: 0.7,
+                      ease: "easeOut",
+                    },
+                  },
+                }}
               >
-                <Image  src="/images/arrowvector.svg" alt="Arrow Right" width={24} height={24} />
-                
+                <Link href={program.href} className="block h-full">
+                  <motion.div
+                    whileHover={{
+                      y: -6,
+                      scale: 1.02,
+                    }}
+                    whileTap={{
+                      scale: 0.97,
+                    }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                    }}
+                    className="h-full"
+                  >
+                    <Card className="bg-white text-gray-900 border-0 h-full cursor-pointer hover:shadow-2xl transition-shadow">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            {typeof program.icon === "string" ? (
+                              <span className="text-3xl">{program.icon}</span>
+                            ) : (
+                              <Image
+                                src={program.icon.src}
+                                width={40}
+                                height={40}
+                                alt={program.title}
+                              />
+                            )}
+                          </div>
+
+                          {/* Arrow animation */}
+                          <motion.div
+                            className="text-gray-400"
+                            whileHover={{ x: 6 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <Image src="/images/arrowvector.svg" alt="Arrow Right" width={24} height={24} />
+
+                          </motion.div>
+                        </div>
+
+                        <h3 className="text-xl font-bold mb-3">
+                          {program.title}
+                        </h3>
+
+                        <p className="text-sm text-gray-600 leading-relaxed">
+                          {program.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Link>
               </motion.div>
-            </div>
-
-            <h3 className="text-xl font-bold mb-3">
-              {program.title}
-            </h3>
-
-            <p className="text-sm text-gray-600 leading-relaxed">
-              {program.description}
-            </p>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </Link>
-  </motion.div>
-))}
+            ))}
 
           </motion.div>
         </div>
@@ -393,60 +405,59 @@ export default function Home() {
         </div>
       </section>
 
- 
 
-<section className="py-12 md:py-20 bg-orange-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            What our Teenagers are saying
-          </h2>
-        </div>
 
-        <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 md:p-12">
-          <div className="text-orange-500 text-5xl mb-4">"</div>
+      <section className="py-12 md:py-20 bg-orange-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
+              What our Teenagers are saying
+            </h2>
+          </div>
 
-          <p className="text-lg text-gray-700 mb-F8 leading-relaxed transition-all duration-500">
-            {testimonials[activeIndex].quote}
-          </p>
+          <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-lg p-8 md:p-12">
+            <div className="text-orange-500 text-5xl mb-4">"</div>
 
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 relative">
-              <Image
-                src={testimonials[activeIndex].image}
-                alt={testimonials[activeIndex].name}
-                fill
-                className="rounded-full object-cover border-2 border-white"
-              />
-            </div>
+            <p className="text-lg text-gray-700 mb-F8 leading-relaxed transition-all duration-500">
+              {testimonials[activeIndex].quote}
+            </p>
 
-            <div>
-              <div className="font-semibold">
-                {testimonials[activeIndex].name}
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 relative">
+                <Image
+                  src={testimonials[activeIndex].image}
+                  alt={testimonials[activeIndex].name}
+                  fill
+                  className="rounded-full object-cover border-2 border-white"
+                />
               </div>
-              <div className="text-sm text-gray-500">
-                {testimonials[activeIndex].age}
+
+              <div>
+                <div className="font-semibold">
+                  {testimonials[activeIndex].name}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {testimonials[activeIndex].age}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Navigation Dots */}
-        <div className="flex justify-center gap-3 mt-8">
-          {testimonials.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setActiveIndex(i)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                i === activeIndex
+          {/* Navigation Dots */}
+          <div className="flex justify-center gap-3 mt-8">
+            {testimonials.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === activeIndex
                   ? "bg-orange-500 scale-125"
                   : "bg-gray-300"
-              }`}
-            ></button>
-          ))}
+                  }`}
+              ></button>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
     </>
   );
 }

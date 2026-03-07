@@ -1,11 +1,22 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { getUpcomingConference } from '@/lib/adminData';
 
 export default function UpcomingConferences() {
+  const [data, setData] = useState<any>(null);
   const revealRefs = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
+    const adminData = getUpcomingConference();
+    if (adminData && adminData.is_active) {
+      setData(adminData);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!data) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -22,13 +33,15 @@ export default function UpcomingConferences() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [data]);
 
   const addToRefs = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
       revealRefs.current.push(el);
     }
   };
+
+  if (!data) return null;
 
   return (
     <section className="w-full bg-white py-20 px-6 lg:px-20">
@@ -39,8 +52,8 @@ export default function UpcomingConferences() {
             className="w-[280px] sm:w-[340px] lg:w-[420px] float-animation opacity-0 translate-y-8 transition-all duration-[1200ms]"
           >
             <img
-              src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764810649/Phone_Mockup_cxmgpl.png"
-              alt="Campaign Preview"
+              src={data.promo_image || "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764810649/Phone_Mockup_cxmgpl.png"}
+              alt={data.name}
               className="rounded-3xl shadow-xl w-full"
             />
           </div>
@@ -50,36 +63,42 @@ export default function UpcomingConferences() {
           ref={addToRefs}
           className="opacity-0 translate-y-8 transition-all duration-[1200ms]"
         >
-        {/* RIGHT — Content + Scroll Reveal */}
-        <div
-          ref={addToRefs}
-          className="opacity-0 translate-y-8 transition-all duration-[1200ms]"
-        >
-          <p className="tracking-widest text-gray-500 text-sm mb-2 uppercase">
-            Upcoming Conferences
-          </p>
+          <div
+            ref={addToRefs}
+            className="opacity-0 translate-y-8 transition-all duration-[1200ms]"
+          >
+            <p className="tracking-widest text-gray-500 text-sm mb-2 uppercase">
+              Upcoming Conferences
+            </p>
 
-          <h2 className="text-4xl font-bold text-gray-900 leading-tight mb-6">
-          Conferences Name
-          </h2>
+            <h2 className="text-4xl font-bold text-gray-900 leading-tight mb-6">
+              {data.name}
+            </h2>
 
-          <p className="text-gray-600 leading-relaxed mb-6">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Condimentum diam orci
-            pretium a pharetra, feugiat cursus. Dictumst risus, sem egestas odio cras
-            adipiscing vulputate.
-          </p>
+            <p className="text-gray-600 leading-relaxed mb-6">
+              {data.description}
+            </p>
 
-          <p className="font-semibold text-gray-800">
-            Saturday, 21st November 2025; 02:00 PM
-          </p>
+            <p className="font-semibold text-gray-800">
+              {data.date_time}
+            </p>
 
-          <p className="text-gray-900 font-medium mt-2">Location???</p>
+            {data.location && (
+              <p className="text-gray-900 font-medium mt-2">{data.location}</p>
+            )}
 
-          {/* Button with Scale + Shine Hover Effect */}
-          <button className="relative mt-8 bg-orange-500 text-white font-semibold px-10 py-3 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:bg-orange-600 shine-btn">
-            Register Now
-          </button>
-        </div>
+            {/* Button with Scale + Shine Hover Effect */}
+            {data.register_url && (
+              <a
+                href={data.register_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block relative mt-8 bg-orange-500 text-white font-semibold px-10 py-3 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:bg-orange-600 shine-btn"
+              >
+                Register Now
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </section>
