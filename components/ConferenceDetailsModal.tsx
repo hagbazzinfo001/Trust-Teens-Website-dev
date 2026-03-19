@@ -202,7 +202,7 @@ export default function ConferenceDetailsModal({
                 <ul className="space-y-3 pl-8">
                   {conference.objectives.map((objective, index) => (
                     <li key={index} className="flex items-start gap-3 text-gray-600">
-                      <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${conference.color}`}>
+                      <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r`}>
                         <Image
                           src={iconsArray[index % iconsArray.length]}
                           alt="icon"
@@ -228,7 +228,7 @@ export default function ConferenceDetailsModal({
 
 
             <section
-              className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
+              className="py-12 md:py-20 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
 
             >
 
