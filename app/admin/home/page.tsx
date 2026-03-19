@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     HeroMetric,
     ImpactStat,
@@ -367,18 +368,14 @@ export default function AdminHomePage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                                            Image URL
-                                        </label>
-                                        <input
-                                            type="text"
+                                        <CloudinaryImageUpload
+                                            label="Teen Image"
                                             value={t.teen_image}
-                                            onChange={(e) => {
+                                            onUpload={(url) => {
                                                 const updated = [...testimonials];
-                                                updated[i] = { ...updated[i], teen_image: e.target.value };
+                                                updated[i] = { ...updated[i], teen_image: url };
                                                 setTestimonials(updated);
                                             }}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                                         />
                                     </div>
                                 </div>

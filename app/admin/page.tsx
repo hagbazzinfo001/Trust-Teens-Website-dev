@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Info, BarChart3, ArrowRight, Megaphone, Mountain, Mic2, Users, BookOpen } from 'lucide-react';
+import { Home, Info, BarChart3, ArrowRight, Megaphone, Mountain, Mic2, Users, BookOpen, Star, UserPlus, GraduationCap, Globe } from 'lucide-react';
 
 const sections = [
     {
@@ -66,6 +66,34 @@ const sections = [
         href: '/admin/community/curriculum',
         icon: BookOpen,
         color: 'bg-blue-600',
+    },
+    {
+        title: 'Core Team',
+        description: 'Manage Core Team member profiles and details',
+        href: '/admin/team/core',
+        icon: Star,
+        color: 'bg-indigo-600',
+    },
+    {
+        title: 'Mentors',
+        description: 'Manage Mentor hero images, roster, roles, and CTA',
+        href: '/admin/team/mentors',
+        icon: GraduationCap,
+        color: 'bg-purple-600',
+    },
+    {
+        title: 'Volunteers',
+        description: 'Manage Volunteer profiles and CTA switch',
+        href: '/admin/team/volunteers',
+        icon: UserPlus,
+        color: 'bg-rose-500',
+    },
+    {
+        title: 'Ambassadors',
+        description: 'Manage Ambassador community grid and CTA link',
+        href: '/admin/team/ambassadors',
+        icon: Globe,
+        color: 'bg-emerald-600',
     },
 ];
 

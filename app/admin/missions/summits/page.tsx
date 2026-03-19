@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     MissionImpactStat,
     PastSummitItem,
@@ -162,14 +163,11 @@ export default function AdminSummitsPage() {
                     <div className="space-y-4">
                         {heroImages.map((url, i) => (
                             <div key={i} className="p-4 bg-gray-50 rounded-xl">
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Image {i + 1} URL</label>
-                                <input
-                                    type="text"
+                                <CloudinaryImageUpload
+                                    label={`Hero Image ${i + 1}`}
                                     value={url}
-                                    onChange={(e) => { const u = [...heroImages]; u[i] = e.target.value; setHeroImages(u); }}
-                                    className={inputCls}
+                                    onUpload={(newUrl) => { const u = [...heroImages]; u[i] = newUrl; setHeroImages(u); }}
                                 />
-                                {url && <img src={url} alt={`Preview ${i + 1}`} className="mt-2 h-24 rounded-lg object-cover" />}
                             </div>
                         ))}
                     </div>
@@ -232,8 +230,11 @@ export default function AdminSummitsPage() {
                                         <input type="text" maxLength={15} value={item.summit_date} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], summit_date: e.target.value }; setPastItems(u); }} className={inputCls} />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
-                                        <input type="text" value={item.summit_image} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], summit_image: e.target.value }; setPastItems(u); }} className={inputCls} />
+                                        <CloudinaryImageUpload
+                                            label="Summit Image"
+                                            value={item.summit_image}
+                                            onUpload={(url) => { const u = [...pastItems]; u[i] = { ...u[i], summit_image: url }; setPastItems(u); }}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -348,8 +349,11 @@ export default function AdminSummitsPage() {
                                     <span className="text-xs text-gray-400">{detail.about_text_body.length}/600</span>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Side Image URL</label>
-                                    <input type="text" value={detail.event_side_image} onChange={(e) => setDetail({ ...detail, event_side_image: e.target.value })} className={inputCls} />
+                                    <CloudinaryImageUpload
+                                        label="Side Image"
+                                        value={detail.event_side_image}
+                                        onUpload={(url) => setDetail({ ...detail, event_side_image: url })}
+                                    />
                                 </div>
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
@@ -401,8 +405,11 @@ export default function AdminSummitsPage() {
                                                 <input type="text" maxLength={50} value={sp.speaker_role} onChange={(e) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_role: e.target.value }; setDetail({ ...detail, speakers: u }); }} className={inputCls} />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
-                                                <input type="text" value={sp.speaker_image} onChange={(e) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_image: e.target.value }; setDetail({ ...detail, speakers: u }); }} className={inputCls} />
+                                                <CloudinaryImageUpload
+                                                    label="Speaker Image"
+                                                    value={sp.speaker_image}
+                                                    onUpload={(url) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_image: url }; setDetail({ ...detail, speakers: u }); }}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -416,7 +423,7 @@ export default function AdminSummitsPage() {
                                     <button onClick={addPartner} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Partner</button>
                                 </div>
                                 {detail.partners.map((p, i) => (
-                                    <div key={i} className="flex gap-2">
+                                    <div key={i} className="flex gap-2 items-start">
                                         <input
                                             type="text"
                                             placeholder="Partner Name"
@@ -428,18 +435,18 @@ export default function AdminSummitsPage() {
                                             }}
                                             className={`${inputCls} flex-1`}
                                         />
-                                        <input
-                                            type="text"
-                                            placeholder="Partner logo URL"
-                                            value={p.logo}
-                                            onChange={(e) => {
-                                                const u = [...detail.partners];
-                                                u[i] = { ...p, logo: e.target.value };
-                                                setDetail({ ...detail, partners: u });
-                                            }}
-                                            className={`${inputCls} flex-1`}
-                                        />
-                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label="Partner Logo"
+                                                value={p.logo}
+                                                onUpload={(url) => {
+                                                    const u = [...detail.partners];
+                                                    u[i] = { ...p, logo: url };
+                                                    setDetail({ ...detail, partners: u });
+                                                }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
                                     </div>
                                 ))}
                             </div>
@@ -451,9 +458,15 @@ export default function AdminSummitsPage() {
                                     <button onClick={addGalleryImage} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Image</button>
                                 </div>
                                 {detail.gallery.map((url, i) => (
-                                    <div key={i} className="flex gap-2">
-                                        <input type="text" placeholder="Gallery image URL" value={url} onChange={(e) => { const u = [...detail.gallery]; u[i] = e.target.value; setDetail({ ...detail, gallery: u }); }} className={`${inputCls} flex-1`} />
-                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
+                                    <div key={i} className="flex gap-2 items-start">
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label={`Gallery Image ${i + 1}`}
+                                                value={url}
+                                                onUpload={(newUrl) => { const u = [...detail.gallery]; u[i] = newUrl; setDetail({ ...detail, gallery: u }); }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
                                     </div>
                                 ))}
                             </div>

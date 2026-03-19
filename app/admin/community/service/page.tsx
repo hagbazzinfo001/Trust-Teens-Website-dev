@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     MissionImpactStat,
     PastCommunityServiceItem,
@@ -181,17 +182,14 @@ export default function AdminCommunityServicePage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {hero.hero_gallery.map((url, i) => (
                                 <div key={i}>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Image {i + 1} URL</label>
-                                    <input
-                                        type="text"
+                                    <CloudinaryImageUpload
+                                        label={`Hero Image ${i + 1}`}
                                         value={url}
-                                        onChange={(e) => {
+                                        onUpload={(newUrl) => {
                                             const u = [...hero.hero_gallery];
-                                            u[i] = e.target.value;
+                                            u[i] = newUrl;
                                             setHero({ hero_gallery: u });
                                         }}
-                                        className={inputCls}
-                                        placeholder="https://..."
                                     />
                                 </div>
                             ))}
@@ -207,12 +205,10 @@ export default function AdminCommunityServicePage() {
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Side Image URL</label>
-                                <input
-                                    type="text"
+                                <CloudinaryImageUpload
+                                    label="Approach Side Image"
                                     value={approach.approach_image}
-                                    onChange={(e) => setApproach({ ...approach, approach_image: e.target.value })}
-                                    className={inputCls}
+                                    onUpload={(url) => setApproach({ ...approach, approach_image: url })}
                                 />
                             </div>
                             <div className="space-y-2">
@@ -358,16 +354,14 @@ export default function AdminCommunityServicePage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
-                                        <input
-                                            type="text"
+                                        <CloudinaryImageUpload
+                                            label="Project Image"
                                             value={item.project_image}
-                                            onChange={(e) => {
+                                            onUpload={(url) => {
                                                 const u = [...pastItems];
-                                                u[i] = { ...u[i], project_image: e.target.value };
+                                                u[i] = { ...u[i], project_image: url };
                                                 setPastItems(u);
                                             }}
-                                            className={inputCls}
                                         />
                                     </div>
                                 </div>
@@ -425,8 +419,11 @@ export default function AdminCommunityServicePage() {
                                         <input type="text" maxLength={50} value={detail.project_name} onChange={(e) => setDetail({ ...detail, project_name: e.target.value })} className={inputCls} />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Hero Image URL</label>
-                                        <input type="text" value={detail.hero_main_image} onChange={(e) => setDetail({ ...detail, hero_main_image: e.target.value })} className={inputCls} />
+                                        <CloudinaryImageUpload
+                                            label="Hero Image"
+                                            value={detail.hero_main_image}
+                                            onUpload={(url) => setDetail({ ...detail, hero_main_image: url })}
+                                        />
                                     </div>
                                 </div>
                                 <div>
@@ -442,8 +439,11 @@ export default function AdminCommunityServicePage() {
                                     <textarea maxLength={600} rows={5} value={detail.project_body_text} onChange={(e) => setDetail({ ...detail, project_body_text: e.target.value })} className={`${inputCls} resize-none`} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Side Action Image URL</label>
-                                    <input type="text" value={detail.side_action_image} onChange={(e) => setDetail({ ...detail, side_action_image: e.target.value })} className={inputCls} />
+                                    <CloudinaryImageUpload
+                                        label="Side Action Image"
+                                        value={detail.side_action_image}
+                                        onUpload={(url) => setDetail({ ...detail, side_action_image: url })}
+                                    />
                                 </div>
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
@@ -512,7 +512,7 @@ export default function AdminCommunityServicePage() {
                                     <button onClick={addPartner} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Partner</button>
                                 </div>
                                 {detail.partners.map((p, i) => (
-                                    <div key={i} className="flex gap-2">
+                                    <div key={i} className="flex gap-2 items-start">
                                         <input
                                             type="text"
                                             placeholder="Partner name"
@@ -524,18 +524,18 @@ export default function AdminCommunityServicePage() {
                                             }}
                                             className={`${inputCls} flex-1`}
                                         />
-                                        <input
-                                            type="text"
-                                            placeholder="Logo URL"
-                                            value={p.logo}
-                                            onChange={(e) => {
-                                                const u = [...detail.partners];
-                                                u[i] = { ...p, logo: e.target.value };
-                                                setDetail({ ...detail, partners: u });
-                                            }}
-                                            className={`${inputCls} flex-1`}
-                                        />
-                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500">
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label="Partner Logo"
+                                                value={p.logo}
+                                                onUpload={(url) => {
+                                                    const u = [...detail.partners];
+                                                    u[i] = { ...p, logo: url };
+                                                    setDetail({ ...detail, partners: u });
+                                                }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500 mt-6">
                                             <Trash2 size={16} />
                                         </button>
                                     </div>
@@ -548,19 +548,19 @@ export default function AdminCommunityServicePage() {
                                     <button onClick={addGalleryImage} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Image</button>
                                 </div>
                                 {detail.gallery.map((url, i) => (
-                                    <div key={i} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Image URL"
-                                            value={url}
-                                            onChange={(e) => {
-                                                const u = [...detail.gallery];
-                                                u[i] = e.target.value;
-                                                setDetail({ ...detail, gallery: u });
-                                            }}
-                                            className={`${inputCls} flex-1`}
-                                        />
-                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500">
+                                    <div key={i} className="flex gap-2 items-start">
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label={`Gallery Image ${i + 1}`}
+                                                value={url}
+                                                onUpload={(newUrl) => {
+                                                    const u = [...detail.gallery];
+                                                    u[i] = newUrl;
+                                                    setDetail({ ...detail, gallery: u });
+                                                }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500 mt-6">
                                             <Trash2 size={16} />
                                         </button>
                                     </div>

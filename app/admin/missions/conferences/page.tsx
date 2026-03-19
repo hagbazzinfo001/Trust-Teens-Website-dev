@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     MissionImpactStat,
     PastConferenceItem,
@@ -156,14 +157,18 @@ export default function AdminConferencesPage() {
                     </div>
                     <div className="space-y-4">
                         <div className="p-4 bg-gray-50 rounded-xl">
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Primary Hero Image URL</label>
-                            <input type="text" value={hero.primary_hero_image} onChange={(e) => setHero({ ...hero, primary_hero_image: e.target.value })} className={inputCls} />
-                            {hero.primary_hero_image && <img src={hero.primary_hero_image} alt="Primary preview" className="mt-2 h-24 rounded-lg object-cover" />}
+                            <CloudinaryImageUpload
+                                label="Primary Hero Image"
+                                value={hero.primary_hero_image}
+                                onUpload={(url) => setHero({ ...hero, primary_hero_image: url })}
+                            />
                         </div>
                         <div className="p-4 bg-gray-50 rounded-xl">
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Secondary Hero Image URL</label>
-                            <input type="text" value={hero.secondary_hero_image} onChange={(e) => setHero({ ...hero, secondary_hero_image: e.target.value })} className={inputCls} />
-                            {hero.secondary_hero_image && <img src={hero.secondary_hero_image} alt="Secondary preview" className="mt-2 h-24 rounded-lg object-cover" />}
+                            <CloudinaryImageUpload
+                                label="Secondary Hero Image"
+                                value={hero.secondary_hero_image}
+                                onUpload={(url) => setHero({ ...hero, secondary_hero_image: url })}
+                            />
                         </div>
                     </div>
                 </div>
@@ -223,8 +228,11 @@ export default function AdminConferencesPage() {
                                         <input type="text" maxLength={15} value={item.conference_date} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], conference_date: e.target.value }; setPastItems(u); }} className={inputCls} />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
-                                        <input type="text" value={item.conference_image} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], conference_image: e.target.value }; setPastItems(u); }} className={inputCls} />
+                                        <CloudinaryImageUpload
+                                            label="Conference Image"
+                                            value={item.conference_image}
+                                            onUpload={(url) => { const u = [...pastItems]; u[i] = { ...u[i], conference_image: url }; setPastItems(u); }}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -278,8 +286,11 @@ export default function AdminConferencesPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Promo Image URL</label>
-                            <input type="text" value={upcoming.promo_image || ''} onChange={(e) => setUpcoming({ ...upcoming, promo_image: e.target.value })} className={inputCls} />
+                            <CloudinaryImageUpload
+                                label="Promo Image"
+                                value={upcoming.promo_image || ''}
+                                onUpload={(url) => setUpcoming({ ...upcoming, promo_image: url })}
+                            />
                         </div>
                     </div>
                 </div>
@@ -323,8 +334,11 @@ export default function AdminConferencesPage() {
                                         <input type="text" maxLength={50} value={detail.conference_name} onChange={(e) => setDetail({ ...detail, conference_name: e.target.value })} className={inputCls} />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Hero Main Image URL</label>
-                                        <input type="text" value={detail.hero_main_image} onChange={(e) => setDetail({ ...detail, hero_main_image: e.target.value })} className={inputCls} />
+                                        <CloudinaryImageUpload
+                                            label="Hero Main Image"
+                                            value={detail.hero_main_image}
+                                            onUpload={(url) => setDetail({ ...detail, hero_main_image: url })}
+                                        />
                                     </div>
                                 </div>
                                 <div>
@@ -343,8 +357,11 @@ export default function AdminConferencesPage() {
                                     <span className="text-xs text-gray-400">{detail.about_text_body.length}/600</span>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Side Image URL</label>
-                                    <input type="text" value={detail.about_side_image} onChange={(e) => setDetail({ ...detail, about_side_image: e.target.value })} className={inputCls} />
+                                    <CloudinaryImageUpload
+                                        label="Side Image"
+                                        value={detail.about_side_image}
+                                        onUpload={(url) => setDetail({ ...detail, about_side_image: url })}
+                                    />
                                 </div>
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
@@ -396,8 +413,11 @@ export default function AdminConferencesPage() {
                                                 <input type="text" value={n.news_link} onChange={(e) => { const u = [...detail.news]; u[i] = { ...u[i], news_link: e.target.value }; setDetail({ ...detail, news: u }); }} className={inputCls} />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1">Thumbnail URL</label>
-                                                <input type="text" value={n.news_thumbnail} onChange={(e) => { const u = [...detail.news]; u[i] = { ...u[i], news_thumbnail: e.target.value }; setDetail({ ...detail, news: u }); }} className={inputCls} />
+                                                <CloudinaryImageUpload
+                                                    label="News Thumbnail"
+                                                    value={n.news_thumbnail}
+                                                    onUpload={(url) => { const u = [...detail.news]; u[i] = { ...u[i], news_thumbnail: url }; setDetail({ ...detail, news: u }); }}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -423,8 +443,11 @@ export default function AdminConferencesPage() {
                                                 <input type="text" maxLength={50} value={sp.speaker_role} onChange={(e) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_role: e.target.value }; setDetail({ ...detail, speakers: u }); }} className={inputCls} />
                                             </div>
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
-                                                <input type="text" value={sp.speaker_image} onChange={(e) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_image: e.target.value }; setDetail({ ...detail, speakers: u }); }} className={inputCls} />
+                                                <CloudinaryImageUpload
+                                                    label="Speaker Image"
+                                                    value={sp.speaker_image}
+                                                    onUpload={(url) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_image: url }; setDetail({ ...detail, speakers: u }); }}
+                                                />
                                             </div>
                                         </div>
                                     </div>
@@ -438,7 +461,7 @@ export default function AdminConferencesPage() {
                                     <button onClick={addPartner} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Partner</button>
                                 </div>
                                 {detail.partners.map((p, i) => (
-                                    <div key={i} className="flex gap-2">
+                                    <div key={i} className="flex gap-2 items-start">
                                         <input
                                             type="text"
                                             placeholder="Partner Name"
@@ -450,18 +473,18 @@ export default function AdminConferencesPage() {
                                             }}
                                             className={`${inputCls} flex-1`}
                                         />
-                                        <input
-                                            type="text"
-                                            placeholder="Partner logo URL"
-                                            value={p.logo}
-                                            onChange={(e) => {
-                                                const u = [...detail.partners];
-                                                u[i] = { ...p, logo: e.target.value };
-                                                setDetail({ ...detail, partners: u });
-                                            }}
-                                            className={`${inputCls} flex-1`}
-                                        />
-                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label="Partner Logo"
+                                                value={p.logo}
+                                                onUpload={(url) => {
+                                                    const u = [...detail.partners];
+                                                    u[i] = { ...p, logo: url };
+                                                    setDetail({ ...detail, partners: u });
+                                                }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
                                     </div>
                                 ))}
                             </div>
@@ -473,9 +496,15 @@ export default function AdminConferencesPage() {
                                     <button onClick={addGalleryImage} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Image</button>
                                 </div>
                                 {detail.gallery.map((url, i) => (
-                                    <div key={i} className="flex gap-2">
-                                        <input type="text" placeholder="Gallery image URL" value={url} onChange={(e) => { const u = [...detail.gallery]; u[i] = e.target.value; setDetail({ ...detail, gallery: u }); }} className={`${inputCls} flex-1`} />
-                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
+                                    <div key={i} className="flex gap-2 items-start">
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label={`Gallery Image ${i + 1}`}
+                                                value={url}
+                                                onUpload={(newUrl) => { const u = [...detail.gallery]; u[i] = newUrl; setDetail({ ...detail, gallery: u }); }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
                                     </div>
                                 ))}
                             </div>

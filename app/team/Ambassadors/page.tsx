@@ -2,15 +2,15 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useState } from "react";
+import { getAmbassadorMembers, getAmbassadorCTA, AmbassadorMember, AmbassadorCTA } from '@/lib/adminData';
 
 export default function TeenAmbassadorsPage() {
-    const router = useRouter();
-  
+  const router = useRouter();
+
   const ambassadors = [
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
@@ -33,12 +33,32 @@ export default function TeenAmbassadorsPage() {
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
   ];
- 
-  
+
+  const [dbAmbassadors, setDbAmbassadors] = useState<AmbassadorMember[]>([]);
+  const [dbCta, setDbCta] = useState<AmbassadorCTA | null>(null);
+
+  useEffect(() => {
+    const members = getAmbassadorMembers();
+    if (members && members.length > 0) setDbAmbassadors(members);
+
+    const cta = getAmbassadorCTA();
+    if (cta) setDbCta(cta);
+  }, []);
+
+  const ambassadorsToDisplay = dbAmbassadors.length > 0 ? dbAmbassadors.map(a => ({
+    name: a.ambassador_name,
+    school: a.school_name,
+    location: a.location,
+    image: a.ambassador_image || "/images/coreteam2.svg"
+  })) : ambassadors.map(a => ({
+    ...a,
+    image: "/images/coreteam2.svg"
+  }));
+
   return (
 
-  <div>
-{/* <AnimatePresence>
+    <div>
+      {/* <AnimatePresence>
   {open && (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/70"
@@ -92,82 +112,87 @@ export default function TeenAmbassadorsPage() {
   )}
 </AnimatePresence> */}
 
-    <main className="bg-white text-black">
-      {/* Header */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4">Teen Ambassadors</h1>
-        <p className="text-gray-600 max-w-2xl">
-          The people stewarding the vision, building the systems, and delivering the work behind Trust Teens. This team leads strategy, programs, partnerships, and daily execution with purpose and care.
-        </p>
-      </section>
-
-      {/* Group Image */}
-      <section className="max-w-7xl mx-auto px-6 mb-20">
-         <Image
-          src="/images/ambassadors-hero.svg"
-          alt="Teen Ambassadors Group"
-          width={1200}
-          height={400}  
-          className="h-72 md:h-96 rounded-3xl" 
-        />
-      </section>
-
-      {/* Ambassador Community */}
-      <section className="bg-gray-50 py-20">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-semibold mb-4">Ambassador Community</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-12">
-            Our ambassadors are young leaders who embody purpose, responsibility, and influence. They help create awareness, encourage participation, and support peer-to-peer growth within their environments.
+      <main className="bg-white text-black">
+        {/* Header */}
+        <section className="max-w-7xl mx-auto px-6 py-20">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Teen Ambassadors</h1>
+          <p className="text-gray-600 max-w-2xl">
+            The people stewarding the vision, building the systems, and delivering the work behind Trust Teens. This team leads strategy, programs, partnerships, and daily execution with purpose and care.
           </p>
+        </section>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-            {ambassadors.map((a, i) => (
-              <Card key={i} className="rounded-2xl shadow-sm">
-                <CardContent className="p-6 text-left">
-                  <Image
-                    src="/images/coreteam2.svg"
-                    alt="Ambassador"  
-                    width={200}
-                    height={200}
-                    className="h-26 w-full rounded-xl mb-4"
-                  />
-                  <h3 className="font-semibold text-lg">{a.name}</h3>
-                  <p className="text-sm text-orange-500">{a.school}</p>
-                  <p className="text-sm text-gray-500">{a.location}</p>
-                </CardContent>
-              </Card>
-            ))}
+        {/* Group Image */}
+        <section className="max-w-7xl mx-auto px-6 mb-20">
+          <Image
+            src="/images/ambassadors-hero.svg"
+            alt="Teen Ambassadors Group"
+            width={1200}
+            height={400}
+            className="h-72 md:h-96 rounded-3xl"
+          />
+        </section>
+
+        {/* Ambassador Community */}
+        <section className="bg-gray-50 py-20">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            <h2 className="text-3xl font-semibold mb-4">Ambassador Community</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto mb-12">
+              Our ambassadors are young leaders who embody purpose, responsibility, and influence. They help create awareness, encourage participation, and support peer-to-peer growth within their environments.
+            </p>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+              {ambassadorsToDisplay.map((a, i) => (
+                <Card key={i} className="rounded-2xl shadow-sm">
+                  <CardContent className="p-6 text-left">
+                    <Image
+                      src={a.image || "/images/coreteam2.svg"}
+                      alt="Ambassador"
+                      width={200}
+                      height={200}
+                      className="h-26 w-full rounded-xl mb-4"
+                    />
+                    <h3 className="font-semibold text-lg">{a.name}</h3>
+                    <p className="text-sm text-orange-500">{a.school}</p>
+                    <p className="text-sm text-gray-500">{a.location}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              className="mt-4 bg-orange-500 text-white px-6 py-3 rounded-lg"
+              onClick={() => router.push("/team/Ambassador/allAmbassadoor")}
+            >
+              See all Volunteers
+            </motion.button>
+
           </div>
+        </section>
 
-    <motion.button
-  whileHover={{ scale: 1.05 }}
-  className="mt-4 bg-orange-500 text-white px-6 py-3 rounded-lg"
-  onClick={() => router.push("/team/Ambassador/allAmbassadoor")}
->
-  See all Volunteers
-</motion.button>
-
-        </div>
-      </section>
-
-      {/* Become Ambassador */}
-      <section className="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
-         <Image 
-          src="/images/ctaAmbassador.svg"
-          alt="Become an Ambassador"
-          width={600}
-          height={400}
-          className="h-80 rounded-3xl"
-        />
-        <div>
-          <h3 className="text-3xl font-semibold mb-4">Become an Ambassador</h3>
-          <p className="text-gray-600 mb-8">
-            We invite teenagers who are ready to lead with values and influence their peers positively to become Trust Teens Ambassadors. Ambassadors receive guidance, learning opportunities, and platforms to grow as leaders.
-          </p>
-          <Button className="bg-black text-white rounded-xl px-8">Join Us today</Button>
-        </div>
-      </section>
-    </main>
+        {/* Become Ambassador */}
+        <section className="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
+          <Image
+            src="/images/ctaAmbassador.svg"
+            alt="Become an Ambassador"
+            width={600}
+            height={400}
+            className="h-80 rounded-3xl"
+          />
+          <div>
+            <h3 className="text-3xl font-semibold mb-4">Become an Ambassador</h3>
+            <p className="text-gray-600 mb-8">
+              We invite teenagers who are ready to lead with values and influence their peers positively to become Trust Teens Ambassadors. Ambassadors receive guidance, learning opportunities, and platforms to grow as leaders.
+            </p>
+            <Button
+              className="bg-black text-white rounded-xl px-8"
+              onClick={() => { if (dbCta?.apply_button_url) window.open(dbCta.apply_button_url, '_blank') }}
+            >
+              Join Us today
+            </Button>
+          </div>
+        </section>
+      </main>
     </div>
 
   );

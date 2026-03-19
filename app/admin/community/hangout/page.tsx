@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     MissionImpactStat,
     PastHangoutItem,
@@ -198,17 +199,14 @@ export default function AdminHangoutPage() {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {hero.hero_gallery_images.map((url, i) => (
                                 <div key={i}>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Image {i + 1} URL</label>
-                                    <input
-                                        type="text"
+                                    <CloudinaryImageUpload
+                                        label={`Hero Image ${i + 1}`}
                                         value={url}
-                                        onChange={(e) => {
+                                        onUpload={(newUrl) => {
                                             const u = [...hero.hero_gallery_images];
-                                            u[i] = e.target.value;
+                                            u[i] = newUrl;
                                             setHero({ hero_gallery_images: u });
                                         }}
-                                        className={inputCls}
-                                        placeholder="https://..."
                                     />
                                 </div>
                             ))}
@@ -224,12 +222,10 @@ export default function AdminHangoutPage() {
                         </div>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Vertical Side Image URL</label>
-                                <input
-                                    type="text"
+                                <CloudinaryImageUpload
+                                    label="Vertical Side Image"
                                     value={approach.approach_image}
-                                    onChange={(e) => setApproach({ ...approach, approach_image: e.target.value })}
-                                    className={inputCls}
+                                    onUpload={(url) => setApproach({ ...approach, approach_image: url })}
                                 />
                             </div>
                             <div className="space-y-2">
@@ -375,16 +371,14 @@ export default function AdminHangoutPage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Image URL</label>
-                                        <input
-                                            type="text"
+                                        <CloudinaryImageUpload
+                                            label="Hangout Image"
                                             value={item.hangout_image}
-                                            onChange={(e) => {
+                                            onUpload={(url) => {
                                                 const u = [...pastItems];
-                                                u[i] = { ...u[i], hangout_image: e.target.value };
+                                                u[i] = { ...u[i], hangout_image: url };
                                                 setPastItems(u);
                                             }}
-                                            className={inputCls}
                                         />
                                     </div>
                                 </div>
@@ -454,8 +448,11 @@ export default function AdminHangoutPage() {
                             </div>
                         </div>
                         <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Promo Image URL</label>
-                            <input type="text" value={upcoming.promo_image || ''} onChange={(e) => setUpcoming({ ...upcoming, promo_image: e.target.value })} className={inputCls} />
+                            <CloudinaryImageUpload
+                                label="Promo Image"
+                                value={upcoming.promo_image || ''}
+                                onUpload={(url) => setUpcoming({ ...upcoming, promo_image: url })}
+                            />
                         </div>
                     </div>
                 </div>
@@ -509,8 +506,11 @@ export default function AdminHangoutPage() {
                                         <input type="text" maxLength={50} value={detail.hangout_name} onChange={(e) => setDetail({ ...detail, hangout_name: e.target.value })} className={inputCls} />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Hero Main Image URL</label>
-                                        <input type="text" value={detail.hero_main_image} onChange={(e) => setDetail({ ...detail, hero_main_image: e.target.value })} className={inputCls} />
+                                        <CloudinaryImageUpload
+                                            label="Hero Main Image"
+                                            value={detail.hero_main_image}
+                                            onUpload={(url) => setDetail({ ...detail, hero_main_image: url })}
+                                        />
                                     </div>
                                 </div>
                                 <div>
@@ -526,8 +526,11 @@ export default function AdminHangoutPage() {
                                     <textarea maxLength={600} rows={4} value={detail.about_text_body} onChange={(e) => setDetail({ ...detail, about_text_body: e.target.value })} className={`${inputCls} resize-none`} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Side Action Image URL</label>
-                                    <input type="text" value={detail.side_action_image} onChange={(e) => setDetail({ ...detail, side_action_image: e.target.value })} className={inputCls} />
+                                    <CloudinaryImageUpload
+                                        label="Side Action Image"
+                                        value={detail.side_action_image}
+                                        onUpload={(url) => setDetail({ ...detail, side_action_image: url })}
+                                    />
                                 </div>
                                 <div>
                                     <div className="flex items-center justify-between mb-2">
@@ -596,19 +599,19 @@ export default function AdminHangoutPage() {
                                     <button onClick={addPartner} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Partner</button>
                                 </div>
                                 {detail.partners.map((p, i) => (
-                                    <div key={i} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Partner logo URL"
-                                            value={p.logo}
-                                            onChange={(e) => {
-                                                const u = [...detail.partners];
-                                                u[i] = { ...p, logo: e.target.value };
-                                                setDetail({ ...detail, partners: u });
-                                            }}
-                                            className={`${inputCls} flex-1`}
-                                        />
-                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500">
+                                    <div key={i} className="flex gap-2 items-start">
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label="Partner Logo"
+                                                value={p.logo}
+                                                onUpload={(url) => {
+                                                    const u = [...detail.partners];
+                                                    u[i] = { ...p, logo: url };
+                                                    setDetail({ ...detail, partners: u });
+                                                }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500 mt-6">
                                             <Trash2 size={16} />
                                         </button>
                                     </div>
@@ -621,19 +624,19 @@ export default function AdminHangoutPage() {
                                     <button onClick={addGalleryImage} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Image</button>
                                 </div>
                                 {detail.gallery.map((url, i) => (
-                                    <div key={i} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Image URL"
-                                            value={url}
-                                            onChange={(e) => {
-                                                const u = [...detail.gallery];
-                                                u[i] = e.target.value;
-                                                setDetail({ ...detail, gallery: u });
-                                            }}
-                                            className={`${inputCls} flex-1`}
-                                        />
-                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500">
+                                    <div key={i} className="flex gap-2 items-start">
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label={`Gallery Image ${i + 1}`}
+                                                value={url}
+                                                onUpload={(newUrl) => {
+                                                    const u = [...detail.gallery];
+                                                    u[i] = newUrl;
+                                                    setDetail({ ...detail, gallery: u });
+                                                }}
+                                            />
+                                        </div>
+                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500 mt-6">
                                             <Trash2 size={16} />
                                         </button>
                                     </div>

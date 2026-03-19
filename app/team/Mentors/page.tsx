@@ -1,10 +1,12 @@
- 
+
 "use client";
 import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import TeamCard from "@/components/TeamCard";
-  
+import { useEffect, useState } from 'react';
+import { getMentorHero, getMentorMembers, getMentorRoleMedia, getMentorCTA, MentorMember, MentorCTA } from '@/lib/adminData';
+
 const teamMembers = [
   {
     name: "Deborah Dada",
@@ -44,6 +46,32 @@ const teamMembers = [
   },
 ];
 const MentorPage = () => {
+  const [dbHero, setDbHero] = useState<string[]>([]);
+  const [dbMembers, setDbMembers] = useState<MentorMember[]>([]);
+  const [dbRoleImage, setDbRoleImage] = useState<string>("");
+  const [dbCta, setDbCta] = useState<MentorCTA | null>(null);
+
+  useEffect(() => {
+    const hero = getMentorHero();
+    if (hero && hero.hero_mentor_images?.length > 0) setDbHero(hero.hero_mentor_images);
+
+    const members = getMentorMembers();
+    if (members && members.length > 0) setDbMembers(members);
+
+    const roleMedia = getMentorRoleMedia();
+    if (roleMedia && roleMedia.role_feature_image) setDbRoleImage(roleMedia.role_feature_image);
+
+    const cta = getMentorCTA();
+    if (cta) setDbCta(cta);
+  }, []);
+
+  const mentorsToDisplay = dbMembers.length > 0 ? dbMembers.map(m => ({
+    name: m.member_name,
+    role: m.member_role,
+    description: m.member_bio,
+    image: m.member_image || "/images/coreteam1.svg"
+  })) : teamMembers;
+
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6 } }
@@ -60,14 +88,14 @@ const MentorPage = () => {
 
   return (
     <main className="bg-white overflow-hidden">
-      
+
       {/* SECTION 1: MENTOR COMMUNITY HERO */}
       <section className="max-w-7xl mx-auto px-6 py-16 text-center">
         <h1 className="text-4xl font-extrabold text-slate-900 mb-6">Mentor Community</h1>
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12">
           <p className="text-gray-600 max-w-xl text-left md:text-left text-sm leading-relaxed">
-            Mentors support teenagers by sharing guidance, perspective, and lived experience. 
-            Through conversations, teaching, and presence, they help young people think clearly, 
+            Mentors support teenagers by sharing guidance, perspective, and lived experience.
+            Through conversations, teaching, and presence, they help young people think clearly,
             grow confidently, and make better life decisions.
           </p>
           <button className="bg-[#E91E63] text-white px-6 py-3 rounded-md font-semibold text-sm hover:bg-pink-600 transition-all">
@@ -78,10 +106,10 @@ const MentorPage = () => {
         {/* Top Two Featured Images */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="rounded-[2rem] overflow-hidden h-[350px] relative shadow-lg">
-            <Image src="/images/mentorhero2.svg" alt="Conference" fill className="object-cover" />
+            <Image src={dbHero[1] || "/images/mentorhero2.svg"} alt="Conference" fill className="object-cover" />
           </div>
           <div className="rounded-[2rem] overflow-hidden h-[350px] relative shadow-lg">
-            <Image src="/images/mentorhero1.svg " alt="Meeting" fill className="object-cover" />
+            <Image src={dbHero[0] || "/images/mentorhero1.svg "} alt="Meeting" fill className="object-cover" />
           </div>
         </div>
       </section>
@@ -91,12 +119,12 @@ const MentorPage = () => {
         <div className="max-w-7xl mx-auto text-center mb-16">
           <h2 className="text-3xl font-extrabold text-slate-900 mb-4">Meet the Trust Teens Mentors</h2>
           <p className="text-gray-500 max-w-3xl mx-auto text-sm leading-relaxed">
-            Our mentors are professionals, creatives, educators, and leaders who are committed to 
-            shaping teenagers beyond academics. They contribute by speaking, facilitating sessions, 
+            Our mentors are professionals, creatives, educators, and leaders who are committed to
+            shaping teenagers beyond academics. They contribute by speaking, facilitating sessions,
             leading workshops, and offering guidance across Trust Teens programs.
           </p>
         </div>
- 
+
 
 
         <motion.div
@@ -112,7 +140,7 @@ const MentorPage = () => {
           }}
           className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {teamMembers.map((member) => (
+          {mentorsToDisplay.map((member) => (
             <TeamCard key={member.name} {...member} />
           ))}
         </motion.div>
@@ -126,21 +154,21 @@ const MentorPage = () => {
           </span>
           <h3 className="text-4xl font-extrabold text-slate-900 mb-6">What Mentors Do</h3>
           <p className="text-gray-600 text-sm leading-relaxed mb-12 max-w-2xl">
-            Mentors at Trust Teens engage teenagers through structured conversations, 
-            teaching sessions, and interactive experiences. They provide clarity, 
-            encouragement, and real-world perspective that helps teenagers navigate 
+            Mentors at Trust Teens engage teenagers through structured conversations,
+            teaching sessions, and interactive experiences. They provide clarity,
+            encouragement, and real-world perspective that helps teenagers navigate
             identity, purpose, relationships, and future decisions.
           </p>
-          
+
           {/* Example Roles Internal Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-             {/* Map your roles here as per previous component */}
+            {/* Map your roles here as per previous component */}
           </div>
         </motion.div>
 
         <motion.div variants={fadeUp} initial="hidden" whileInView="visible" className="lg:col-span-4">
           <div className="rounded-[2.5rem] overflow-hidden shadow-2xl relative aspect-[4/5]">
-            <Image src="/images/mentorrole.svg" alt="Mentoring" fill className="object-cover" />
+            <Image src={dbRoleImage || "/images/mentorrole.svg"} alt="Mentoring" fill className="object-cover" />
           </div>
         </motion.div>
       </section>
@@ -148,18 +176,21 @@ const MentorPage = () => {
       {/* SECTION 4: BECOME A MENTOR FOOTER */}
       <section className="max-w-7xl mx-auto px-6 pb-24">
         <div className="rounded-[2.5rem] overflow-hidden h-[400px] relative mb-12">
-          <Image src="/images/mentorfooter.svg" alt="Team" fill className="object-cover" />
+          <Image src={dbCta?.cta_footer_image || "/images/mentorfooter.svg"} alt="Team" fill className="object-cover" />
         </div>
         <div className="flex flex-col md:flex-row justify-between gap-12">
           <div className="md:w-1/3">
-            <h2 className="text-4xl font-extrabold text-slate-900 mb-6 leading-tight">Become a<br/>Mentor</h2>
-            <button className="bg-black text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-slate-800 transition-all">
+            <h2 className="text-4xl font-extrabold text-slate-900 mb-6 leading-tight">Become a<br />Mentor</h2>
+            <button
+              className="bg-black text-white px-8 py-3 rounded-lg text-sm font-medium hover:bg-slate-800 transition-all"
+              onClick={() => { if (dbCta?.apply_button_url) window.open(dbCta.apply_button_url, '_blank') }}
+            >
               Join Us today
             </button>
           </div>
           <div className="md:w-2/3">
             <p className="text-gray-600 text-base leading-7">
-            We welcome mentors who are aligned with our values and passionate about supporting teenagers through guidance and example. Mentorship opportunities vary by program and may be short-term or ongoing. Mentors are expected to engage responsibly, communicate clearly, and uphold the values of Trust Teens in all interactions.
+              We welcome mentors who are aligned with our values and passionate about supporting teenagers through guidance and example. Mentorship opportunities vary by program and may be short-term or ongoing. Mentors are expected to engage responsibly, communicate clearly, and uphold the values of Trust Teens in all interactions.
             </p>
           </div>
         </div>

@@ -20,6 +20,10 @@ import {
     Coffee,
     BookOpen,
     Settings,
+    Star,
+    Globe,
+    UserPlus,
+    GraduationCap,
 } from 'lucide-react';
 
 const navItems = [
@@ -41,6 +45,13 @@ const communityItems = [
     { label: 'Curriculum', href: '/admin/community/curriculum', icon: BookOpen },
 ];
 
+const teamItems = [
+    { label: 'Core Team', href: '/admin/team/core', icon: Users },
+    { label: 'Volunteers', href: '/admin/team/volunteers', icon: UserPlus },
+    { label: 'Mentors', href: '/admin/team/mentors', icon: GraduationCap },
+    { label: 'Ambassadors', href: '/admin/team/ambassadors', icon: Globe },
+];
+
 function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     const { user, isAdmin, loading, logout } = useAdmin();
     const router = useRouter();
@@ -52,6 +63,9 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
     const isCommunityActive = pathname.startsWith('/admin/community');
     const [communityOpen, setCommunityOpen] = useState(
         () => pathname.startsWith('/admin/community')
+    );
+    const [teamOpen, setTeamOpen] = useState(
+        () => pathname.startsWith('/admin/team')
     );
 
     useEffect(() => {
@@ -198,6 +212,57 @@ function AdminLayoutInner({ children }: { children: React.ReactNode }) {
                                                 href={item.href}
 
 
+                                                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${active
+                                                    ? 'bg-orange-500/15 text-orange-400'
+                                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                                    }`}
+                                            >
+                                                <item.icon size={16} />
+                                                {item.label}
+                                            </Link>
+                                        );
+                                    })}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Team Section */}
+                    <div className="space-y-1 mt-2">
+                        <Link href="/admin/team"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setTeamOpen(!teamOpen);
+                            }}
+                            className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 w-full ${pathname.startsWith('/admin/team')
+                                ? 'text-orange-400'
+                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                }`}
+                        >
+                            <Star size={18} />
+                            <span className="flex-1 text-left">Team</span>
+
+                            <ChevronRight
+                                size={16}
+                                className={`transition-transform duration-200 ${teamOpen ? 'rotate-90' : ''
+                                    }`}
+                            />
+                        </Link>
+
+                        <AnimatePresence>
+                            {teamOpen && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden ml-2"
+                                >
+                                    {teamItems.map((item) => {
+                                        const active = pathname === item.href;
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
                                                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 ${active
                                                     ? 'bg-orange-500/15 text-orange-400'
                                                     : 'text-gray-400 hover:text-white hover:bg-gray-800'

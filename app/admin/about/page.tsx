@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     AchievementMetric,
     Leader,
@@ -131,8 +132,8 @@ export default function AdminAboutPage() {
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         {tab}
@@ -297,21 +298,17 @@ export default function AdminAboutPage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">
-                                            Image URL
-                                        </label>
-                                        <input
-                                            type="text"
+                                        <CloudinaryImageUpload
+                                            label="Leader Image"
                                             value={leader.leader_image}
-                                            onChange={(e) => {
+                                            onUpload={(url) => {
                                                 const updated = [...leaders];
                                                 updated[i] = {
                                                     ...updated[i],
-                                                    leader_image: e.target.value,
+                                                    leader_image: url,
                                                 };
                                                 setLeaders(updated);
                                             }}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                                         />
                                     </div>
                                 </div>

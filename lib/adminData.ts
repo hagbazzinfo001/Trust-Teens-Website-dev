@@ -207,6 +207,84 @@ export interface CurriculumInfo {
     notion_url: string;
 }
 
+// ─── Team: Core Team ─────────────────────────────────────────────────
+
+export interface CoreTeamMember {
+    id: string;
+    member_name: string;      // max 40 chars
+    member_role: string;      // max 50 chars
+    member_bio: string;       // max 150 chars
+    member_image: string;     // URL
+    linkedin_url?: string;
+    twitter_url?: string;
+    instagram_url?: string;
+    display_order: number;
+}
+
+// ─── Team: Volunteers ────────────────────────────────────────────────
+
+export interface VolunteerMember {
+    id: string;
+    member_name: string;      // max 40 chars
+    member_role: string;      // max 50 chars
+    member_bio: string;       // max 150 chars
+    member_image: string;     // URL
+    social_links?: {
+        linkedin?: string;
+        twitter?: string;
+        instagram?: string;
+    };
+    display_order: number;
+}
+
+export interface VolunteerCTA {
+    join_button_url: string;
+}
+
+// ─── Team: Mentors ───────────────────────────────────────────────────
+
+export interface MentorHero {
+    hero_mentor_images: string[]; // exactly 2
+}
+
+export interface MentorMember {
+    id: string;
+    member_name: string;      // max 40 chars
+    member_role: string;      // max 50 chars
+    member_bio: string;       // max 150 chars
+    member_image: string;     // URL
+    social_links?: {
+        linkedin?: string;
+        twitter?: string;
+        instagram?: string;
+    };
+    display_order: number;
+}
+
+export interface MentorRoleMedia {
+    role_feature_image: string;
+}
+
+export interface MentorCTA {
+    apply_button_url: string;
+    cta_footer_image: string;
+}
+
+// ─── Team: Ambassadors ───────────────────────────────────────────────
+
+export interface AmbassadorMember {
+    id: string;
+    ambassador_name: string;  // max 40 chars
+    school_name: string;      // max 50 chars
+    location: string;         // max 50 chars
+    ambassador_image: string; // URL
+    display_order: number;
+}
+
+export interface AmbassadorCTA {
+    apply_button_url: string;
+}
+
 // ─── Storage Keys ────────────────────────────────────────────────────
 
 const KEYS = {
@@ -245,6 +323,19 @@ const KEYS = {
     HANGOUTS_UPCOMING: 'admin_hangouts_upcoming',
     // Community — Curriculum
     CURRICULUM_INFO: 'admin_curriculum_info',
+    // Team — Core Team
+    TEAM_CORE_MEMBERS: 'admin_team_core_members',
+    // Team — Volunteers
+    TEAM_VOLUNTEER_MEMBERS: 'admin_team_volunteer_members',
+    TEAM_VOLUNTEER_CTA: 'admin_team_volunteer_cta',
+    // Team — Mentors
+    TEAM_MENTOR_HERO: 'admin_team_mentor_hero',
+    TEAM_MENTOR_MEMBERS: 'admin_team_mentor_members',
+    TEAM_MENTOR_ROLE_MEDIA: 'admin_team_mentor_role_media',
+    TEAM_MENTOR_CTA: 'admin_team_mentor_cta',
+    // Team — Ambassadors
+    TEAM_AMBASSADOR_MEMBERS: 'admin_team_ambassador_members',
+    TEAM_AMBASSADOR_CTA: 'admin_team_ambassador_cta',
 } as const;
 
 // ─── Generic Helpers ─────────────────────────────────────────────────
@@ -555,4 +646,87 @@ export function getCurriculumInfo(): CurriculumInfo | null {
 }
 export function saveCurriculumInfo(info: CurriculumInfo): void {
     setItem(KEYS.CURRICULUM_INFO, info);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TEAM — CORE TEAM
+// ═══════════════════════════════════════════════════════════════════════
+
+export function getCoreTeamMembers(): CoreTeamMember[] | null {
+    return getItem<CoreTeamMember[]>(KEYS.TEAM_CORE_MEMBERS);
+}
+export function saveCoreTeamMembers(members: CoreTeamMember[]): void {
+    const sorted = [...members].sort((a, b) => a.display_order - b.display_order);
+    setItem(KEYS.TEAM_CORE_MEMBERS, sorted);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TEAM — VOLUNTEERS
+// ═══════════════════════════════════════════════════════════════════════
+
+export function getVolunteerMembers(): VolunteerMember[] | null {
+    return getItem<VolunteerMember[]>(KEYS.TEAM_VOLUNTEER_MEMBERS);
+}
+export function saveVolunteerMembers(members: VolunteerMember[]): void {
+    const sorted = [...members].sort((a, b) => a.display_order - b.display_order);
+    setItem(KEYS.TEAM_VOLUNTEER_MEMBERS, sorted);
+}
+
+export function getVolunteerCTA(): VolunteerCTA | null {
+    return getItem<VolunteerCTA>(KEYS.TEAM_VOLUNTEER_CTA);
+}
+export function saveVolunteerCTA(cta: VolunteerCTA): void {
+    setItem(KEYS.TEAM_VOLUNTEER_CTA, cta);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TEAM — MENTORS
+// ═══════════════════════════════════════════════════════════════════════
+
+export function getMentorHero(): MentorHero | null {
+    return getItem<MentorHero>(KEYS.TEAM_MENTOR_HERO);
+}
+export function saveMentorHero(hero: MentorHero): void {
+    setItem(KEYS.TEAM_MENTOR_HERO, hero);
+}
+
+export function getMentorMembers(): MentorMember[] | null {
+    return getItem<MentorMember[]>(KEYS.TEAM_MENTOR_MEMBERS);
+}
+export function saveMentorMembers(members: MentorMember[]): void {
+    const sorted = [...members].sort((a, b) => a.display_order - b.display_order);
+    setItem(KEYS.TEAM_MENTOR_MEMBERS, sorted);
+}
+
+export function getMentorRoleMedia(): MentorRoleMedia | null {
+    return getItem<MentorRoleMedia>(KEYS.TEAM_MENTOR_ROLE_MEDIA);
+}
+export function saveMentorRoleMedia(media: MentorRoleMedia): void {
+    setItem(KEYS.TEAM_MENTOR_ROLE_MEDIA, media);
+}
+
+export function getMentorCTA(): MentorCTA | null {
+    return getItem<MentorCTA>(KEYS.TEAM_MENTOR_CTA);
+}
+export function saveMentorCTA(cta: MentorCTA): void {
+    setItem(KEYS.TEAM_MENTOR_CTA, cta);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// TEAM — AMBASSADORS
+// ═══════════════════════════════════════════════════════════════════════
+
+export function getAmbassadorMembers(): AmbassadorMember[] | null {
+    return getItem<AmbassadorMember[]>(KEYS.TEAM_AMBASSADOR_MEMBERS);
+}
+export function saveAmbassadorMembers(members: AmbassadorMember[]): void {
+    const sorted = [...members].sort((a, b) => a.display_order - b.display_order);
+    setItem(KEYS.TEAM_AMBASSADOR_MEMBERS, sorted);
+}
+
+export function getAmbassadorCTA(): AmbassadorCTA | null {
+    return getItem<AmbassadorCTA>(KEYS.TEAM_AMBASSADOR_CTA);
+}
+export function saveAmbassadorCTA(cta: AmbassadorCTA): void {
+    setItem(KEYS.TEAM_AMBASSADOR_CTA, cta);
 }

@@ -14,10 +14,10 @@ import icon3 from '@/public/images/icon3.svg';
 import icon4 from '@/public/images/icon4.svg';
 import icon5 from '@/public/images/icon5.svg';
 import icon6 from '@/public/images/icon6.svg';
-import volunteerIcon from '@/public/images/volunteerIcon.svg'
-import sessionIcon from '@/public/images/sessionIcon.svg'
-import teenagerIcon from '@/public/images/teenagersIcon.svg'
-import schoolIcon from '@/public/images/schoolIcon.svg'
+import volunteerIcon from '/public/images/volunteerIcon.svg'
+import sessionIcon from '/public/images/sessionIcon.svg'
+import teenagerIcon from '/public/images/teenagersIcon.svg'
+import schoolIcon from '/public/images/schoolIcon.svg'
 
 
 interface SummitDetailsModalProps {
@@ -74,7 +74,7 @@ export default function SummitDetailsModal({
 
 
 
-            <div className="text-white py-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/summitBlueBg.svg)]">
+            <div className="text-white py-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/images/summitBlueBg.svg)]">
               <div className="h-64 md:h-96 overflow-hidden bg-white mt-5 rounded-3xl p-2">
                 <img
                   src={Summit.headerImage}
@@ -129,7 +129,7 @@ export default function SummitDetailsModal({
                     <ul className="space-y-3 pl-8">
                       {Summit.objectives.map((objective, index) => (
                         <li key={index} className="flex items-start gap-3 text-gray-600">
-                          <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${Summit.color}`}>
+                          <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r `}>
                             <Image
                               src={iconsArray[index % iconsArray.length]}
                               alt="icon"
@@ -153,7 +153,7 @@ export default function SummitDetailsModal({
               </div>
 
               <section
-                className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
+                className="py-12 md:py-20 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
 
               >
 
@@ -249,7 +249,7 @@ export default function SummitDetailsModal({
               </div>
 
               {Summit.speakers && Summit.speakers.length > 0 && (
-                <section className="relative py-20 bg-[url('/speakersBlue.svg')] bg-no-repeat bg-center overflow-hidden mb-12 bg-cover rounded-3xl mx-8">
+                <section className="relative py-20 bg-[url('/image/speakersBlue.svg')] bg-no-repeat bg-center overflow-hidden mb-12 bg-cover rounded-3xl mx-8">
                   <div className="relative max-w-7xl mx-auto px-6">
                     <h2 className="text-center text-white text-3xl md:text-5xl font-extrabold mb-11 tracking-wide">
                       MEET OUR SPEAKERS

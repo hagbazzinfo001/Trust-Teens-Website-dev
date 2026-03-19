@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     ImpactHero,
     ImpactMetric,
@@ -115,8 +116,8 @@ export default function AdminImpactPage() {
                         key={tab}
                         onClick={() => setActiveTab(tab)}
                         className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         {tab}
@@ -191,21 +192,21 @@ export default function AdminImpactPage() {
                             </div>
                             <div className="space-y-2">
                                 {hero.hero_images.map((url, i) => (
-                                    <div key={i} className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={url}
-                                            onChange={(e) => {
-                                                const imgs = [...hero.hero_images];
-                                                imgs[i] = e.target.value;
-                                                setHero({ ...hero, hero_images: imgs });
-                                            }}
-                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                            placeholder="Image URL"
-                                        />
+                                    <div key={i} className="flex gap-2 items-start">
+                                        <div className="flex-1">
+                                            <CloudinaryImageUpload
+                                                label={`Hero Image ${i + 1}`}
+                                                value={url}
+                                                onUpload={(newUrl) => {
+                                                    const imgs = [...hero.hero_images];
+                                                    imgs[i] = newUrl;
+                                                    setHero({ ...hero, hero_images: imgs });
+                                                }}
+                                            />
+                                        </div>
                                         <button
                                             onClick={() => removeHeroImage(i)}
-                                            className="text-gray-400 hover:text-red-500 px-2"
+                                            className="text-gray-400 hover:text-red-500 px-2 mt-6"
                                         >
                                             <Trash2 size={16} />
                                         </button>
