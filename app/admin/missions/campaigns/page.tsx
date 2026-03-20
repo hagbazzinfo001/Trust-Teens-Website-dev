@@ -1,23 +1,32 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useAdmin } from '@/contexts/AdminContext';
 import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     MissionImpactStat,
     PastCampaignItem,
     UpcomingEvent,
     CampaignDetail,
-    getCampaignsImpact,
-    saveCampaignsImpact,
-    getPastCampaigns,
-    savePastCampaigns,
-    getUpcomingCampaign,
-    saveUpcomingCampaign,
     getCampaignDetail,
     saveCampaignDetail,
     generateId,
 } from '@/lib/adminData';
-import { Save, Plus, Trash2, Check, Image as ImageIcon } from 'lucide-react';
+import {
+    ApiImpactStat,
+    ApiPastCampaign,
+    fetchImpactStats,
+    createImpactStat,
+    updateImpactStat,
+    deleteImpactStat,
+    fetchPastCampaigns,
+    createPastCampaign,
+    updatePastCampaign,
+    deletePastCampaign,
+    fetchUpcoming,
+    updateUpcoming,
+} from '@/lib/campaignsApi';
+import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
 
 // ─── Defaults ────────────────────────────────────────────────────────
 
@@ -60,33 +69,118 @@ const EMPTY_DETAIL: CampaignDetail = {
 const tabs = ['Impact Stats', 'Past Campaigns', 'Upcoming', 'Campaign Details'] as const;
 type Tab = (typeof tabs)[number];
 
+// ─── Mappers (API ↔ local) ──────────────────────────────────────────
+
+function apiImpactToLocal(a: ApiImpactStat): MissionImpactStat & { _apiId: number; _position: number } {
+    return { stat_number: a.statNumber, stat_label: a.statLabel, _apiId: a.id, _position: a.position };
+}
+
+function apiCampaignToLocal(a: ApiPastCampaign): PastCampaignItem & { _apiId: number } {
+    return {
+        campaign_id: String(a.id),
+        campaign_title: a.campaignTitle,
+        campaign_date: a.campaignDate,
+        campaign_image: a.campaignImage,
+        _apiId: a.id,
+    };
+}
+
+// Extended local types
+type ImpactWithApi = MissionImpactStat & { _apiId?: number; _position?: number };
+type CampaignWithApi = PastCampaignItem & { _apiId?: number };
+
 export default function AdminCampaignsPage() {
+    const { getAuthHeaders } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Impact Stats');
     const [saved, setSaved] = useState(false);
+    const [saving, setSaving] = useState(false);
 
     // Impact Stats
-    const [impact, setImpact] = useState<MissionImpactStat[]>(DEFAULT_IMPACT);
+    const [impact, setImpact] = useState<ImpactWithApi[]>(DEFAULT_IMPACT);
+    const [impactLoading, setImpactLoading] = useState(true);
+    const [impactError, setImpactError] = useState('');
 
     // Past Campaigns
-    const [pastItems, setPastItems] = useState<PastCampaignItem[]>([]);
+    const [pastItems, setPastItems] = useState<CampaignWithApi[]>([]);
+    const [pastLoading, setPastLoading] = useState(true);
+    const [pastError, setPastError] = useState('');
 
     // Upcoming
     const [upcoming, setUpcoming] = useState<UpcomingEvent>(DEFAULT_UPCOMING);
+    const [upcomingApiId, setUpcomingApiId] = useState<number | null>(null);
+    const [upcomingLoading, setUpcomingLoading] = useState(true);
+    const [upcomingError, setUpcomingError] = useState('');
 
-    // Campaign Details
+    // Campaign Details (still localStorage)
     const [selectedCampaignId, setSelectedCampaignId] = useState<string>('');
     const [detail, setDetail] = useState<CampaignDetail>(EMPTY_DETAIL);
 
-    useEffect(() => {
-        const i = getCampaignsImpact();
-        if (i) setImpact(i);
-        const p = getPastCampaigns();
-        if (p) setPastItems(p);
-        const u = getUpcomingCampaign();
-        if (u) setUpcoming(u);
+    // ─── Data fetching ──────────────────────────────────────────────
+
+    const loadImpact = useCallback(async () => {
+        setImpactLoading(true);
+        setImpactError('');
+        try {
+            const data = await fetchImpactStats();
+            if (data && data.length > 0) {
+                setImpact(data.map(apiImpactToLocal));
+            }
+        } catch (e: unknown) {
+            setImpactError(e instanceof Error ? e.message : 'Failed to load impact stats');
+        } finally {
+            setImpactLoading(false);
+        }
     }, []);
 
-    // Load detail when selecting a campaign
+    const loadPast = useCallback(async () => {
+        setPastLoading(true);
+        setPastError('');
+        try {
+            const data = await fetchPastCampaigns();
+            if (data) {
+                setPastItems(data.map(apiCampaignToLocal));
+            }
+        } catch (e: unknown) {
+            setPastError(e instanceof Error ? e.message : 'Failed to load past campaigns');
+        } finally {
+            setPastLoading(false);
+        }
+    }, []);
+
+    const loadUpcoming = useCallback(async () => {
+        setUpcomingLoading(true);
+        setUpcomingError('');
+        try {
+            const data = await fetchUpcoming();
+            if (data) {
+                setUpcomingApiId(data.id);
+                setUpcoming({
+                    is_active: true,
+                    name: data.missionTitle || '',
+                    description: data.missionDescription || '',
+                    date_time: data.missionDate || '',
+                    location: '',
+                    register_url: data.missionLink || '',
+                    promo_image: data.missionImage || '',
+                });
+            }
+        } catch (e: unknown) {
+            // If 404 or no upcoming, that's fine — use defaults
+            if (e instanceof Error && !e.message.includes('404')) {
+                setUpcomingError(e instanceof Error ? e.message : 'Failed to load upcoming');
+            }
+        } finally {
+            setUpcomingLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadImpact();
+        loadPast();
+        loadUpcoming();
+    }, [loadImpact, loadPast, loadUpcoming]);
+
+    // Load detail when selecting a campaign (localStorage)
     useEffect(() => {
         if (selectedCampaignId) {
             const d = getCampaignDetail(selectedCampaignId);
@@ -99,18 +193,127 @@ export default function AdminCampaignsPage() {
         setTimeout(() => setSaved(false), 2000);
     };
 
-    // ─── Past Campaign helpers ──
+    // ─── Impact Stats save ──────────────────────────────────────────
+
+    const handleSaveImpact = async () => {
+        setSaving(true);
+        setImpactError('');
+        try {
+            const headers = getAuthHeaders();
+            // Fetch current remote list to determine creates vs. updates vs. deletes
+            const remote = await fetchImpactStats();
+            const remoteIds = new Set(remote.map((r) => r.id));
+            const localIds = new Set(impact.filter((s) => s._apiId).map((s) => s._apiId!));
+
+            // Delete stats that no longer exist locally
+            for (const r of remote) {
+                if (!localIds.has(r.id)) {
+                    await deleteImpactStat(r.id, headers);
+                }
+            }
+
+            // Create or update
+            for (let i = 0; i < impact.length; i++) {
+                const stat = impact[i];
+                const payload = { statNumber: stat.stat_number, statLabel: stat.stat_label, position: i };
+                if (stat._apiId && remoteIds.has(stat._apiId)) {
+                    await updateImpactStat(stat._apiId, payload, headers);
+                } else {
+                    await createImpactStat(payload, headers);
+                }
+            }
+
+            flash();
+            await loadImpact(); // refresh from server
+        } catch (e: unknown) {
+            setImpactError(e instanceof Error ? e.message : 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ─── Past Campaign helpers ──────────────────────────────────────
+
     const addPastCampaign = () => {
         setPastItems([
             ...pastItems,
             { campaign_id: generateId(), campaign_title: '', campaign_date: '', campaign_image: '' },
         ]);
     };
-    const removePastCampaign = (id: string) => {
-        setPastItems(pastItems.filter((c) => c.campaign_id !== id));
+
+    const handleRemovePastCampaign = async (item: CampaignWithApi) => {
+        if (item._apiId) {
+            setSaving(true);
+            setPastError('');
+            try {
+                await deletePastCampaign(item._apiId, getAuthHeaders());
+                setPastItems(pastItems.filter((c) => c.campaign_id !== item.campaign_id));
+                flash();
+            } catch (e: unknown) {
+                setPastError(e instanceof Error ? e.message : 'Delete failed');
+            } finally {
+                setSaving(false);
+            }
+        } else {
+            // Remove unsaved local item
+            setPastItems(pastItems.filter((c) => c.campaign_id !== item.campaign_id));
+        }
     };
 
-    // ─── Detail helpers ──
+    const handleSavePastCampaigns = async () => {
+        setSaving(true);
+        setPastError('');
+        try {
+            const headers = getAuthHeaders();
+            for (const item of pastItems) {
+                const payload = {
+                    campaignTitle: item.campaign_title,
+                    campaignDate: item.campaign_date,
+                    campaignImage: item.campaign_image,
+                    isActive: true,
+                };
+                if (item._apiId) {
+                    await updatePastCampaign(item._apiId, payload, headers);
+                } else {
+                    await createPastCampaign(payload, headers);
+                }
+            }
+            flash();
+            await loadPast(); // refresh from server
+        } catch (e: unknown) {
+            setPastError(e instanceof Error ? e.message : 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ─── Upcoming save ──────────────────────────────────────────────
+
+    const handleSaveUpcoming = async () => {
+        setSaving(true);
+        setUpcomingError('');
+        try {
+            await updateUpcoming(
+                {
+                    missionTitle: upcoming.name,
+                    missionDate: upcoming.date_time,
+                    missionLink: upcoming.register_url,
+                    missionDescription: upcoming.description,
+                    missionImage: upcoming.promo_image || '',
+                },
+                getAuthHeaders(),
+            );
+            flash();
+            await loadUpcoming();
+        } catch (e: unknown) {
+            setUpcomingError(e instanceof Error ? e.message : 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ─── Detail helpers (still localStorage) ────────────────────────
+
     const addActionItem = () => setDetail({ ...detail, action_items: [...detail.action_items, ''] });
     const removeActionItem = (idx: number) =>
         setDetail({ ...detail, action_items: detail.action_items.filter((_, i) => i !== idx) });
@@ -131,6 +334,22 @@ export default function AdminCampaignsPage() {
     const btnAdd =
         'flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors';
 
+    // Error banner
+    const ErrorBanner = ({ message }: { message: string }) =>
+        message ? (
+            <div className="mb-4 px-4 py-2.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                {message}
+            </div>
+        ) : null;
+
+    // Section loader
+    const SectionLoader = () => (
+        <div className="flex items-center justify-center py-12 text-gray-400 gap-2">
+            <Loader2 size={20} className="animate-spin" />
+            <span className="text-sm">Loading…</span>
+        </div>
+    );
+
     return (
         <div>
             <div className="mb-6">
@@ -141,6 +360,16 @@ export default function AdminCampaignsPage() {
             {saved && (
                 <div className="fixed top-6 right-6 z-50 flex items-center gap-2 bg-green-500 text-white px-4 py-2.5 rounded-xl shadow-lg">
                     <Check size={16} /> Saved successfully
+                </div>
+            )}
+
+            {/* Saving overlay */}
+            {saving && (
+                <div className="fixed inset-0 z-40 bg-black/10 flex items-center justify-center">
+                    <div className="bg-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3">
+                        <Loader2 size={20} className="animate-spin text-orange-500" />
+                        <span className="text-sm font-medium text-gray-700">Saving…</span>
+                    </div>
                 </div>
             )}
 
@@ -168,44 +397,49 @@ export default function AdminCampaignsPage() {
                             <h2 className="font-semibold text-gray-900">Campaigns&apos; Impact</h2>
                             <p className="text-sm text-gray-500">Exactly 4 records</p>
                         </div>
-                        <button onClick={() => { saveCampaignsImpact(impact); flash(); }} className={btnSave}>
+                        <button onClick={handleSaveImpact} disabled={saving} className={btnSave}>
                             <Save size={16} /> Save
                         </button>
                     </div>
-                    <div className="space-y-4">
-                        {impact.map((stat, i) => (
-                            <div key={i} className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Number (max 10)</label>
-                                    <input
-                                        type="text"
-                                        maxLength={10}
-                                        value={stat.stat_number}
-                                        onChange={(e) => {
-                                            const u = [...impact];
-                                            u[i] = { ...u[i], stat_number: e.target.value };
-                                            setImpact(u);
-                                        }}
-                                        className={inputCls}
-                                    />
+                    <ErrorBanner message={impactError} />
+                    {impactLoading ? (
+                        <SectionLoader />
+                    ) : (
+                        <div className="space-y-4">
+                            {impact.map((stat, i) => (
+                                <div key={stat._apiId ?? `new-${i}`} className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-500 mb-1">Number (max 10)</label>
+                                        <input
+                                            type="text"
+                                            maxLength={10}
+                                            value={stat.stat_number}
+                                            onChange={(e) => {
+                                                const u = [...impact];
+                                                u[i] = { ...u[i], stat_number: e.target.value };
+                                                setImpact(u);
+                                            }}
+                                            className={inputCls}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-500 mb-1">Label (max 25)</label>
+                                        <input
+                                            type="text"
+                                            maxLength={25}
+                                            value={stat.stat_label}
+                                            onChange={(e) => {
+                                                const u = [...impact];
+                                                u[i] = { ...u[i], stat_label: e.target.value };
+                                                setImpact(u);
+                                            }}
+                                            className={inputCls}
+                                        />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Label (max 25)</label>
-                                    <input
-                                        type="text"
-                                        maxLength={25}
-                                        value={stat.stat_label}
-                                        onChange={(e) => {
-                                            const u = [...impact];
-                                            u[i] = { ...u[i], stat_label: e.target.value };
-                                            setImpact(u);
-                                        }}
-                                        className={inputCls}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -221,67 +455,72 @@ export default function AdminCampaignsPage() {
                             <button onClick={addPastCampaign} className={btnAdd}>
                                 <Plus size={16} /> Add
                             </button>
-                            <button onClick={() => { savePastCampaigns(pastItems); flash(); }} className={btnSave}>
+                            <button onClick={handleSavePastCampaigns} disabled={saving} className={btnSave}>
                                 <Save size={16} /> Save
                             </button>
                         </div>
                     </div>
-                    <div className="space-y-4">
-                        {pastItems.map((item, i) => (
-                            <div key={item.campaign_id} className="p-4 bg-gray-50 rounded-xl relative">
-                                <button
-                                    onClick={() => removePastCampaign(item.campaign_id)}
-                                    className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Title (max 30)</label>
-                                        <input
-                                            type="text"
-                                            maxLength={30}
-                                            value={item.campaign_title}
-                                            onChange={(e) => {
-                                                const u = [...pastItems];
-                                                u[i] = { ...u[i], campaign_title: e.target.value };
-                                                setPastItems(u);
-                                            }}
-                                            className={inputCls}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Date (max 15)</label>
-                                        <input
-                                            type="text"
-                                            maxLength={15}
-                                            value={item.campaign_date}
-                                            onChange={(e) => {
-                                                const u = [...pastItems];
-                                                u[i] = { ...u[i], campaign_date: e.target.value };
-                                                setPastItems(u);
-                                            }}
-                                            className={inputCls}
-                                        />
-                                    </div>
-                                    <div>
-                                        <CloudinaryImageUpload
-                                            label="Campaign Image"
-                                            value={item.campaign_image}
-                                            onUpload={(url) => {
-                                                const u = [...pastItems];
-                                                u[i] = { ...u[i], campaign_image: url };
-                                                setPastItems(u);
-                                            }}
-                                        />
+                    <ErrorBanner message={pastError} />
+                    {pastLoading ? (
+                        <SectionLoader />
+                    ) : (
+                        <div className="space-y-4">
+                            {pastItems.map((item, i) => (
+                                <div key={item.campaign_id} className="p-4 bg-gray-50 rounded-xl relative">
+                                    <button
+                                        onClick={() => handleRemovePastCampaign(item)}
+                                        className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">Title (max 30)</label>
+                                            <input
+                                                type="text"
+                                                maxLength={30}
+                                                value={item.campaign_title}
+                                                onChange={(e) => {
+                                                    const u = [...pastItems];
+                                                    u[i] = { ...u[i], campaign_title: e.target.value };
+                                                    setPastItems(u);
+                                                }}
+                                                className={inputCls}
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">Date (max 15)</label>
+                                            <input
+                                                type="text"
+                                                maxLength={15}
+                                                value={item.campaign_date}
+                                                onChange={(e) => {
+                                                    const u = [...pastItems];
+                                                    u[i] = { ...u[i], campaign_date: e.target.value };
+                                                    setPastItems(u);
+                                                }}
+                                                className={inputCls}
+                                            />
+                                        </div>
+                                        <div>
+                                            <CloudinaryImageUpload
+                                                label="Campaign Image"
+                                                value={item.campaign_image}
+                                                onUpload={(url) => {
+                                                    const u = [...pastItems];
+                                                    u[i] = { ...u[i], campaign_image: url };
+                                                    setPastItems(u);
+                                                }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        {pastItems.length === 0 && (
-                            <p className="text-gray-400 text-sm text-center py-8">No past campaigns added yet. Click &quot;Add&quot; to create one.</p>
-                        )}
-                    </div>
+                            ))}
+                            {pastItems.length === 0 && (
+                                <p className="text-gray-400 text-sm text-center py-8">No past campaigns added yet. Click &quot;Add&quot; to create one.</p>
+                            )}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -291,73 +530,61 @@ export default function AdminCampaignsPage() {
                     <div className="flex items-center justify-between mb-6">
                         <div>
                             <h2 className="font-semibold text-gray-900">Upcoming Campaign</h2>
-                            <p className="text-sm text-gray-500">Conditional section — toggle to show/hide on frontend</p>
+                            <p className="text-sm text-gray-500">Edit the next upcoming campaign details</p>
                         </div>
-                        <button onClick={() => { saveUpcomingCampaign(upcoming); flash(); }} className={btnSave}>
+                        <button onClick={handleSaveUpcoming} disabled={saving} className={btnSave}>
                             <Save size={16} /> Save
                         </button>
                     </div>
-
-                    {/* Active toggle */}
-                    <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={upcoming.is_active}
-                                onChange={(e) => setUpcoming({ ...upcoming, is_active: e.target.checked })}
-                                className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-orange-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
-                        </label>
-                        <span className="text-sm font-medium text-gray-700">
-                            {upcoming.is_active ? 'Visible on frontend' : 'Hidden on frontend'}
-                        </span>
-                    </div>
-
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Campaign Name (max 50)</label>
-                                <input type="text" maxLength={50} value={upcoming.name} onChange={(e) => setUpcoming({ ...upcoming, name: e.target.value })} className={inputCls} />
+                    <ErrorBanner message={upcomingError} />
+                    {upcomingLoading ? (
+                        <SectionLoader />
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Campaign Name (max 50)</label>
+                                    <input type="text" maxLength={50} value={upcoming.name} onChange={(e) => setUpcoming({ ...upcoming, name: e.target.value })} className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Date & Time (max 40)</label>
+                                    <input type="text" maxLength={40} value={upcoming.date_time} onChange={(e) => setUpcoming({ ...upcoming, date_time: e.target.value })} className={inputCls} />
+                                </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Date & Time (max 40)</label>
-                                <input type="text" maxLength={40} value={upcoming.date_time} onChange={(e) => setUpcoming({ ...upcoming, date_time: e.target.value })} className={inputCls} />
+                                <label className="block text-xs font-medium text-gray-500 mb-1">Description (max 350)</label>
+                                <textarea
+                                    maxLength={350}
+                                    rows={3}
+                                    value={upcoming.description}
+                                    onChange={(e) => setUpcoming({ ...upcoming, description: e.target.value })}
+                                    className={`${inputCls} resize-none`}
+                                />
+                                <span className="text-xs text-gray-400">{upcoming.description.length}/350</span>
                             </div>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Description (max 350)</label>
-                            <textarea
-                                maxLength={350}
-                                rows={3}
-                                value={upcoming.description}
-                                onChange={(e) => setUpcoming({ ...upcoming, description: e.target.value })}
-                                className={`${inputCls} resize-none`}
-                            />
-                            <span className="text-xs text-gray-400">{upcoming.description.length}/350</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Location (max 40)</label>
+                                    <input type="text" maxLength={40} value={upcoming.location} onChange={(e) => setUpcoming({ ...upcoming, location: e.target.value })} className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Register URL</label>
+                                    <input type="text" value={upcoming.register_url} onChange={(e) => setUpcoming({ ...upcoming, register_url: e.target.value })} className={inputCls} />
+                                </div>
+                            </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Location (max 40)</label>
-                                <input type="text" maxLength={40} value={upcoming.location} onChange={(e) => setUpcoming({ ...upcoming, location: e.target.value })} className={inputCls} />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Register URL</label>
-                                <input type="text" value={upcoming.register_url} onChange={(e) => setUpcoming({ ...upcoming, register_url: e.target.value })} className={inputCls} />
+                                <CloudinaryImageUpload
+                                    label="Promo Image"
+                                    value={upcoming.promo_image || ''}
+                                    onUpload={(url) => setUpcoming({ ...upcoming, promo_image: url })}
+                                />
                             </div>
                         </div>
-                        <div>
-                            <CloudinaryImageUpload
-                                label="Promo Image"
-                                value={upcoming.promo_image || ''}
-                                onUpload={(url) => setUpcoming({ ...upcoming, promo_image: url })}
-                            />
-                        </div>
-                    </div>
+                    )}
                 </div>
             )}
 
-            {/* ──── CAMPAIGN DETAILS ──── */}
+            {/* ──── CAMPAIGN DETAILS (localStorage) ──── */}
             {activeTab === 'Campaign Details' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">

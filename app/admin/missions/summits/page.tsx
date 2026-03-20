@@ -1,26 +1,34 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useAdmin } from '@/contexts/AdminContext';
 import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     MissionImpactStat,
     PastSummitItem,
     UpcomingEvent,
     SummitDetail,
-    Speaker,
     getSummitsHeroGallery,
     saveSummitsHeroGallery,
-    getSummitsImpact,
-    saveSummitsImpact,
-    getPastSummits,
-    savePastSummits,
-    getUpcomingSummit,
-    saveUpcomingSummit,
     getSummitDetail,
     saveSummitDetail,
     generateId,
 } from '@/lib/adminData';
-import { Save, Plus, Trash2, Check } from 'lucide-react';
+import {
+    ApiImpactStat,
+    ApiPastSummit,
+    fetchImpactStats,
+    createImpactStat,
+    updateImpactStat,
+    deleteImpactStat,
+    fetchPastSummits,
+    createPastSummit,
+    updatePastSummit,
+    deletePastSummit,
+    fetchUpcoming,
+    updateUpcoming,
+} from '@/lib/summitsApi';
+import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
 
 // ─── Defaults ────────────────────────────────────────────────────────
 
@@ -65,36 +73,118 @@ const EMPTY_DETAIL: SummitDetail = {
 const tabs = ['Hero Gallery', 'Impact Stats', 'Past Summits', 'Upcoming', 'Summit Details'] as const;
 type Tab = (typeof tabs)[number];
 
+// ─── Mappers ─────────────────────────────────────────────────────────
+
+function apiImpactToLocal(a: ApiImpactStat): MissionImpactStat & { _apiId: number; _position: number } {
+    return { stat_number: a.statNumber, stat_label: a.statLabel, _apiId: a.id, _position: a.position };
+}
+
+function apiSummitToLocal(a: ApiPastSummit): PastSummitItem & { _apiId: number } {
+    return {
+        summit_id: String(a.id),
+        summit_title: a.campaignTitle,
+        summit_date: a.campaignDate,
+        summit_image: a.campaignImage,
+        _apiId: a.id,
+    };
+}
+
+type ImpactWithApi = MissionImpactStat & { _apiId?: number; _position?: number };
+type SummitWithApi = PastSummitItem & { _apiId?: number };
+
 export default function AdminSummitsPage() {
+    const { getAuthHeaders } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Hero Gallery');
     const [saved, setSaved] = useState(false);
+    const [saving, setSaving] = useState(false);
 
-    // Hero Gallery
+    // Hero Gallery (still localStorage)
     const [heroImages, setHeroImages] = useState<string[]>(DEFAULT_HERO_GALLERY);
 
     // Impact Stats
-    const [impact, setImpact] = useState<MissionImpactStat[]>(DEFAULT_IMPACT);
+    const [impact, setImpact] = useState<ImpactWithApi[]>(DEFAULT_IMPACT);
+    const [impactLoading, setImpactLoading] = useState(true);
+    const [impactError, setImpactError] = useState('');
 
     // Past Summits
-    const [pastItems, setPastItems] = useState<PastSummitItem[]>([]);
+    const [pastItems, setPastItems] = useState<SummitWithApi[]>([]);
+    const [pastLoading, setPastLoading] = useState(true);
+    const [pastError, setPastError] = useState('');
 
     // Upcoming
     const [upcoming, setUpcoming] = useState<UpcomingEvent>(DEFAULT_UPCOMING);
+    const [upcomingLoading, setUpcomingLoading] = useState(true);
+    const [upcomingError, setUpcomingError] = useState('');
 
-    // Summit Details
+    // Summit Details (still localStorage)
     const [selectedSummitId, setSelectedSummitId] = useState<string>('');
     const [detail, setDetail] = useState<SummitDetail>(EMPTY_DETAIL);
 
+    // ─── Data fetching ──────────────────────────────────────────────
+
+    const loadImpact = useCallback(async () => {
+        setImpactLoading(true);
+        setImpactError('');
+        try {
+            const data = await fetchImpactStats();
+            if (data && data.length > 0) {
+                setImpact(data.map(apiImpactToLocal));
+            }
+        } catch (e: unknown) {
+            setImpactError(e instanceof Error ? e.message : 'Failed to load impact stats');
+        } finally {
+            setImpactLoading(false);
+        }
+    }, []);
+
+    const loadPast = useCallback(async () => {
+        setPastLoading(true);
+        setPastError('');
+        try {
+            const data = await fetchPastSummits();
+            if (data) {
+                setPastItems(data.map(apiSummitToLocal));
+            }
+        } catch (e: unknown) {
+            setPastError(e instanceof Error ? e.message : 'Failed to load past summits');
+        } finally {
+            setPastLoading(false);
+        }
+    }, []);
+
+    const loadUpcoming = useCallback(async () => {
+        setUpcomingLoading(true);
+        setUpcomingError('');
+        try {
+            const data = await fetchUpcoming();
+            if (data) {
+                setUpcoming({
+                    is_active: true,
+                    name: data.missionTitle || '',
+                    description: data.missionDescription || '',
+                    date_time: data.missionDate || '',
+                    location: '',
+                    register_url: data.missionLink || '',
+                });
+            }
+        } catch (e: unknown) {
+            if (e instanceof Error && !e.message.includes('404')) {
+                setUpcomingError(e instanceof Error ? e.message : 'Failed to load upcoming');
+            }
+        } finally {
+            setUpcomingLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
+        // Hero gallery stays localStorage
         const h = getSummitsHeroGallery();
         if (h) setHeroImages(h);
-        const i = getSummitsImpact();
-        if (i) setImpact(i);
-        const p = getPastSummits();
-        if (p) setPastItems(p);
-        const u = getUpcomingSummit();
-        if (u) setUpcoming(u);
-    }, []);
+
+        loadImpact();
+        loadPast();
+        loadUpcoming();
+    }, [loadImpact, loadPast, loadUpcoming]);
 
     useEffect(() => {
         if (selectedSummitId) {
@@ -105,12 +195,120 @@ export default function AdminSummitsPage() {
 
     const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
 
+    // ─── Impact Stats save ──────────────────────────────────────────
+
+    const handleSaveImpact = async () => {
+        setSaving(true);
+        setImpactError('');
+        try {
+            const headers = getAuthHeaders();
+            const remote = await fetchImpactStats();
+            const remoteIds = new Set(remote.map((r) => r.id));
+            const localIds = new Set(impact.filter((s) => s._apiId).map((s) => s._apiId!));
+
+            for (const r of remote) {
+                if (!localIds.has(r.id)) {
+                    await deleteImpactStat(r.id, headers);
+                }
+            }
+
+            for (let i = 0; i < impact.length; i++) {
+                const stat = impact[i];
+                const payload = { statNumber: stat.stat_number, statLabel: stat.stat_label, position: i };
+                if (stat._apiId && remoteIds.has(stat._apiId)) {
+                    await updateImpactStat(stat._apiId, payload, headers);
+                } else {
+                    await createImpactStat(payload, headers);
+                }
+            }
+
+            flash();
+            await loadImpact();
+        } catch (e: unknown) {
+            setImpactError(e instanceof Error ? e.message : 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ─── Past Summit helpers ────────────────────────────────────────
+
     const addPastSummit = () => {
         setPastItems([...pastItems, { summit_id: generateId(), summit_title: '', summit_date: '', summit_image: '' }]);
     };
-    const removePastSummit = (id: string) => setPastItems(pastItems.filter((s) => s.summit_id !== id));
 
-    // Detail helpers
+    const handleRemovePastSummit = async (item: SummitWithApi) => {
+        if (item._apiId) {
+            setSaving(true);
+            setPastError('');
+            try {
+                await deletePastSummit(item._apiId, getAuthHeaders());
+                setPastItems(pastItems.filter((s) => s.summit_id !== item.summit_id));
+                flash();
+            } catch (e: unknown) {
+                setPastError(e instanceof Error ? e.message : 'Delete failed');
+            } finally {
+                setSaving(false);
+            }
+        } else {
+            setPastItems(pastItems.filter((s) => s.summit_id !== item.summit_id));
+        }
+    };
+
+    const handleSavePastSummits = async () => {
+        setSaving(true);
+        setPastError('');
+        try {
+            const headers = getAuthHeaders();
+            for (const item of pastItems) {
+                const payload = {
+                    campaignTitle: item.summit_title,
+                    campaignDate: item.summit_date,
+                    campaignImage: item.summit_image,
+                    isActive: true,
+                };
+                if (item._apiId) {
+                    await updatePastSummit(item._apiId, payload, headers);
+                } else {
+                    await createPastSummit(payload, headers);
+                }
+            }
+            flash();
+            await loadPast();
+        } catch (e: unknown) {
+            setPastError(e instanceof Error ? e.message : 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ─── Upcoming save ──────────────────────────────────────────────
+
+    const handleSaveUpcoming = async () => {
+        setSaving(true);
+        setUpcomingError('');
+        try {
+            await updateUpcoming(
+                {
+                    missionTitle: upcoming.name,
+                    missionDate: upcoming.date_time,
+                    missionLink: upcoming.register_url,
+                    missionDescription: upcoming.description,
+                    missionImage: '',
+                },
+                getAuthHeaders(),
+            );
+            flash();
+            await loadUpcoming();
+        } catch (e: unknown) {
+            setUpcomingError(e instanceof Error ? e.message : 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ─── Detail helpers (still localStorage) ────────────────────────
+
     const addHighlight = () => setDetail({ ...detail, event_highlights: [...detail.event_highlights, ''] });
     const removeHighlight = (idx: number) => setDetail({ ...detail, event_highlights: detail.event_highlights.filter((_, i) => i !== idx) });
 
@@ -127,6 +325,20 @@ export default function AdminSummitsPage() {
     const btnSave = 'flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors';
     const btnAdd = 'flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors';
 
+    const ErrorBanner = ({ message }: { message: string }) =>
+        message ? (
+            <div className="mb-4 px-4 py-2.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                {message}
+            </div>
+        ) : null;
+
+    const SectionLoader = () => (
+        <div className="flex items-center justify-center py-12 text-gray-400 gap-2">
+            <Loader2 size={20} className="animate-spin" />
+            <span className="text-sm">Loading…</span>
+        </div>
+    );
+
     return (
         <div>
             <div className="mb-6">
@@ -140,6 +352,15 @@ export default function AdminSummitsPage() {
                 </div>
             )}
 
+            {saving && (
+                <div className="fixed inset-0 z-40 bg-black/10 flex items-center justify-center">
+                    <div className="bg-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3">
+                        <Loader2 size={20} className="animate-spin text-orange-500" />
+                        <span className="text-sm font-medium text-gray-700">Saving…</span>
+                    </div>
+                </div>
+            )}
+
             <div className="flex gap-1 bg-gray-100 p-1 rounded-xl mb-6 w-fit flex-wrap">
                 {tabs.map((tab) => (
                     <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}>
@@ -148,7 +369,7 @@ export default function AdminSummitsPage() {
                 ))}
             </div>
 
-            {/* ──── HERO GALLERY ──── */}
+            {/* ──── HERO GALLERY (localStorage) ──── */}
             {activeTab === 'Hero Gallery' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -182,24 +403,29 @@ export default function AdminSummitsPage() {
                             <h2 className="font-semibold text-gray-900">Summit Impact Metrics</h2>
                             <p className="text-sm text-gray-500">Exactly 4 records</p>
                         </div>
-                        <button onClick={() => { saveSummitsImpact(impact); flash(); }} className={btnSave}>
+                        <button onClick={handleSaveImpact} disabled={saving} className={btnSave}>
                             <Save size={16} /> Save
                         </button>
                     </div>
-                    <div className="space-y-4">
-                        {impact.map((stat, i) => (
-                            <div key={i} className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl">
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Number (max 10)</label>
-                                    <input type="text" maxLength={10} value={stat.stat_number} onChange={(e) => { const u = [...impact]; u[i] = { ...u[i], stat_number: e.target.value }; setImpact(u); }} className={inputCls} />
+                    <ErrorBanner message={impactError} />
+                    {impactLoading ? (
+                        <SectionLoader />
+                    ) : (
+                        <div className="space-y-4">
+                            {impact.map((stat, i) => (
+                                <div key={stat._apiId ?? `new-${i}`} className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl">
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-500 mb-1">Number (max 10)</label>
+                                        <input type="text" maxLength={10} value={stat.stat_number} onChange={(e) => { const u = [...impact]; u[i] = { ...u[i], stat_number: e.target.value }; setImpact(u); }} className={inputCls} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-medium text-gray-500 mb-1">Label (max 25)</label>
+                                        <input type="text" maxLength={25} value={stat.stat_label} onChange={(e) => { const u = [...impact]; u[i] = { ...u[i], stat_label: e.target.value }; setImpact(u); }} className={inputCls} />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-medium text-gray-500 mb-1">Label (max 25)</label>
-                                    <input type="text" maxLength={25} value={stat.stat_label} onChange={(e) => { const u = [...impact]; u[i] = { ...u[i], stat_label: e.target.value }; setImpact(u); }} className={inputCls} />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -213,34 +439,39 @@ export default function AdminSummitsPage() {
                         </div>
                         <div className="flex gap-2">
                             <button onClick={addPastSummit} className={btnAdd}><Plus size={16} /> Add</button>
-                            <button onClick={() => { savePastSummits(pastItems); flash(); }} className={btnSave}><Save size={16} /> Save</button>
+                            <button onClick={handleSavePastSummits} disabled={saving} className={btnSave}><Save size={16} /> Save</button>
                         </div>
                     </div>
-                    <div className="space-y-4">
-                        {pastItems.map((item, i) => (
-                            <div key={item.summit_id} className="p-4 bg-gray-50 rounded-xl relative">
-                                <button onClick={() => removePastSummit(item.summit_id)} className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Title (max 30)</label>
-                                        <input type="text" maxLength={30} value={item.summit_title} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], summit_title: e.target.value }; setPastItems(u); }} className={inputCls} />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-medium text-gray-500 mb-1">Date (max 15)</label>
-                                        <input type="text" maxLength={15} value={item.summit_date} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], summit_date: e.target.value }; setPastItems(u); }} className={inputCls} />
-                                    </div>
-                                    <div>
-                                        <CloudinaryImageUpload
-                                            label="Summit Image"
-                                            value={item.summit_image}
-                                            onUpload={(url) => { const u = [...pastItems]; u[i] = { ...u[i], summit_image: url }; setPastItems(u); }}
-                                        />
+                    <ErrorBanner message={pastError} />
+                    {pastLoading ? (
+                        <SectionLoader />
+                    ) : (
+                        <div className="space-y-4">
+                            {pastItems.map((item, i) => (
+                                <div key={item.summit_id} className="p-4 bg-gray-50 rounded-xl relative">
+                                    <button onClick={() => handleRemovePastSummit(item)} className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"><Trash2 size={16} /></button>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">Title (max 30)</label>
+                                            <input type="text" maxLength={30} value={item.summit_title} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], summit_title: e.target.value }; setPastItems(u); }} className={inputCls} />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-medium text-gray-500 mb-1">Date (max 15)</label>
+                                            <input type="text" maxLength={15} value={item.summit_date} onChange={(e) => { const u = [...pastItems]; u[i] = { ...u[i], summit_date: e.target.value }; setPastItems(u); }} className={inputCls} />
+                                        </div>
+                                        <div>
+                                            <CloudinaryImageUpload
+                                                label="Summit Image"
+                                                value={item.summit_image}
+                                                onUpload={(url) => { const u = [...pastItems]; u[i] = { ...u[i], summit_image: url }; setPastItems(u); }}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                        {pastItems.length === 0 && <p className="text-gray-400 text-sm text-center py-8">No past summits added yet.</p>}
-                    </div>
+                            ))}
+                            {pastItems.length === 0 && <p className="text-gray-400 text-sm text-center py-8">No past summits added yet.</p>}
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -250,48 +481,46 @@ export default function AdminSummitsPage() {
                     <div className="flex items-center justify-between mb-6">
                         <div>
                             <h2 className="font-semibold text-gray-900">Upcoming Summit</h2>
-                            <p className="text-sm text-gray-500">Conditional section — toggle to show/hide</p>
+                            <p className="text-sm text-gray-500">Edit the next upcoming summit details</p>
                         </div>
-                        <button onClick={() => { saveUpcomingSummit(upcoming); flash(); }} className={btnSave}><Save size={16} /> Save</button>
+                        <button onClick={handleSaveUpcoming} disabled={saving} className={btnSave}><Save size={16} /> Save</button>
                     </div>
-                    <div className="flex items-center gap-3 mb-6 p-4 bg-gray-50 rounded-xl">
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" checked={upcoming.is_active} onChange={(e) => setUpcoming({ ...upcoming, is_active: e.target.checked })} className="sr-only peer" />
-                            <div className="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-orange-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full" />
-                        </label>
-                        <span className="text-sm font-medium text-gray-700">{upcoming.is_active ? 'Visible on frontend' : 'Hidden on frontend'}</span>
-                    </div>
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Summit Name (max 50)</label>
-                                <input type="text" maxLength={50} value={upcoming.name} onChange={(e) => setUpcoming({ ...upcoming, name: e.target.value })} className={inputCls} />
+                    <ErrorBanner message={upcomingError} />
+                    {upcomingLoading ? (
+                        <SectionLoader />
+                    ) : (
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Summit Name (max 50)</label>
+                                    <input type="text" maxLength={50} value={upcoming.name} onChange={(e) => setUpcoming({ ...upcoming, name: e.target.value })} className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Date & Time (max 40)</label>
+                                    <input type="text" maxLength={40} value={upcoming.date_time} onChange={(e) => setUpcoming({ ...upcoming, date_time: e.target.value })} className={inputCls} />
+                                </div>
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Date & Time (max 40)</label>
-                                <input type="text" maxLength={40} value={upcoming.date_time} onChange={(e) => setUpcoming({ ...upcoming, date_time: e.target.value })} className={inputCls} />
+                                <label className="block text-xs font-medium text-gray-500 mb-1">Description (max 350)</label>
+                                <textarea maxLength={350} rows={3} value={upcoming.description} onChange={(e) => setUpcoming({ ...upcoming, description: e.target.value })} className={`${inputCls} resize-none`} />
+                                <span className="text-xs text-gray-400">{upcoming.description.length}/350</span>
                             </div>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-500 mb-1">Description (max 350)</label>
-                            <textarea maxLength={350} rows={3} value={upcoming.description} onChange={(e) => setUpcoming({ ...upcoming, description: e.target.value })} className={`${inputCls} resize-none`} />
-                            <span className="text-xs text-gray-400">{upcoming.description.length}/350</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Location (max 40)</label>
-                                <input type="text" maxLength={40} value={upcoming.location} onChange={(e) => setUpcoming({ ...upcoming, location: e.target.value })} className={inputCls} />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-medium text-gray-500 mb-1">Register URL</label>
-                                <input type="text" value={upcoming.register_url} onChange={(e) => setUpcoming({ ...upcoming, register_url: e.target.value })} className={inputCls} />
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Location (max 40)</label>
+                                    <input type="text" maxLength={40} value={upcoming.location} onChange={(e) => setUpcoming({ ...upcoming, location: e.target.value })} className={inputCls} />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-medium text-gray-500 mb-1">Register URL</label>
+                                    <input type="text" value={upcoming.register_url} onChange={(e) => setUpcoming({ ...upcoming, register_url: e.target.value })} className={inputCls} />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             )}
 
-            {/* ──── SUMMIT DETAILS ──── */}
+            {/* ──── SUMMIT DETAILS (localStorage) ──── */}
             {activeTab === 'Summit Details' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">

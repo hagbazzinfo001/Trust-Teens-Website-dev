@@ -9,7 +9,7 @@ interface AdminContextType {
   user: { email: string } | null;
   loading: boolean;
   isAdmin: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, passwvord: string) => Promise<boolean>;
   logout: () => void;
   forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   verifyOtp: (email: string, otp: string) => Promise<{ success: boolean; resetToken?: string; message: string }>;
