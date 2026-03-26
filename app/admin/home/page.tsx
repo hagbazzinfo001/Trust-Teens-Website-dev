@@ -10,11 +10,11 @@ import {
     saveHeroMetrics,
     getImpactStats,
     saveImpactStats,
-    getTestimonials,
-    saveTestimonials,
     generateId,
 } from '@/lib/adminData';
-import { Save, Plus, Trash2, Check } from 'lucide-react';
+import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
+import { useAdmin } from '@/contexts/AdminContext';
+import { fetchTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '@/lib/testimonialsApi';
 
 // ─── Defaults (match the hardcoded values in client page) ────────────
 
@@ -55,9 +55,13 @@ const DEFAULT_TESTIMONIALS: Testimonial[] = [
 const tabs = ['Hero Metrics', 'Impact Stats', 'Testimonials'] as const;
 type Tab = (typeof tabs)[number];
 
+type LocalTestimonial = Testimonial & { apiId?: string | number };
+
 export default function AdminHomePage() {
+    const { getAuthHeaders } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Hero Metrics');
     const [saved, setSaved] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     // ── Hero Metrics ──
     const [heroMetrics, setHeroMetrics] = useState<HeroMetric[]>(DEFAULT_HERO);
@@ -66,10 +70,10 @@ export default function AdminHomePage() {
     const [impactStats, setImpactStats] = useState<ImpactStat[]>(DEFAULT_IMPACT);
 
     // ── Testimonials ──
-    const [testimonials, setTestimonials] =
-        useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
+    const [testimonials, setTestimonials] = useState<LocalTestimonial[]>([]);
+    const [initialTestimonials, setInitialTestimonials] = useState<LocalTestimonial[]>([]);
 
-    // ── Load from localStorage ──
+    // ── Load from localStorage and API ──
     useEffect(() => {
         const h = getHeroMetrics();
         if (h) setHeroMetrics(h);
@@ -77,9 +81,32 @@ export default function AdminHomePage() {
         const s = getImpactStats();
         if (s) setImpactStats(s);
 
-        const t = getTestimonials();
-        if (t) setTestimonials(t);
+        loadTestimonials();
     }, []);
+
+    const loadTestimonials = async () => {
+        try {
+            const apiData = await fetchTestimonials().catch(() => null);
+            if (apiData && apiData.length > 0) {
+                const mapped = apiData.map((t) => ({
+                    id: generateId(), // local random ID for react key
+                    apiId: t._id || t.id,
+                    teen_name: t.teenName || '',
+                    teen_age: t.teenAge || '',
+                    quote_text: t.quoteText || '',
+                    teen_image: t.teenImage || '/images/testimonia4.svg',
+                }));
+                setTestimonials(mapped);
+                setInitialTestimonials(JSON.parse(JSON.stringify(mapped)));
+            } else {
+                const defaults = DEFAULT_TESTIMONIALS.map(t => ({ ...t, apiId: undefined }));
+                setTestimonials(defaults);
+                setInitialTestimonials(defaults);
+            }
+        } catch (e) {
+            console.error("Failed to load testimonials", e);
+        }
+    };
 
     // ── Save & flash ──
     const flash = () => {
@@ -97,9 +124,38 @@ export default function AdminHomePage() {
         flash();
     };
 
-    const handleSaveTestimonials = () => {
-        saveTestimonials(testimonials);
-        flash();
+    const handleSaveTestimonials = async () => {
+        setLoading(true);
+        try {
+            const initialApiIds = initialTestimonials.filter(t => t.apiId !== undefined).map(t => t.apiId);
+            const currentApiIds = testimonials.filter(t => t.apiId !== undefined).map(t => t.apiId);
+            const deletedIds = initialApiIds.filter(id => !currentApiIds.includes(id));
+
+            for (const id of deletedIds) {
+                if (id !== undefined) await deleteTestimonial(id, getAuthHeaders());
+            }
+
+            for (const t of testimonials) {
+                const data = {
+                    teenName: t.teen_name,
+                    teenAge: t.teen_age,
+                    quoteText: t.quote_text,
+                    teenImage: t.teen_image,
+                };
+                if (t.apiId === undefined) {
+                    await createTestimonial(data, getAuthHeaders());
+                } else {
+                    await updateTestimonial(t.apiId, data, getAuthHeaders());
+                }
+            }
+            await loadTestimonials();
+            flash();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to save Testimonials");
+        } finally {
+            setLoading(false);
+        }
     };
 
     // ── Testimonial helpers ──
@@ -316,9 +372,11 @@ export default function AdminHomePage() {
                             </button>
                             <button
                                 onClick={handleSaveTestimonials}
-                                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                                disabled={loading}
+                                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                             >
-                                <Save size={16} /> Save
+                                {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                Save
                             </button>
                         </div>
                     </div>

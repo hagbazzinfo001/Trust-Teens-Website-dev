@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import CountUp from "@/components/ui/CountUp2"
 import { useEffect, useState } from 'react';
-import { getImpactMetrics } from '@/lib/adminData';
+import { fetchImpactMetrics } from '@/lib/impactApi';
 
 const DEFAULT_STATS = [
   {
@@ -51,16 +51,17 @@ export default function ImpactStats() {
   const [stats, setStats] = useState(DEFAULT_STATS);
 
   useEffect(() => {
-    const savedMetrics = getImpactMetrics();
-    if (savedMetrics) {
-      setStats(
-        savedMetrics.map((m, i) => ({
-          value: parseInt(m.metric_value) || 0,
-          label: m.metric_label,
-          bgImage: BG_IMAGES[i % BG_IMAGES.length],
-        }))
-      );
-    }
+    fetchImpactMetrics().then((savedMetrics) => {
+      if (savedMetrics && savedMetrics.length > 0) {
+        setStats(
+          savedMetrics.map((m, i) => ({
+            value: parseInt(m.metricValue) || 0,
+            label: m.metricLabel,
+            bgImage: BG_IMAGES[i % BG_IMAGES.length],
+          }))
+        );
+      }
+    }).catch(e => console.error("Failed to load metrics", e));
   }, []);
   return (
     <section className="w-full mx-auto  py-24">

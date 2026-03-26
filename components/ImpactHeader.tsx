@@ -97,7 +97,7 @@
 import { motion, useAnimationControls } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import { getImpactHero } from '@/lib/adminData';
+import { fetchImpactHero } from '@/lib/impactApi';
 
 const images = [
   '/images/ImpactImage_1.svg',
@@ -119,14 +119,15 @@ export default function AutoScrollImages() {
   useEffect(() => {
     startAutoScroll();
 
-    const savedHero = getImpactHero();
-    if (savedHero) {
-      setImpactNumber(savedHero.total_impact_number);
-      setBodyText(savedHero.hero_body_text);
-      if (savedHero.hero_images.length > 0) {
-        setHeroImages(savedHero.hero_images);
+    fetchImpactHero().then((savedHero) => {
+      if (savedHero) {
+        setImpactNumber(savedHero.totalImpactNumber);
+        setBodyText(savedHero.heroBodyText);
+        if (savedHero.heroImages && savedHero.heroImages.length > 0) {
+          setHeroImages(savedHero.heroImages);
+        }
       }
-    }
+    }).catch(e => console.error("Failed to load hero", e));
   }, []);
 
   const startAutoScroll = () => {

@@ -13,7 +13,8 @@ import icon2 from "@/public/images/icon2.svg";
 import icon5 from "@/public/images/icon5.svg";
 import icon6 from "@/public/images/icon6.svg";
 import Image from "next/image";
-import { getImpactStats, getTestimonials } from "@/lib/adminData";
+import { getImpactStats } from "@/lib/adminData";
+import { fetchTestimonials } from "@/lib/testimonialsApi";
 
 const DEFAULT_TESTIMONIALS = [
   {
@@ -94,17 +95,24 @@ export default function Home() {
   const [impactStats, setImpactStats] = useState(DEFAULT_IMPACT_STATS);
 
   useEffect(() => {
-    const savedTestimonials = getTestimonials();
-    if (savedTestimonials) {
-      setTestimonials(
-        savedTestimonials.map((t) => ({
-          quote: t.quote_text,
-          name: t.teen_name,
-          age: t.teen_age,
-          image: t.teen_image,
-        }))
-      );
-    }
+    const loadTestimonials = async () => {
+      try {
+        const apiData = await fetchTestimonials();
+        if (apiData && apiData.length > 0) {
+          setTestimonials(
+            apiData.map((t) => ({
+              quote: t.quoteText || "",
+              name: t.teenName || "",
+              age: t.teenAge || "",
+              image: t.teenImage || "/images/testimonia4.svg",
+            }))
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load testimonials on client", err);
+      }
+    };
+    loadTestimonials();
 
     const savedStats = getImpactStats();
     if (savedStats) {

@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import { useRouter } from 'next/navigation';
+import { useAdmin } from '@/contexts/AdminContext';
 import {
     CoreTeamMember,
     VolunteerMember,
@@ -13,18 +14,10 @@ import {
     MentorCTA,
     AmbassadorMember,
     AmbassadorCTA,
-    getCoreTeamMembers, saveCoreTeamMembers,
-    getVolunteerMembers, saveVolunteerMembers,
-    getVolunteerCTA, saveVolunteerCTA,
-    getMentorHero, saveMentorHero,
-    getMentorMembers, saveMentorMembers,
-    getMentorRoleMedia, saveMentorRoleMedia,
-    getMentorCTA, saveMentorCTA,
-    getAmbassadorMembers, saveAmbassadorMembers,
-    getAmbassadorCTA, saveAmbassadorCTA,
     generateId,
 } from '@/lib/adminData';
-import { Save, Plus, Trash2, ArrowUp, ArrowDown, Check } from 'lucide-react';
+import * as teamApi from '@/lib/teamApi';
+import { Save, Plus, Trash2, ArrowUp, ArrowDown, Check, Loader2 } from 'lucide-react';
 
 const tabs = ['Core Team', 'Mentors', 'Volunteers', 'Ambassadors'] as const;
 type Tab = (typeof tabs)[number];
@@ -36,72 +29,324 @@ const tabToParam: Record<Tab, string> = {
     'Ambassadors': 'ambassadors'
 };
 
+// ─── Data Mappers ──────────────────────────────────────────────────
+
+function apiToCore(a: teamApi.ApiTeamMember): CoreTeamMember & { _apiId: number } {
+    return {
+        id: String(a.id),
+        _apiId: a.id,
+        display_order: a.displayOrder,
+        member_name: a.memberName || '',
+        member_role: a.memberRole || '',
+        member_bio: a.memberBio || '',
+        member_image: a.memberImage || '',
+        linkedin_url: a.linkedInUrl || '',
+        twitter_url: a.twitterUrl || '',
+        instagram_url: a.instagramUrl || '',
+    };
+}
+
+function apiToVol(a: teamApi.ApiTeamMember): VolunteerMember & { _apiId: number } {
+    return {
+        id: String(a.id),
+        _apiId: a.id,
+        display_order: a.displayOrder,
+        member_name: a.memberName || '',
+        member_role: a.memberRole || '',
+        member_bio: a.memberBio || '',
+        member_image: a.memberImage || '',
+        social_links: {
+            linkedin: a.linkedInUrl || '',
+            twitter: a.twitterUrl || '',
+        }
+    };
+}
+
+function apiToMen(a: teamApi.ApiTeamMember): MentorMember & { _apiId: number } {
+    return {
+        id: String(a.id),
+        _apiId: a.id,
+        display_order: a.displayOrder,
+        member_name: a.memberName || '',
+        member_role: a.memberRole || '',
+        member_bio: a.memberBio || '',
+        member_image: a.memberImage || '',
+        social_links: {
+            linkedin: a.linkedInUrl || '',
+            twitter: a.twitterUrl || '',
+        }
+    };
+}
+
+function apiToAmb(a: teamApi.ApiAmbassadorMember): AmbassadorMember & { _apiId: number } {
+    return {
+        id: String(a.id),
+        _apiId: a.id,
+        display_order: a.displayOrder,
+        ambassador_name: a.ambassadorName || '',
+        school_name: a.schoolName || '',
+        location: a.location || '',
+        ambassador_image: a.ambassadorImage || '',
+    };
+}
+
 export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
     const router = useRouter();
+    const { getAuthHeaders } = useAdmin();
     const activeTab = initialTab;
+    
     const [saved, setSaved] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [errorMsg, setErrorMsg] = useState('');
 
     // --- Core Team ---
-    const [coreMembers, setCoreMembers] = useState<CoreTeamMember[]>([]);
+    const [coreHero, setCoreHero] = useState('');
+    const [coreMembers, setCoreMembers] = useState<(CoreTeamMember & { _apiId?: number })[]>([]);
 
     // --- Volunteers ---
-    const [volunteerMembers, setVolunteerMembers] = useState<VolunteerMember[]>([]);
+    const [volunteerHero, setVolunteerHero] = useState<['', ''] | [string, string]>(['', '']);
+    const [volunteerMembers, setVolunteerMembers] = useState<(VolunteerMember & { _apiId?: number })[]>([]);
     const [volunteerCTA, setVolunteerCTA] = useState<VolunteerCTA>({ join_button_url: '' });
 
     // --- Mentors ---
     const [mentorHero, setMentorHero] = useState<MentorHero>({ hero_mentor_images: ['', ''] });
-    const [mentorMembers, setMentorMembers] = useState<MentorMember[]>([]);
+    const [mentorMembers, setMentorMembers] = useState<(MentorMember & { _apiId?: number })[]>([]);
     const [mentorRoleMedia, setMentorRoleMedia] = useState<MentorRoleMedia>({ role_feature_image: '' });
     const [mentorCTA, setMentorCTA] = useState<MentorCTA>({ apply_button_url: '', cta_footer_image: '' });
 
     // --- Ambassadors ---
-    const [ambassadorMembers, setAmbassadorMembers] = useState<AmbassadorMember[]>([]);
+    const [ambassadorHero, setAmbassadorHero] = useState('');
+    const [ambassadorMembers, setAmbassadorMembers] = useState<(AmbassadorMember & { _apiId?: number })[]>([]);
     const [ambassadorCTA, setAmbassadorCTA] = useState<AmbassadorCTA>({ apply_button_url: '' });
 
-    useEffect(() => {
-        // Load Core
-        const cm = getCoreTeamMembers();
-        if (cm) setCoreMembers(cm);
+    // ─── Data Loading ───────────────────────────────────────────────
 
-        // Load Volunteers
-        const vm = getVolunteerMembers();
-        if (vm) setVolunteerMembers(vm);
-        const vCta = getVolunteerCTA();
-        if (vCta) setVolunteerCTA(vCta);
+    const loadData = useCallback(async () => {
+        setLoading(true);
+        setErrorMsg('');
+        try {
+            // We load data based on active tab to optimize slightly, or load all. Let's load all for simplicity since it's an admin dashboard.
+            
+            // Core
+            const [cH, cM] = await Promise.all([
+                teamApi.fetchCoreHero().catch(() => ({ imageUrl: '' })),
+                teamApi.fetchCoreMembers().catch(() => [])
+            ]);
+            if (cH?.imageUrl) setCoreHero(cH.imageUrl);
+            if (cM) setCoreMembers(cM.sort((a,b)=>a.displayOrder-b.displayOrder).map(apiToCore));
 
-        // Load Mentors
-        const mh = getMentorHero();
-        if (mh) setMentorHero(mh);
-        const mm = getMentorMembers();
-        if (mm) setMentorMembers(mm);
-        const mrm = getMentorRoleMedia();
-        if (mrm) setMentorRoleMedia(mrm);
-        const mCta = getMentorCTA();
-        if (mCta) setMentorCTA(mCta);
+            // Volunteers
+            const [vH, vM, vC] = await Promise.all([
+                teamApi.fetchVolunteersHero().catch(() => ({ heroImage1: '', heroImage2: '' })),
+                teamApi.fetchVolunteerMembers().catch(() => []),
+                teamApi.fetchVolunteerCta().catch(() => ({ joinButtonUrl: '' } as teamApi.ApiVolunteerCta))
+            ]);
+            if (vH) setVolunteerHero([vH.heroImage1 || '', vH.heroImage2 || '']);
+            if (vM) setVolunteerMembers(vM.sort((a,b)=>a.displayOrder-b.displayOrder).map(apiToVol));
+            if (vC) setVolunteerCTA({ join_button_url: vC.joinButtonUrl || '' });
 
-        // Load Ambassadors
-        const am = getAmbassadorMembers();
-        if (am) setAmbassadorMembers(am);
-        const aCta = getAmbassadorCTA();
-        if (aCta) setAmbassadorCTA(aCta);
+            // Mentors
+            const [mH, mM, mR, mC] = await Promise.all([
+                teamApi.fetchMentorsHero().catch(() => ({ heroImage1: '', heroImage2: '' })),
+                teamApi.fetchMentorMembers().catch(() => []),
+                teamApi.fetchMentorRoleMedia().catch(() => ({ imageUrl: '' })),
+                teamApi.fetchMentorCta().catch(() => ({ applyButtonUrl: '', ctaFooterImage: '' } as teamApi.ApiMentorCta))
+            ]);
+            if (mH) setMentorHero({ hero_mentor_images: [mH.heroImage1 || '', mH.heroImage2 || ''] });
+            if (mM) setMentorMembers(mM.sort((a,b)=>a.displayOrder-b.displayOrder).map(apiToMen));
+            if (mR?.imageUrl) setMentorRoleMedia({ role_feature_image: mR.imageUrl || '' });
+            if (mC) setMentorCTA({ apply_button_url: mC.applyButtonUrl || '', cta_footer_image: mC.ctaFooterImage || '' });
+
+            // Ambassadors
+            const [aH, aM, aC] = await Promise.all([
+                teamApi.fetchAmbassadorsHero().catch(() => ({ imageUrl: '' })),
+                teamApi.fetchAmbassadorMembers().catch(() => []),
+                teamApi.fetchAmbassadorCta().catch(() => ({ applyButtonUrl: '' } as teamApi.ApiAmbassadorCta))
+            ]);
+            if (aH?.imageUrl) setAmbassadorHero(aH.imageUrl);
+            if (aM) setAmbassadorMembers(aM.sort((a,b)=>a.displayOrder-b.displayOrder).map(apiToAmb));
+            if (aC) setAmbassadorCTA({ apply_button_url: aC.applyButtonUrl || '' });
+
+        } catch (err: any) {
+            setErrorMsg(err.message || 'Failed to load team data');
+        } finally {
+            setLoading(false);
+        }
     }, []);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
+
 
     const flash = () => {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
 
-    // --- Save Handlers ---
-    const saveCore = () => { saveCoreTeamMembers(coreMembers); flash(); };
-    const saveVolunteers = () => { saveVolunteerMembers(volunteerMembers); saveVolunteerCTA(volunteerCTA); flash(); }
-    const saveMentors = () => { saveMentorHero(mentorHero); saveMentorMembers(mentorMembers); saveMentorRoleMedia(mentorRoleMedia); saveMentorCTA(mentorCTA); flash(); }
-    const saveAmbassadors = () => { saveAmbassadorMembers(ambassadorMembers); saveAmbassadorCTA(ambassadorCTA); flash(); }
+    // ─── Save Handlers ──────────────────────────────────────────────
 
-    // --- Array Helpers ---
+    const saveCore = async () => {
+        setSaving(true);
+        setErrorMsg('');
+        const headers = getAuthHeaders();
+        try {
+            // Save core hero just in case we add it to the UI later, but for now just members
+            const remote = await teamApi.fetchCoreMembers().catch(() => []);
+            const remoteIds = new Set(remote.map(r => r.id));
+            const localIds = new Set(coreMembers.filter(m => m._apiId).map(m => m._apiId!));
+            
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteCoreMember(r.id, headers);
+
+            for (const m of coreMembers) {
+                const payload = {
+                    memberName: m.member_name,
+                    memberRole: m.member_role,
+                    memberBio: m.member_bio,
+                    memberImage: m.member_image,
+                    linkedInUrl: m.linkedin_url || '',
+                    twitterUrl: m.twitter_url || '',
+                    instagramUrl: m.instagram_url || '',
+                    displayOrder: m.display_order,
+                };
+                if (m._apiId && remoteIds.has(m._apiId)) {
+                    await teamApi.updateCoreMember(m._apiId, { ...payload, isActive: true }, headers);
+                } else {
+                    await teamApi.createCoreMember(payload, headers);
+                }
+            }
+            flash();
+            await loadData();
+        } catch (e: any) {
+            setErrorMsg(e.message || 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const saveVolunteers = async () => { 
+        setSaving(true);
+        setErrorMsg('');
+        const headers = getAuthHeaders();
+        try {
+            await teamApi.updateVolunteerCta({ isActive: true, joinButtonUrl: volunteerCTA.join_button_url }, headers);
+
+            const remote = await teamApi.fetchVolunteerMembers().catch(() => []);
+            const remoteIds = new Set(remote.map(r => r.id));
+            const localIds = new Set(volunteerMembers.filter(m => m._apiId).map(m => m._apiId!));
+
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteVolunteerMember(r.id, headers);
+
+            for (const m of volunteerMembers) {
+                const payload = {
+                    memberName: m.member_name,
+                    memberRole: m.member_role,
+                    memberBio: m.member_bio,
+                    memberImage: m.member_image,
+                    linkedInUrl: m.social_links?.linkedin || '',
+                    twitterUrl: m.social_links?.twitter || '',
+                    instagramUrl: '',
+                    displayOrder: m.display_order,
+                };
+                if (m._apiId && remoteIds.has(m._apiId)) {
+                    await teamApi.updateVolunteerMember(m._apiId, { ...payload, isActive: true }, headers);
+                } else {
+                    await teamApi.createVolunteerMember(payload, headers);
+                }
+            }
+            flash();
+            await loadData();
+        } catch (e: any) {
+            setErrorMsg(e.message || 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const saveMentors = async () => { 
+        setSaving(true);
+        setErrorMsg('');
+        const headers = getAuthHeaders();
+        try {
+            await teamApi.updateMentorsHero({ heroImage1: mentorHero.hero_mentor_images[0], heroImage2: mentorHero.hero_mentor_images[1] }, headers);
+            await teamApi.updateMentorRoleMedia({ imageUrl: mentorRoleMedia.role_feature_image }, headers);
+            await teamApi.updateMentorCta({ isActive: true, applyButtonUrl: mentorCTA.apply_button_url, ctaFooterImage: mentorCTA.cta_footer_image }, headers);
+
+            const remote = await teamApi.fetchMentorMembers().catch(() => []);
+            const remoteIds = new Set(remote.map(r => r.id));
+            const localIds = new Set(mentorMembers.filter(m => m._apiId).map(m => m._apiId!));
+
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteMentorMember(r.id, headers);
+
+            for (const m of mentorMembers) {
+                const payload = {
+                    memberName: m.member_name,
+                    memberRole: m.member_role,
+                    memberBio: m.member_bio,
+                    memberImage: m.member_image,
+                    linkedInUrl: m.social_links?.linkedin || '',
+                    twitterUrl: m.social_links?.twitter || '',
+                    instagramUrl: '',
+                    displayOrder: m.display_order,
+                };
+                if (m._apiId && remoteIds.has(m._apiId)) {
+                    await teamApi.updateMentorMember(m._apiId, { ...payload, isActive: true }, headers);
+                } else {
+                    await teamApi.createMentorMember(payload, headers);
+                }
+            }
+            flash();
+            await loadData();
+        } catch (e: any) {
+            setErrorMsg(e.message || 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const saveAmbassadors = async () => { 
+        setSaving(true);
+        setErrorMsg('');
+        const headers = getAuthHeaders();
+        try {
+            await teamApi.updateAmbassadorCta({ isActive: true, applyButtonUrl: ambassadorCTA.apply_button_url }, headers);
+
+            const remote = await teamApi.fetchAmbassadorMembers().catch(() => []);
+            const remoteIds = new Set(remote.map(r => r.id));
+            const localIds = new Set(ambassadorMembers.filter(m => m._apiId).map(m => m._apiId!));
+
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteAmbassadorMember(r.id, headers);
+
+            for (const m of ambassadorMembers) {
+                const payload = {
+                    ambassadorName: m.ambassador_name,
+                    schoolName: m.school_name,
+                    location: m.location,
+                    ambassadorImage: m.ambassador_image,
+                    displayOrder: m.display_order,
+                };
+                if (m._apiId && remoteIds.has(m._apiId)) {
+                    await teamApi.updateAmbassadorMember(m._apiId, { ...payload, isActive: true }, headers);
+                } else {
+                    await teamApi.createAmbassadorMember(payload, headers);
+                }
+            }
+            flash();
+            await loadData();
+        } catch (e: any) {
+            setErrorMsg(e.message || 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ─── Array Helpers ──────────────────────────────────────────────
+
     const addMember = <T extends { id: string, display_order: number }>(arr: T[], setArr: (val: T[]) => void, defaultItem: Omit<T, 'id' | 'display_order'>) => {
         setArr([...arr, { ...defaultItem, id: generateId(), display_order: arr.length + 1 } as unknown as T]);
     };
-    const removeMember = <T extends { id: string }>(arr: T[], setArr: (val: T[]) => void, id: string) => {
+    const removeMember = <T extends { id: string, _apiId?: number }>(arr: T[], setArr: (val: T[]) => void, id: string) => {
         setArr(arr.filter(a => a.id !== id));
     };
     const moveMember = <T extends { display_order: number }>(arr: T[], setArr: (val: T[]) => void, index: number, dir: 'up' | 'down') => {
@@ -113,6 +358,15 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
         setArr(newArr);
     };
 
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-24 text-gray-400 gap-2">
+                <Loader2 size={24} className="animate-spin text-orange-500" />
+                <span>Loading team data…</span>
+            </div>
+        );
+    }
+
     return (
         <div>
             <div className="mb-6">
@@ -120,9 +374,24 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                 <p className="text-gray-500 mt-1">Manage all team directories and call-to-actions.</p>
             </div>
 
+            {errorMsg && (
+                <div className="mb-4 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                    {errorMsg}
+                </div>
+            )}
+
             {saved && (
                 <div className="fixed top-6 right-6 z-50 flex items-center gap-2 bg-green-500 text-white px-4 py-2.5 rounded-xl shadow-lg">
                     <Check size={16} /> Saved successfully
+                </div>
+            )}
+
+            {saving && (
+                <div className="fixed inset-0 z-40 bg-black/10 flex items-center justify-center">
+                    <div className="bg-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3">
+                        <Loader2 size={20} className="animate-spin text-orange-500" />
+                        <span className="text-sm font-medium text-gray-700">Saving…</span>
+                    </div>
                 </div>
             )}
 
@@ -150,7 +419,7 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                             <button onClick={() => addMember(coreMembers, setCoreMembers, { member_name: '', member_role: '', member_bio: '', member_image: '', linkedin_url: '', twitter_url: '', instagram_url: '' })} className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <Plus size={16} /> Add Member
                             </button>
-                            <button onClick={saveCore} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <button onClick={saveCore} disabled={saving} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <Save size={16} /> Save
                             </button>
                         </div>
@@ -207,7 +476,7 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                             <div>
                                 <h2 className="font-semibold text-gray-900">Volunteer CTA</h2>
                             </div>
-                            <button onClick={saveVolunteers} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <button onClick={saveVolunteers} disabled={saving} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <Save size={16} /> Save All Volunteers
                             </button>
                         </div>
@@ -273,7 +542,7 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                             <div>
                                 <h2 className="font-semibold text-gray-900">Mentors Section</h2>
                             </div>
-                            <button onClick={saveMentors} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <button onClick={saveMentors} disabled={saving} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <Save size={16} /> Save All Mentors
                             </button>
                         </div>
@@ -354,7 +623,7 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                             <div>
                                 <h2 className="font-semibold text-gray-900">Ambassador CTA</h2>
                             </div>
-                            <button onClick={saveAmbassadors} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <button onClick={saveAmbassadors} disabled={saving} className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <Save size={16} /> Save All Ambassadors
                             </button>
                         </div>

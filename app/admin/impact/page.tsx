@@ -3,26 +3,26 @@
 import { useState, useEffect } from 'react';
 import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
-    ImpactHero,
-    ImpactMetric,
-    ImpactVideo,
-    getImpactHero,
-    saveImpactHero,
-    getImpactMetrics,
-    saveImpactMetrics,
-    getImpactVideo,
-    saveImpactVideo,
-    generateId,
-} from '@/lib/adminData';
-import { Save, Plus, Trash2, Check } from 'lucide-react';
+    fetchImpactHero,
+    updateImpactHero,
+    fetchImpactMetrics,
+    createImpactMetric,
+    updateImpactMetric,
+    deleteImpactMetric,
+    fetchImpactVideo,
+    updateImpactVideo,
+    ApiImpactHero,
+    ApiImpactMetric,
+    ApiImpactVideo,
+} from '@/lib/impactApi';
+import { useAdmin } from '@/contexts/AdminContext';
+import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
 
-// ─── Defaults ────────────────────────────────────────────────────────
-
-const DEFAULT_HERO: ImpactHero = {
-    total_impact_number: '8906',
-    hero_body_text:
+const DEFAULT_HERO: ApiImpactHero = {
+    totalImpactNumber: '8906',
+    heroBodyText:
         'Through every conference hall filled, every small room gathered, every campaign walked, and every conversation held, one thing has remained consistent. Teenagers show up ready.',
-    hero_images: [
+    heroImages: [
         '/images/ImpactImage_1.svg',
         '/images/ImpactImage_2.svg',
         '/images/ImpactImage_3.svg',
@@ -31,18 +31,18 @@ const DEFAULT_HERO: ImpactHero = {
     ],
 };
 
-const DEFAULT_METRICS: ImpactMetric[] = [
-    { id: '1', metric_value: '17', metric_label: 'Events Organised' },
-    { id: '2', metric_value: '54', metric_label: 'Activities Set Up' },
-    { id: '3', metric_value: '19', metric_label: 'Communities Engaged' },
-    { id: '4', metric_value: '200', metric_label: 'Members' },
-    { id: '5', metric_value: '30', metric_label: 'Speakers / Mentors' },
-    { id: '6', metric_value: '105', metric_label: 'Volunteers' },
+const DEFAULT_METRICS: ApiImpactMetric[] = [
+    { id: 1, metricValue: '17', metricLabel: 'Events Organised' },
+    { id: 2, metricValue: '54', metricLabel: 'Activities Set Up' },
+    { id: 3, metricValue: '19', metricLabel: 'Communities Engaged' },
+    { id: 4, metricValue: '200', metricLabel: 'Members' },
+    { id: 5, metricValue: '30', metricLabel: 'Speakers / Mentors' },
+    { id: 6, metricValue: '105', metricLabel: 'Volunteers' },
 ];
 
-const DEFAULT_VIDEO: ImpactVideo = {
-    video_url: 'https://www.youtube.com/watch?v=ygXT6v59cTU',
-    video_description:
+const DEFAULT_VIDEO: ApiImpactVideo = {
+    videoUrl: 'https://www.youtube.com/watch?v=ygXT6v59cTU',
+    videoDescription:
         'See the moments, voices, and stories behind the numbers. Our impact videos capture teenagers learning, speaking, creating, and leading across conferences, summits, campaigns, and community activities.',
 };
 
@@ -50,48 +50,149 @@ const tabs = ['Hero Section', 'Metrics Grid', 'Video Highlight'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminImpactPage() {
+    const { getAuthHeaders } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Hero Section');
     const [saved, setSaved] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const [hero, setHero] = useState<ImpactHero>(DEFAULT_HERO);
-    const [metrics, setMetrics] = useState<ImpactMetric[]>(DEFAULT_METRICS);
-    const [video, setVideo] = useState<ImpactVideo>(DEFAULT_VIDEO);
+    const [hero, setHero] = useState<ApiImpactHero>(DEFAULT_HERO);
+
+    // For metrics, we need to track local temporary IDs vs backend IDs
+    type LocalMetric = Omit<ApiImpactMetric, 'id'> & { id?: number; localId: string };
+    const [metrics, setMetrics] = useState<LocalMetric[]>(
+        DEFAULT_METRICS.map((m) => ({ ...m, localId: m.id.toString() }))
+    );
+    const [initialMetrics, setInitialMetrics] = useState<LocalMetric[]>([]);
+
+    const [video, setVideo] = useState<ApiImpactVideo>(DEFAULT_VIDEO);
 
     useEffect(() => {
-        const h = getImpactHero();
-        if (h) setHero(h);
-        const m = getImpactMetrics();
-        if (m) setMetrics(m);
-        const v = getImpactVideo();
-        if (v) setVideo(v);
+        loadData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const loadData = async () => {
+        try {
+            const h = await fetchImpactHero().catch(() => null);
+            if (h) setHero(h);
+
+            const m = await fetchImpactMetrics().catch(() => null);
+            if (m && m.length > 0) {
+                const mapped = m.map((metric) => ({
+                    ...metric,
+                    localId: metric.id.toString(),
+                }));
+                // Sort by ID to maintain order if the API doesn't guarantee it natively
+                mapped.sort((a, b) => a.id - b.id);
+                setMetrics(mapped);
+                setInitialMetrics(JSON.parse(JSON.stringify(mapped)));
+            }
+
+            const v = await fetchImpactVideo().catch(() => null);
+            if (v && v.videoUrl) setVideo(v);
+        } catch (e) {
+            console.error("Failed to load impact data", e);
+        }
+    };
 
     const flash = () => {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
     };
 
+    const handleSaveHero = async () => {
+        setLoading(true);
+        try {
+            await updateImpactHero(hero, getAuthHeaders());
+            flash();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to save Hero section");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSaveMetrics = async () => {
+        setLoading(true);
+        try {
+            // Find deleted metrics
+            const initialIds = initialMetrics.filter(m => m.id !== undefined).map(m => m.id);
+            const currentIds = metrics.filter(m => m.id !== undefined).map(m => m.id);
+            const deletedIds = initialIds.filter(id => !currentIds.includes(id));
+
+            // Delete removed metrics
+            for (const id of deletedIds) {
+                if (id !== undefined) {
+                    await deleteImpactMetric(id, getAuthHeaders());
+                }
+            }
+
+            // Create or update metrics
+            for (const m of metrics) {
+                const data = { metricValue: m.metricValue, metricLabel: m.metricLabel };
+                if (m.id === undefined) {
+                    // New metric
+                    await createImpactMetric(data, getAuthHeaders());
+                } else {
+                    // Update existing
+                    await updateImpactMetric(m.id, data, getAuthHeaders());
+                }
+            }
+            // Reload metrics to get accurate IDs after creations
+            const mData = await fetchImpactMetrics().catch(() => null);
+            if (mData) {
+                const mapped = mData.map((metric) => ({
+                    ...metric,
+                    localId: metric.id.toString(),
+                }));
+                mapped.sort((a, b) => a.id - b.id);
+                setMetrics(mapped);
+                setInitialMetrics(JSON.parse(JSON.stringify(mapped)));
+            }
+            flash();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to save Metrics Grid");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSaveVideo = async () => {
+        setLoading(true);
+        try {
+            await updateImpactVideo(video, getAuthHeaders());
+            flash();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to save Video Highlight");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     // ── Hero helpers ──
     const addHeroImage = () => {
-        setHero({ ...hero, hero_images: [...hero.hero_images, ''] });
+        setHero({ ...hero, heroImages: [...hero.heroImages, ''] });
     };
 
     const removeHeroImage = (index: number) => {
-        const imgs = [...hero.hero_images];
+        const imgs = [...hero.heroImages];
         imgs.splice(index, 1);
-        setHero({ ...hero, hero_images: imgs });
+        setHero({ ...hero, heroImages: imgs });
     };
 
     // ── Metrics helpers ──
     const addMetric = () => {
         setMetrics([
             ...metrics,
-            { id: generateId(), metric_value: '', metric_label: '' },
+            { localId: Math.random().toString(36).substr(2, 9), metricValue: '', metricLabel: '' },
         ]);
     };
 
-    const removeMetric = (id: string) => {
-        setMetrics(metrics.filter((m) => m.id !== id));
+    const removeMetric = (localId: string) => {
+        setMetrics(metrics.filter((m) => m.localId !== localId));
     };
 
     return (
@@ -131,13 +232,12 @@ export default function AdminImpactPage() {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="font-semibold text-gray-900">Hero Impact Section</h2>
                         <button
-                            onClick={() => {
-                                saveImpactHero(hero);
-                                flash();
-                            }}
-                            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                            onClick={handleSaveHero}
+                            disabled={loading}
+                            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                         >
-                            <Save size={16} /> Save
+                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            Save
                         </button>
                     </div>
 
@@ -150,9 +250,9 @@ export default function AdminImpactPage() {
                                 <input
                                     type="text"
                                     maxLength={10}
-                                    value={hero.total_impact_number}
+                                    value={hero.totalImpactNumber}
                                     onChange={(e) =>
-                                        setHero({ ...hero, total_impact_number: e.target.value })
+                                        setHero({ ...hero, totalImpactNumber: e.target.value })
                                     }
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                                 />
@@ -166,14 +266,14 @@ export default function AdminImpactPage() {
                             <textarea
                                 maxLength={600}
                                 rows={5}
-                                value={hero.hero_body_text}
+                                value={hero.heroBodyText}
                                 onChange={(e) =>
-                                    setHero({ ...hero, hero_body_text: e.target.value })
+                                    setHero({ ...hero, heroBodyText: e.target.value })
                                 }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                             />
                             <span className="text-xs text-gray-400">
-                                {hero.hero_body_text.length}/600
+                                {hero.heroBodyText.length}/600
                             </span>
                         </div>
 
@@ -191,16 +291,16 @@ export default function AdminImpactPage() {
                                 </button>
                             </div>
                             <div className="space-y-2">
-                                {hero.hero_images.map((url, i) => (
+                                {hero.heroImages.map((url, i) => (
                                     <div key={i} className="flex gap-2 items-start">
                                         <div className="flex-1">
                                             <CloudinaryImageUpload
                                                 label={`Hero Image ${i + 1}`}
                                                 value={url}
                                                 onUpload={(newUrl) => {
-                                                    const imgs = [...hero.hero_images];
+                                                    const imgs = [...hero.heroImages];
                                                     imgs[i] = newUrl;
-                                                    setHero({ ...hero, hero_images: imgs });
+                                                    setHero({ ...hero, heroImages: imgs });
                                                 }}
                                             />
                                         </div>
@@ -236,13 +336,12 @@ export default function AdminImpactPage() {
                                 <Plus size={16} /> Add Metric
                             </button>
                             <button
-                                onClick={() => {
-                                    saveImpactMetrics(metrics);
-                                    flash();
-                                }}
-                                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                                onClick={handleSaveMetrics}
+                                disabled={loading}
+                                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                             >
-                                <Save size={16} /> Save
+                                {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                                Save
                             </button>
                         </div>
                     </div>
@@ -250,11 +349,11 @@ export default function AdminImpactPage() {
                     <div className="space-y-4">
                         {metrics.map((m, i) => (
                             <div
-                                key={m.id}
+                                key={m.localId}
                                 className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-xl relative"
                             >
                                 <button
-                                    onClick={() => removeMetric(m.id)}
+                                    onClick={() => removeMetric(m.localId)}
                                     className="absolute top-3 right-3 text-gray-400 hover:text-red-500"
                                 >
                                     <Trash2 size={16} />
@@ -266,12 +365,12 @@ export default function AdminImpactPage() {
                                     <input
                                         type="text"
                                         maxLength={10}
-                                        value={m.metric_value}
+                                        value={m.metricValue}
                                         onChange={(e) => {
                                             const updated = [...metrics];
                                             updated[i] = {
                                                 ...updated[i],
-                                                metric_value: e.target.value,
+                                                metricValue: e.target.value,
                                             };
                                             setMetrics(updated);
                                         }}
@@ -285,12 +384,12 @@ export default function AdminImpactPage() {
                                     <input
                                         type="text"
                                         maxLength={30}
-                                        value={m.metric_label}
+                                        value={m.metricLabel}
                                         onChange={(e) => {
                                             const updated = [...metrics];
                                             updated[i] = {
                                                 ...updated[i],
-                                                metric_label: e.target.value,
+                                                metricLabel: e.target.value,
                                             };
                                             setMetrics(updated);
                                         }}
@@ -311,13 +410,12 @@ export default function AdminImpactPage() {
                             &ldquo;Watch our Impact&rdquo; Video
                         </h2>
                         <button
-                            onClick={() => {
-                                saveImpactVideo(video);
-                                flash();
-                            }}
-                            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                            onClick={handleSaveVideo}
+                            disabled={loading}
+                            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                         >
-                            <Save size={16} /> Save
+                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            Save
                         </button>
                     </div>
 
@@ -328,9 +426,9 @@ export default function AdminImpactPage() {
                             </label>
                             <input
                                 type="text"
-                                value={video.video_url}
+                                value={video.videoUrl}
                                 onChange={(e) =>
-                                    setVideo({ ...video, video_url: e.target.value })
+                                    setVideo({ ...video, videoUrl: e.target.value })
                                 }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
                                 placeholder="https://www.youtube.com/watch?v=..."
@@ -343,14 +441,14 @@ export default function AdminImpactPage() {
                             <textarea
                                 maxLength={200}
                                 rows={4}
-                                value={video.video_description}
+                                value={video.videoDescription}
                                 onChange={(e) =>
-                                    setVideo({ ...video, video_description: e.target.value })
+                                    setVideo({ ...video, videoDescription: e.target.value })
                                 }
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                             />
                             <span className="text-xs text-gray-400">
-                                {video.video_description.length}/200
+                                {video.videoDescription.length}/200
                             </span>
                         </div>
                     </div>

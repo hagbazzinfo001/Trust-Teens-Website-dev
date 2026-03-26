@@ -2,7 +2,7 @@
 
 import { motion, useInView } from 'framer-motion';
 import { useRef, useState, useEffect } from 'react';
-import { getImpactVideo } from '@/lib/adminData';
+import { fetchImpactVideo } from '@/lib/impactApi';
 
 export default function WatchOurImpact() {
   const videoRef = useRef(null);
@@ -27,11 +27,12 @@ export default function WatchOurImpact() {
   }, [isInView]);
 
   useEffect(() => {
-    const savedVideo = getImpactVideo();
-    if (savedVideo) {
-      setVideoUrl(savedVideo.video_url);
-      setVideoDescription(savedVideo.video_description);
-    }
+    fetchImpactVideo().then((savedVideo) => {
+      if (savedVideo && savedVideo.videoUrl) {
+        setVideoUrl(savedVideo.videoUrl);
+        setVideoDescription(savedVideo.videoDescription);
+      }
+    }).catch(e => console.error("Failed to load video", e));
   }, []);
 
   return (
