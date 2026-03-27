@@ -8,8 +8,7 @@ import {
     Testimonial,
     generateId,
 } from '@/lib/adminData';
-import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
-import { useAdmin } from '@/contexts/AdminContext';
+import { Plus, Trash2, Check, Loader2, Save } from 'lucide-react';
 import { fetchTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '@/lib/testimonialsApi';
 import { fetchHeroStats, createHeroStat, updateHeroStat, deleteHeroStat } from '@/lib/heroStatsApi';
 import { ApiHomeImpactStat, fetchHomeImpactStats, createHomeImpactStat, updateHomeImpactStat, deleteHomeImpactStat } from '@/lib/homeImpactStatsApi';
@@ -58,7 +57,6 @@ type LocalHeroMetric = { apiId?: string | number, metric_value: string, metric_l
 type LocalImpactStat = ImpactStat & { _apiId?: string | number; _position?: number };
 
 export default function AdminHomePage() {
-    const { getAuthHeaders } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Hero Metrics');
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -175,9 +173,9 @@ export default function AdminHomePage() {
                     position: m.position,
                 };
                 if (m.apiId === undefined) {
-                    await createHeroStat(data, getAuthHeaders());
+                    await createHeroStat(data);
                 } else {
-                    await updateHeroStat(m.apiId, data, getAuthHeaders());
+                    await updateHeroStat(m.apiId, data);
                 }
             }
             await loadHeroStats();
@@ -194,7 +192,6 @@ export default function AdminHomePage() {
         setLoading(true);
         setImpactError('');
         try {
-            const headers = getAuthHeaders();
             // Fetch current remote list for diffing
             const remote = await fetchHomeImpactStats();
             const remoteIds = new Set(remote.map((r) => String(r._id || r.id)));
@@ -204,7 +201,7 @@ export default function AdminHomePage() {
             for (const r of remote) {
                 const rid = String(r._id || r.id);
                 if (!localIds.has(rid)) {
-                    await deleteHomeImpactStat(rid, headers);
+                    await deleteHomeImpactStat(rid);
                 }
             }
 
@@ -214,9 +211,9 @@ export default function AdminHomePage() {
                 const numStr = stat.suffix ? `${stat.value}${stat.suffix}` : String(stat.value);
                 const payload = { statNumber: numStr, statTitle: stat.label, position: i };
                 if (stat._apiId && remoteIds.has(String(stat._apiId))) {
-                    await updateHomeImpactStat(stat._apiId, payload, headers);
+                    await updateHomeImpactStat(stat._apiId, payload);
                 } else {
-                    await createHomeImpactStat(payload, headers);
+                    await createHomeImpactStat(payload);
                 }
             }
 
@@ -239,7 +236,7 @@ export default function AdminHomePage() {
             const deletedIds = initialApiIds.filter(id => !currentApiIds.includes(id));
 
             for (const id of deletedIds) {
-                if (id !== undefined) await deleteTestimonial(id, getAuthHeaders());
+                if (id !== undefined) await deleteTestimonial(id);
             }
 
             for (const t of testimonials) {
@@ -250,9 +247,9 @@ export default function AdminHomePage() {
                     teenImage: t.teen_image,
                 };
                 if (t.apiId === undefined) {
-                    await createTestimonial(data, getAuthHeaders());
+                    await createTestimonial(data);
                 } else {
-                    await updateTestimonial(t.apiId, data, getAuthHeaders());
+                    await updateTestimonial(t.apiId, data);
                 }
             }
             await loadTestimonials();
