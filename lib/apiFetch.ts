@@ -20,6 +20,14 @@ export async function apiFetch<T>(
     });
 
     if (!res.ok) {
+        if (res.status === 401 && typeof window !== 'undefined') {
+            console.error('Unauthorized (401) - clearing session and redirecting to login.');
+            localStorage.removeItem('admin_user');
+            localStorage.removeItem('admin_access_token');
+            if (window.location.pathname !== '/admin/login') {
+                window.location.href = '/admin/login';
+            }
+        }
         const body = await res.text().catch(() => '');
         throw new Error(
             `API ${init?.method ?? 'GET'} ${url} → ${res.status}: ${body}`
