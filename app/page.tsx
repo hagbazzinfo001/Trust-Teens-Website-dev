@@ -13,7 +13,7 @@ import icon2 from "@/public/images/icon2.svg";
 import icon5 from "@/public/images/icon5.svg";
 import icon6 from "@/public/images/icon6.svg";
 import Image from "next/image";
-import { getImpactStats } from "@/lib/adminData";
+import { fetchHomeImpactStats } from "@/lib/homeImpactStatsApi";
 import { fetchTestimonials } from "@/lib/testimonialsApi";
 
 const DEFAULT_TESTIMONIALS = [
@@ -114,10 +114,23 @@ export default function Home() {
     };
     loadTestimonials();
 
-    const savedStats = getImpactStats();
-    if (savedStats) {
-      setImpactStats(savedStats);
-    }
+    const loadImpactStats = async () => {
+      try {
+        const apiData = await fetchHomeImpactStats();
+        if (apiData && apiData.length > 0) {
+          setImpactStats(
+            apiData.map((d) => ({
+              value: parseInt(String(d.statNumber).replace(/[^0-9]/g, '')) || 0,
+              label: d.statTitle || '',
+              suffix: String(d.statNumber).replace(/[0-9]/g, '').trim() || undefined,
+            }))
+          );
+        }
+      } catch (err) {
+        console.error('Failed to load impact stats on client', err);
+      }
+    };
+    loadImpactStats();
   }, []);
 
   return (

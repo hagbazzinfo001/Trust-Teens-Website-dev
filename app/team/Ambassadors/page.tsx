@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { getAmbassadorMembers, getAmbassadorCTA, AmbassadorMember, AmbassadorCTA } from '@/lib/adminData';
+import { fetchAmbassadorMembers, fetchAmbassadorCta } from '@/lib/teamApi';
 
 export default function TeenAmbassadorsPage() {
   const router = useRouter();
@@ -34,23 +34,31 @@ export default function TeenAmbassadorsPage() {
     { name: "Deborah Dada", school: "School name", location: "Ogun State, Nigeria" },
   ];
 
-  const [dbAmbassadors, setDbAmbassadors] = useState<AmbassadorMember[]>([]);
-  const [dbCta, setDbCta] = useState<AmbassadorCTA | null>(null);
+  const [dbAmbassadors, setDbAmbassadors] = useState<{name: string; school: string; location: string; image: string}[]>([]);
+  const [dbCta, setDbCta] = useState<{apply_button_url: string} | null>(null);
 
   useEffect(() => {
-    const members = getAmbassadorMembers();
-    if (members && members.length > 0) setDbAmbassadors(members);
-
-    const cta = getAmbassadorCTA();
-    if (cta) setDbCta(cta);
+    const loadData = async () => {
+      try {
+        const members = await fetchAmbassadorMembers();
+        if (members && members.length > 0) {
+          setDbAmbassadors(members.sort((a,b) => a.displayOrder - b.displayOrder).map(a => ({
+            name: a.ambassadorName || '',
+            school: a.schoolName || '',
+            location: a.location || '',
+            image: a.ambassadorImage || '/images/coreteam2.svg',
+          })));
+        }
+      } catch (err) { console.error('Failed to load ambassador members', err); }
+      try {
+        const cta = await fetchAmbassadorCta();
+        if (cta) setDbCta({ apply_button_url: cta.applyButtonUrl || '' });
+      } catch (err) { console.error('Failed to load ambassador CTA', err); }
+    };
+    loadData();
   }, []);
 
-  const ambassadorsToDisplay = dbAmbassadors.length > 0 ? dbAmbassadors.map(a => ({
-    name: a.ambassador_name,
-    school: a.school_name,
-    location: a.location,
-    image: a.ambassador_image || "/images/coreteam2.svg"
-  })) : ambassadors.map(a => ({
+  const ambassadorsToDisplay = dbAmbassadors.length > 0 ? dbAmbassadors : ambassadors.map(a => ({
     ...a,
     image: "/images/coreteam2.svg"
   }));

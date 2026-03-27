@@ -16,9 +16,11 @@ interface HangoutDetailsModalProps {
   onClose: () => void;
 }
 const stats = [
-  { icon: "/images/teenagerCommunitty.svg", label: "Teenagers actively participating in service projects", value: "25" },
-  { icon: "/images/cleanCummunity.svg", label: "Cleaner, safer community spaces", value: "3" },
-  { icon: "/images/projectCommunity.svg", label: "Community Projects Delivered", value: "2" },
+  { icon: "/images/hangout1.png", label: "Session Delivered", value: "1" },
+  { icon: "/images/hangout2.png", label: " Schools & Community Engaged", value: "1" },
+  { icon: "/images/hangout3.png", label: "Volunteers Mobilized", value: "2" },
+  { icon: "/images/hangout4.png", label: "Teenagers Reached", value: "30" },
+
 ];
 export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetailsModalProps) {
   if (!hangout) return null;

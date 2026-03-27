@@ -5,7 +5,7 @@ import TeamCard from "@/components/TeamCard";
 import { FadeUp } from '@/components/MotionWrapper';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { getCoreTeamMembers, CoreTeamMember } from '@/lib/adminData';
+import { fetchCoreMembers, ApiTeamMember } from '@/lib/teamApi';
 
 const teamMembers = [
   {
@@ -47,19 +47,28 @@ const teamMembers = [
 ];
 
 export default function CoreTeamPage() {
-  const [dbMembers, setDbMembers] = useState<CoreTeamMember[]>([]);
+  const [dbMembers, setDbMembers] = useState<{name: string; role: string; description: string; image: string}[]>([]);
 
   useEffect(() => {
-    const data = getCoreTeamMembers();
-    if (data && data.length > 0) setDbMembers(data);
+    const loadMembers = async () => {
+      try {
+        const data = await fetchCoreMembers();
+        if (data && data.length > 0) {
+          setDbMembers(data.sort((a,b) => a.displayOrder - b.displayOrder).map(m => ({
+            name: m.memberName || '',
+            role: m.memberRole || '',
+            description: m.memberBio || '',
+            image: m.memberImage || '/images/coreteam1.svg',
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load core team members', err);
+      }
+    };
+    loadMembers();
   }, []);
 
-  const membersToDisplay = dbMembers.length > 0 ? dbMembers.map(m => ({
-    name: m.member_name,
-    role: m.member_role,
-    description: m.member_bio,
-    image: m.member_image || "/images/coreteam1.svg"
-  })) : teamMembers;
+  const membersToDisplay = dbMembers.length > 0 ? dbMembers : teamMembers;
 
   return (
     <main>

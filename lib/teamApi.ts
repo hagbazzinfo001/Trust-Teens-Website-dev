@@ -83,7 +83,7 @@ export async function updateCoreHero(data: ApiSingleImage, headers: Headers): Pr
 }
 
 export async function fetchCoreMembers(): Promise<ApiTeamMember[]> {
-    return apiFetch<ApiTeamMember[]>(`${BASE}/core-members/all`);
+    return apiFetch<ApiTeamMember[]>(`${BASE}/core-members`);
 }
 
 export async function createCoreMember(data: Omit<ApiTeamMember, 'id' | 'isActive'>, headers: Headers): Promise<void> {
@@ -247,7 +247,7 @@ export async function updateAmbassadorsHero(data: ApiSingleImage, headers: Heade
 }
 
 export async function fetchAmbassadorMembers(): Promise<ApiAmbassadorMember[]> {
-    return apiFetch<ApiAmbassadorMember[]>(`${BASE}/ambassador-members/all`);
+    return apiFetch<ApiAmbassadorMember[]>(`${BASE}/ambassador-members`);
 }
 
 export async function createAmbassadorMember(data: Omit<ApiAmbassadorMember, 'id' | 'isActive'>, headers: Headers): Promise<void> {

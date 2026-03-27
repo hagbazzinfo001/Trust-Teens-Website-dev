@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, type Variants } from "framer-motion";
-import { getVolunteerMembers, VolunteerMember, getVolunteerCTA } from '@/lib/adminData';
+import { fetchVolunteerMembers, fetchVolunteerCta } from '@/lib/teamApi';
 import icon1 from "@/public/images/icon1.svg";
 import icon3 from "@/public/images/icon3.svg";
 import icon4 from "@/public/images/icon4.svg";
@@ -151,26 +151,39 @@ export default function VolunteersPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const [dbVolunteers, setDbVolunteers] = useState<VolunteerMember[]>([]);
+  const [dbVolunteers, setDbVolunteers] = useState<{name: string; role: string; bio: string; image: string}[]>([]);
   const [dbCta, setDbCta] = useState<string>("");
 
   useEffect(() => {
     const t = setTimeout(() => setLoading(false), 900);
-    const data = getVolunteerMembers();
-    if (data && data.length > 0) setDbVolunteers(data);
 
-    const cta = getVolunteerCTA();
-    if (cta && cta.join_button_url) setDbCta(cta.join_button_url);
+    const loadData = async () => {
+      try {
+        const data = await fetchVolunteerMembers();
+        if (data && data.length > 0) {
+          setDbVolunteers(data.sort((a,b) => a.displayOrder - b.displayOrder).map(v => ({
+            name: v.memberName || '',
+            role: v.memberRole || '',
+            bio: v.memberBio || '',
+            image: v.memberImage || '/images/coreteam1.svg',
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load volunteer members', err);
+      }
+      try {
+        const cta = await fetchVolunteerCta();
+        if (cta?.joinButtonUrl) setDbCta(cta.joinButtonUrl);
+      } catch (err) {
+        console.error('Failed to load volunteer CTA', err);
+      }
+    };
+    loadData();
 
     return () => clearTimeout(t);
   }, []);
 
-  const volunteersToDisplay = dbVolunteers.length > 0 ? dbVolunteers.map(v => ({
-    name: v.member_name,
-    role: v.member_role,
-    bio: v.member_bio,
-    image: v.member_image || "/images/coreteam1.svg"
-  })) : volunteers;
+  const volunteersToDisplay = dbVolunteers.length > 0 ? dbVolunteers : volunteers;
 
   return (
     <div>

@@ -14,7 +14,8 @@ import {
   BookOpen,
   Package,
 } from "lucide-react";
-import { getConferencesHero, getConferencesImpact } from "@/lib/adminData";
+import { getConferencesHero } from "@/lib/adminData";
+import { fetchImpactStats as fetchConferenceImpactStats } from "@/lib/conferencesApi";
 
 import icon1 from "@/public/images/icon1.svg";
 import icon3 from "@/public/images/icon3.svg";
@@ -108,15 +109,22 @@ export default function ConferencesPage() {
   const featuresPerPage = 3;
 
   useEffect(() => {
-    const adminImpact = getConferencesImpact();
-    if (adminImpact) {
-      const icons = [icon1, icon2, icon3, icon4];
-      setStats(adminImpact.map((s, i) => ({
-        icon: icons[i] || icon1,
-        label: s.stat_label,
-        value: s.stat_number,
-      })));
-    }
+    const loadConferenceImpact = async () => {
+      try {
+        const apiData = await fetchConferenceImpactStats();
+        if (apiData && apiData.length > 0) {
+          const icons = [icon1, icon2, icon3, icon4];
+          setStats(apiData.map((s, i) => ({
+            icon: icons[i] || icon1,
+            label: s.statLabel,
+            value: s.statNumber,
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load conference impact stats', err);
+      }
+    };
+    loadConferenceImpact();
     const adminHero = getConferencesHero();
     if (adminHero) {
       setHero(adminHero);

@@ -31,7 +31,8 @@ import {
   Package,
   Icon,
 } from "lucide-react";
-import { getSummitsHeroGallery, getSummitsImpact } from "@/lib/adminData";
+import { getSummitsHeroGallery } from "@/lib/adminData";
+import { fetchImpactStats as fetchSummitImpactStats } from "@/lib/summitsApi";
 
 
 
@@ -128,14 +129,21 @@ export default function summitPage() {
   const [heroImages, setHeroImages] = useState(defaultHeroImages);
 
   useEffect(() => {
-    const adminImpact = getSummitsImpact();
-    if (adminImpact) {
-      setStats(adminImpact.map((s, i) => ({
-        icon: statIcons[i] || icon1,
-        label: s.stat_label,
-        value: s.stat_number,
-      })));
-    }
+    const loadSummitImpact = async () => {
+      try {
+        const apiData = await fetchSummitImpactStats();
+        if (apiData && apiData.length > 0) {
+          setStats(apiData.map((s, i) => ({
+            icon: statIcons[i] || icon1,
+            label: s.statLabel,
+            value: s.statNumber,
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load summit impact stats', err);
+      }
+    };
+    loadSummitImpact();
     const adminHero = getSummitsHeroGallery();
     if (adminHero) {
       setHeroImages(adminHero);

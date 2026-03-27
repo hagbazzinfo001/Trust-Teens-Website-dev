@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import TeamCard from "@/components/TeamCard";
 import { useEffect, useState } from 'react';
-import { getMentorHero, getMentorMembers, getMentorRoleMedia, getMentorCTA, MentorMember, MentorCTA } from '@/lib/adminData';
+import { fetchMentorsHero, fetchMentorMembers, fetchMentorRoleMedia, fetchMentorCta } from '@/lib/teamApi';
 
 const teamMembers = [
   {
@@ -47,30 +47,43 @@ const teamMembers = [
 ];
 const MentorPage = () => {
   const [dbHero, setDbHero] = useState<string[]>([]);
-  const [dbMembers, setDbMembers] = useState<MentorMember[]>([]);
+  const [dbMembers, setDbMembers] = useState<{name: string; role: string; description: string; image: string}[]>([]);
   const [dbRoleImage, setDbRoleImage] = useState<string>("");
-  const [dbCta, setDbCta] = useState<MentorCTA | null>(null);
+  const [dbCta, setDbCta] = useState<{apply_button_url: string; cta_footer_image: string} | null>(null);
 
   useEffect(() => {
-    const hero = getMentorHero();
-    if (hero && hero.hero_mentor_images?.length > 0) setDbHero(hero.hero_mentor_images);
+    const loadData = async () => {
+      try {
+        const hero = await fetchMentorsHero();
+        if (hero) setDbHero([hero.heroImage1 || '', hero.heroImage2 || '']);
+      } catch (err) { console.error('Failed to load mentor hero', err); }
 
-    const members = getMentorMembers();
-    if (members && members.length > 0) setDbMembers(members);
+      try {
+        const members = await fetchMentorMembers();
+        if (members && members.length > 0) {
+          setDbMembers(members.sort((a,b) => a.displayOrder - b.displayOrder).map(m => ({
+            name: m.memberName || '',
+            role: m.memberRole || '',
+            description: m.memberBio || '',
+            image: m.memberImage || '/images/coreteam1.svg',
+          })));
+        }
+      } catch (err) { console.error('Failed to load mentor members', err); }
 
-    const roleMedia = getMentorRoleMedia();
-    if (roleMedia && roleMedia.role_feature_image) setDbRoleImage(roleMedia.role_feature_image);
+      try {
+        const roleMedia = await fetchMentorRoleMedia();
+        if (roleMedia?.imageUrl) setDbRoleImage(roleMedia.imageUrl);
+      } catch (err) { console.error('Failed to load mentor role media', err); }
 
-    const cta = getMentorCTA();
-    if (cta) setDbCta(cta);
+      try {
+        const cta = await fetchMentorCta();
+        if (cta) setDbCta({ apply_button_url: cta.applyButtonUrl || '', cta_footer_image: cta.ctaFooterImage || '' });
+      } catch (err) { console.error('Failed to load mentor CTA', err); }
+    };
+    loadData();
   }, []);
 
-  const mentorsToDisplay = dbMembers.length > 0 ? dbMembers.map(m => ({
-    name: m.member_name,
-    role: m.member_role,
-    description: m.member_bio,
-    image: m.member_image || "/images/coreteam1.svg"
-  })) : teamMembers;
+  const mentorsToDisplay = dbMembers.length > 0 ? dbMembers : teamMembers;
 
   const fadeUp = {
     hidden: { opacity: 0, y: 30 },

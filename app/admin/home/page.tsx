@@ -1,21 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import {
     HeroMetric,
     ImpactStat,
     Testimonial,
-    getHeroMetrics,
-    saveHeroMetrics,
-    getImpactStats,
-    saveImpactStats,
     generateId,
 } from '@/lib/adminData';
 import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { fetchTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '@/lib/testimonialsApi';
 import { fetchHeroStats, createHeroStat, updateHeroStat, deleteHeroStat } from '@/lib/heroStatsApi';
+import { ApiHomeImpactStat, fetchHomeImpactStats, createHomeImpactStat, updateHomeImpactStat, deleteHomeImpactStat } from '@/lib/homeImpactStatsApi';
 
 // ─── Defaults (match the hardcoded values in client page) ────────────
 
@@ -58,6 +55,7 @@ type Tab = (typeof tabs)[number];
 
 type LocalTestimonial = Testimonial & { apiId?: string | number };
 type LocalHeroMetric = { apiId?: string | number, metric_value: string, metric_label: string, position: number };
+type LocalImpactStat = ImpactStat & { _apiId?: string | number; _position?: number };
 
 export default function AdminHomePage() {
     const { getAuthHeaders } = useAdmin();
@@ -72,21 +70,43 @@ export default function AdminHomePage() {
     const [initialHeroMetrics, setInitialHeroMetrics] = useState<LocalHeroMetric[]>([]);
 
     // ── Impact Stats ──
-    const [impactStats, setImpactStats] = useState<ImpactStat[]>(DEFAULT_IMPACT);
+    const [impactStats, setImpactStats] = useState<LocalImpactStat[]>(DEFAULT_IMPACT);
+    const [impactLoading, setImpactLoading] = useState(true);
+    const [impactError, setImpactError] = useState('');
 
     // ── Testimonials ──
     const [testimonials, setTestimonials] = useState<LocalTestimonial[]>([]);
     const [initialTestimonials, setInitialTestimonials] = useState<LocalTestimonial[]>([]);
 
-    // ── Load from localStorage and API ──
+    // ── Load from API ──
+    const loadImpactStats = useCallback(async () => {
+        setImpactLoading(true);
+        setImpactError('');
+        try {
+            const data = await fetchHomeImpactStats();
+            if (data && data.length > 0) {
+                const mapped: LocalImpactStat[] = data.map((d, i) => ({
+                    value: parseInt(String(d.statNumber).replace(/[^0-9]/g, '')) || 0,
+                    label: d.statTitle || '',
+                    suffix: String(d.statNumber).replace(/[0-9]/g, '').trim() || undefined,
+                    _apiId: d._id || d.id,
+                    _position: d.position ?? i,
+                }));
+                setImpactStats(mapped);
+            }
+        } catch (e) {
+            console.error('Failed to load home impact stats', e);
+            setImpactError(e instanceof Error ? e.message : 'Failed to load impact stats');
+        } finally {
+            setImpactLoading(false);
+        }
+    }, []);
+
     useEffect(() => {
         loadHeroStats();
-
-        const s = getImpactStats();
-        if (s) setImpactStats(s);
-
+        loadImpactStats();
         loadTestimonials();
-    }, []);
+    }, [loadImpactStats]);
 
     const loadHeroStats = async () => {
         try {
@@ -170,9 +190,45 @@ export default function AdminHomePage() {
         }
     };
 
-    const handleSaveImpact = () => {
-        saveImpactStats(impactStats);
-        flash();
+    const handleSaveImpact = async () => {
+        setLoading(true);
+        setImpactError('');
+        try {
+            const headers = getAuthHeaders();
+            // Fetch current remote list for diffing
+            const remote = await fetchHomeImpactStats();
+            const remoteIds = new Set(remote.map((r) => String(r._id || r.id)));
+            const localIds = new Set(impactStats.filter((s) => s._apiId).map((s) => String(s._apiId)));
+
+            // Delete stats removed locally
+            for (const r of remote) {
+                const rid = String(r._id || r.id);
+                if (!localIds.has(rid)) {
+                    await deleteHomeImpactStat(rid, headers);
+                }
+            }
+
+            // Create or update
+            for (let i = 0; i < impactStats.length; i++) {
+                const stat = impactStats[i];
+                const numStr = stat.suffix ? `${stat.value}${stat.suffix}` : String(stat.value);
+                const payload = { statNumber: numStr, statTitle: stat.label, position: i };
+                if (stat._apiId && remoteIds.has(String(stat._apiId))) {
+                    await updateHomeImpactStat(stat._apiId, payload, headers);
+                } else {
+                    await createHomeImpactStat(payload, headers);
+                }
+            }
+
+            flash();
+            await loadImpactStats();
+        } catch (e) {
+            console.error(e);
+            setImpactError(e instanceof Error ? e.message : 'Save failed');
+            alert('Failed to save Impact Stats');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSaveTestimonials = async () => {

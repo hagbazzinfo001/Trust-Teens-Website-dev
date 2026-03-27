@@ -26,7 +26,7 @@ import {
   BookOpen,
   Package,
 } from "lucide-react";
-import { getCampaignsImpact } from "@/lib/adminData";
+import { fetchImpactStats as fetchCampaignImpactStats } from "@/lib/campaignsApi";
 
 
 
@@ -82,14 +82,21 @@ export default function MissionsPage() {
   const [stats, setStats] = useState(defaultStats);
 
   useEffect(() => {
-    const adminData = getCampaignsImpact();
-    if (adminData) {
-      setStats(adminData.map((s, i) => ({
-        icon: icons[i] || gg,
-        label: s.stat_label,
-        value: s.stat_number,
-      })));
-    }
+    const loadCampaignImpact = async () => {
+      try {
+        const apiData = await fetchCampaignImpactStats();
+        if (apiData && apiData.length > 0) {
+          setStats(apiData.map((s, i) => ({
+            icon: icons[i] || gg,
+            label: s.statLabel,
+            value: s.statNumber,
+          })));
+        }
+      } catch (err) {
+        console.error('Failed to load campaign impact stats', err);
+      }
+    };
+    loadCampaignImpact();
   }, []);
 
   const [activeSet, setActiveSet] = useState(0);
