@@ -99,7 +99,7 @@ type ImpactWithApi = MissionImpactStat & { _apiId?: number; _position?: number }
 type ConfWithApi = PastConferenceItem & { _apiId?: number };
 
 export default function AdminConferencesPage() {
-    const { getAuthHeaders } = useAdmin();
+    const { } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Hero Images');
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -208,14 +208,13 @@ export default function AdminConferencesPage() {
         setSaving(true);
         setImpactError('');
         try {
-            const headers = getAuthHeaders();
             const remote = await fetchImpactStats();
             const remoteIds = new Set(remote.map((r) => r.id));
             const localIds = new Set(impact.filter((s) => s._apiId).map((s) => s._apiId!));
 
             for (const r of remote) {
                 if (!localIds.has(r.id)) {
-                    await deleteImpactStat(r.id, headers);
+                    await deleteImpactStat(r.id);
                 }
             }
 
@@ -223,9 +222,9 @@ export default function AdminConferencesPage() {
                 const stat = impact[i];
                 const payload = { statNumber: stat.stat_number, statLabel: stat.stat_label, position: i };
                 if (stat._apiId && remoteIds.has(stat._apiId)) {
-                    await updateImpactStat(stat._apiId, payload, headers);
+                    await updateImpactStat(stat._apiId, payload);
                 } else {
-                    await createImpactStat(payload, headers);
+                    await createImpactStat(payload);
                 }
             }
 
@@ -249,7 +248,7 @@ export default function AdminConferencesPage() {
             setSaving(true);
             setPastError('');
             try {
-                await deletePastConference(item._apiId, getAuthHeaders());
+                await deletePastConference(item._apiId);
                 setPastItems(pastItems.filter((c) => c.conference_id !== item.conference_id));
                 flash();
             } catch (e: unknown) {
@@ -266,7 +265,6 @@ export default function AdminConferencesPage() {
         setSaving(true);
         setPastError('');
         try {
-            const headers = getAuthHeaders();
             for (const item of pastItems) {
                 const payload = {
                     campaignTitle: item.conference_title,
@@ -275,9 +273,9 @@ export default function AdminConferencesPage() {
                     isActive: true,
                 };
                 if (item._apiId) {
-                    await updatePastConference(item._apiId, payload, headers);
+                    await updatePastConference(item._apiId, payload);
                 } else {
-                    await createPastConference(payload, headers);
+                    await createPastConference(payload);
                 }
             }
             flash();
@@ -295,16 +293,13 @@ export default function AdminConferencesPage() {
         setSaving(true);
         setUpcomingError('');
         try {
-            await updateUpcoming(
-                {
-                    missionTitle: upcoming.name,
-                    missionDate: upcoming.date_time,
-                    missionLink: upcoming.register_url,
-                    missionDescription: upcoming.description,
-                    missionImage: upcoming.promo_image || '',
-                },
-                getAuthHeaders(),
-            );
+            await updateUpcoming({
+                missionTitle: upcoming.name,
+                missionDate: upcoming.date_time,
+                missionLink: upcoming.register_url,
+                missionDescription: upcoming.description,
+                missionImage: upcoming.promo_image || '',
+            });
             flash();
             await loadUpcoming();
         } catch (e: unknown) {

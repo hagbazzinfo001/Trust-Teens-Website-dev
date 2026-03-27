@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
 import { useRouter } from 'next/navigation';
-import { useAdmin } from '@/contexts/AdminContext';
 import {
     CoreTeamMember,
     VolunteerMember,
@@ -92,7 +91,6 @@ function apiToAmb(a: teamApi.ApiAmbassadorMember): AmbassadorMember & { _apiId: 
 
 export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
     const router = useRouter();
-    const { getAuthHeaders } = useAdmin();
     const activeTab = initialTab;
     
     const [saved, setSaved] = useState(false);
@@ -190,14 +188,13 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
     const saveCore = async () => {
         setSaving(true);
         setErrorMsg('');
-        const headers = getAuthHeaders();
         try {
             // Save core hero just in case we add it to the UI later, but for now just members
             const remote = await teamApi.fetchCoreMembers().catch(() => []);
             const remoteIds = new Set(remote.map(r => r.id));
             const localIds = new Set(coreMembers.filter(m => m._apiId).map(m => m._apiId!));
             
-            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteCoreMember(r.id, headers);
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteCoreMember(r.id);
 
             for (const m of coreMembers) {
                 const payload = {
@@ -211,9 +208,9 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                     displayOrder: m.display_order,
                 };
                 if (m._apiId && remoteIds.has(m._apiId)) {
-                    await teamApi.updateCoreMember(m._apiId, { ...payload, isActive: true }, headers);
+                    await teamApi.updateCoreMember(m._apiId, { ...payload, isActive: true });
                 } else {
-                    await teamApi.createCoreMember(payload, headers);
+                    await teamApi.createCoreMember(payload);
                 }
             }
             flash();
@@ -228,15 +225,14 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
     const saveVolunteers = async () => { 
         setSaving(true);
         setErrorMsg('');
-        const headers = getAuthHeaders();
         try {
-            await teamApi.updateVolunteerCta({ isActive: true, joinButtonUrl: volunteerCTA.join_button_url }, headers);
+            await teamApi.updateVolunteerCta({ isActive: true, joinButtonUrl: volunteerCTA.join_button_url });
 
             const remote = await teamApi.fetchVolunteerMembers().catch(() => []);
             const remoteIds = new Set(remote.map(r => r.id));
             const localIds = new Set(volunteerMembers.filter(m => m._apiId).map(m => m._apiId!));
 
-            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteVolunteerMember(r.id, headers);
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteVolunteerMember(r.id);
 
             for (const m of volunteerMembers) {
                 const payload = {
@@ -250,9 +246,9 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                     displayOrder: m.display_order,
                 };
                 if (m._apiId && remoteIds.has(m._apiId)) {
-                    await teamApi.updateVolunteerMember(m._apiId, { ...payload, isActive: true }, headers);
+                    await teamApi.updateVolunteerMember(m._apiId, { ...payload, isActive: true });
                 } else {
-                    await teamApi.createVolunteerMember(payload, headers);
+                    await teamApi.createVolunteerMember(payload);
                 }
             }
             flash();
@@ -267,17 +263,16 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
     const saveMentors = async () => { 
         setSaving(true);
         setErrorMsg('');
-        const headers = getAuthHeaders();
         try {
-            await teamApi.updateMentorsHero({ heroImage1: mentorHero.hero_mentor_images[0], heroImage2: mentorHero.hero_mentor_images[1] }, headers);
-            await teamApi.updateMentorRoleMedia({ imageUrl: mentorRoleMedia.role_feature_image }, headers);
-            await teamApi.updateMentorCta({ isActive: true, applyButtonUrl: mentorCTA.apply_button_url, ctaFooterImage: mentorCTA.cta_footer_image }, headers);
+            await teamApi.updateMentorsHero({ heroImage1: mentorHero.hero_mentor_images[0], heroImage2: mentorHero.hero_mentor_images[1] });
+            await teamApi.updateMentorRoleMedia({ imageUrl: mentorRoleMedia.role_feature_image });
+            await teamApi.updateMentorCta({ isActive: true, applyButtonUrl: mentorCTA.apply_button_url, ctaFooterImage: mentorCTA.cta_footer_image });
 
             const remote = await teamApi.fetchMentorMembers().catch(() => []);
             const remoteIds = new Set(remote.map(r => r.id));
             const localIds = new Set(mentorMembers.filter(m => m._apiId).map(m => m._apiId!));
 
-            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteMentorMember(r.id, headers);
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteMentorMember(r.id);
 
             for (const m of mentorMembers) {
                 const payload = {
@@ -291,9 +286,9 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                     displayOrder: m.display_order,
                 };
                 if (m._apiId && remoteIds.has(m._apiId)) {
-                    await teamApi.updateMentorMember(m._apiId, { ...payload, isActive: true }, headers);
+                    await teamApi.updateMentorMember(m._apiId, { ...payload, isActive: true });
                 } else {
-                    await teamApi.createMentorMember(payload, headers);
+                    await teamApi.createMentorMember(payload);
                 }
             }
             flash();
@@ -308,15 +303,14 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
     const saveAmbassadors = async () => { 
         setSaving(true);
         setErrorMsg('');
-        const headers = getAuthHeaders();
         try {
-            await teamApi.updateAmbassadorCta({ isActive: true, applyButtonUrl: ambassadorCTA.apply_button_url }, headers);
+            await teamApi.updateAmbassadorCta({ isActive: true, applyButtonUrl: ambassadorCTA.apply_button_url });
 
             const remote = await teamApi.fetchAmbassadorMembers().catch(() => []);
             const remoteIds = new Set(remote.map(r => r.id));
             const localIds = new Set(ambassadorMembers.filter(m => m._apiId).map(m => m._apiId!));
 
-            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteAmbassadorMember(r.id, headers);
+            for (const r of remote) if (!localIds.has(r.id)) await teamApi.deleteAmbassadorMember(r.id);
 
             for (const m of ambassadorMembers) {
                 const payload = {
@@ -327,9 +321,9 @@ export default function AdminTeamTabs({ initialTab }: { initialTab: Tab }) {
                     displayOrder: m.display_order,
                 };
                 if (m._apiId && remoteIds.has(m._apiId)) {
-                    await teamApi.updateAmbassadorMember(m._apiId, { ...payload, isActive: true }, headers);
+                    await teamApi.updateAmbassadorMember(m._apiId, { ...payload, isActive: true });
                 } else {
-                    await teamApi.createAmbassadorMember(payload, headers);
+                    await teamApi.createAmbassadorMember(payload);
                 }
             }
             flash();

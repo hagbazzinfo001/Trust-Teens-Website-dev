@@ -1,5 +1,4 @@
-// ─── Impact API Service ───────────────────────────────────────────
-// Wraps the trustteens backend endpoints for the Impact Page
+import { apiFetch } from '@/lib/apiFetch';
 
 const BASE = 'https://trustteens-api.onrender.com/api/v1/impact';
 
@@ -22,20 +21,6 @@ export interface ApiImpactVideo {
     videoDescription: string;
 }
 
-type Headers = Record<string, string>;
-
-// ─── Helper ─────────────────────────────────────────────────────────
-
-async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
-    const res = await fetch(url, init);
-    if (!res.ok) {
-        const body = await res.text().catch(() => '');
-        throw new Error(`API ${init?.method ?? 'GET'} ${url} → ${res.status}: ${body}`);
-    }
-    const text = await res.text();
-    return text ? (JSON.parse(text) as T) : (undefined as unknown as T);
-}
-
 // ═══════════════════════════════════════════════════════════════════════
 // HERO SECTION
 // ═══════════════════════════════════════════════════════════════════════
@@ -45,12 +30,10 @@ export async function fetchImpactHero(): Promise<ApiImpactHero> {
 }
 
 export async function updateImpactHero(
-    data: ApiImpactHero,
-    headers: Headers,
+    data: ApiImpactHero
 ): Promise<void> {
     await apiFetch(`${BASE}/hero`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
@@ -64,32 +47,27 @@ export async function fetchImpactMetrics(): Promise<ApiImpactMetric[]> {
 }
 
 export async function createImpactMetric(
-    data: Omit<ApiImpactMetric, 'id'>,
-    headers: Headers,
+    data: Omit<ApiImpactMetric, 'id'>
 ): Promise<ApiImpactMetric> {
     return apiFetch<ApiImpactMetric>(`${BASE}/stats-grid`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
 export async function updateImpactMetric(
     id: number,
-    data: Omit<ApiImpactMetric, 'id'>,
-    headers: Headers,
+    data: Omit<ApiImpactMetric, 'id'>
 ): Promise<void> {
     await apiFetch(`${BASE}/stats-grid/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function deleteImpactMetric(id: number, headers: Headers): Promise<void> {
+export async function deleteImpactMetric(id: number): Promise<void> {
     await apiFetch(`${BASE}/stats-grid/${id}`, {
         method: 'DELETE',
-        headers: { ...headers },
     });
 }
 
@@ -102,12 +80,10 @@ export async function fetchImpactVideo(): Promise<ApiImpactVideo> {
 }
 
 export async function updateImpactVideo(
-    data: ApiImpactVideo,
-    headers: Headers,
+    data: ApiImpactVideo
 ): Promise<void> {
     await apiFetch(`${BASE}/featured-video`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }

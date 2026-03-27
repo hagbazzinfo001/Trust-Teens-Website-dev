@@ -93,7 +93,7 @@ type ImpactWithApi = MissionImpactStat & { _apiId?: number; _position?: number }
 type SummitWithApi = PastSummitItem & { _apiId?: number };
 
 export default function AdminSummitsPage() {
-    const { getAuthHeaders } = useAdmin();
+    const { } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Hero Gallery');
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -201,14 +201,13 @@ export default function AdminSummitsPage() {
         setSaving(true);
         setImpactError('');
         try {
-            const headers = getAuthHeaders();
             const remote = await fetchImpactStats();
             const remoteIds = new Set(remote.map((r) => r.id));
             const localIds = new Set(impact.filter((s) => s._apiId).map((s) => s._apiId!));
 
             for (const r of remote) {
                 if (!localIds.has(r.id)) {
-                    await deleteImpactStat(r.id, headers);
+                    await deleteImpactStat(r.id);
                 }
             }
 
@@ -216,9 +215,9 @@ export default function AdminSummitsPage() {
                 const stat = impact[i];
                 const payload = { statNumber: stat.stat_number, statLabel: stat.stat_label, position: i };
                 if (stat._apiId && remoteIds.has(stat._apiId)) {
-                    await updateImpactStat(stat._apiId, payload, headers);
+                    await updateImpactStat(stat._apiId, payload);
                 } else {
-                    await createImpactStat(payload, headers);
+                    await createImpactStat(payload);
                 }
             }
 
@@ -242,7 +241,7 @@ export default function AdminSummitsPage() {
             setSaving(true);
             setPastError('');
             try {
-                await deletePastSummit(item._apiId, getAuthHeaders());
+                await deletePastSummit(item._apiId);
                 setPastItems(pastItems.filter((s) => s.summit_id !== item.summit_id));
                 flash();
             } catch (e: unknown) {
@@ -259,7 +258,6 @@ export default function AdminSummitsPage() {
         setSaving(true);
         setPastError('');
         try {
-            const headers = getAuthHeaders();
             for (const item of pastItems) {
                 const payload = {
                     campaignTitle: item.summit_title,
@@ -268,9 +266,9 @@ export default function AdminSummitsPage() {
                     isActive: true,
                 };
                 if (item._apiId) {
-                    await updatePastSummit(item._apiId, payload, headers);
+                    await updatePastSummit(item._apiId, payload);
                 } else {
-                    await createPastSummit(payload, headers);
+                    await createPastSummit(payload);
                 }
             }
             flash();
@@ -288,16 +286,13 @@ export default function AdminSummitsPage() {
         setSaving(true);
         setUpcomingError('');
         try {
-            await updateUpcoming(
-                {
-                    missionTitle: upcoming.name,
-                    missionDate: upcoming.date_time,
-                    missionLink: upcoming.register_url,
-                    missionDescription: upcoming.description,
-                    missionImage: '',
-                },
-                getAuthHeaders(),
-            );
+            await updateUpcoming({
+                missionTitle: upcoming.name,
+                missionDate: upcoming.date_time,
+                missionLink: upcoming.register_url,
+                missionDescription: upcoming.description,
+                missionImage: '',
+            });
             flash();
             await loadUpcoming();
         } catch (e: unknown) {

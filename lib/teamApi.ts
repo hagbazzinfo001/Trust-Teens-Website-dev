@@ -1,4 +1,4 @@
-// ─── Team API Service ──────────────────────────────────────────────────
+import { apiFetch } from '@/lib/apiFetch';
 
 const BASE = 'https://trustteens-api.onrender.com/api/v1/team';
 
@@ -52,20 +52,6 @@ export interface ApiAmbassadorCta {
     ctaSideImage?: string;
 }
 
-type Headers = Record<string, string>;
-
-// ─── Helper ─────────────────────────────────────────────────────────
-
-async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
-    const res = await fetch(url, init);
-    if (!res.ok) {
-        const body = await res.text().catch(() => '');
-        throw new Error(`API ${init?.method ?? 'GET'} ${url} → ${res.status}: ${body}`);
-    }
-    const text = await res.text();
-    return text ? (JSON.parse(text) as T) : (undefined as unknown as T);
-}
-
 // ═══════════════════════════════════════════════════════════════════════
 // CORE TEAM
 // ═══════════════════════════════════════════════════════════════════════
@@ -74,10 +60,9 @@ export async function fetchCoreHero(): Promise<ApiSingleImage> {
     return apiFetch<ApiSingleImage>(`${BASE}/core-hero`);
 }
 
-export async function updateCoreHero(data: ApiSingleImage, headers: Headers): Promise<void> {
+export async function updateCoreHero(data: ApiSingleImage): Promise<void> {
     await apiFetch(`${BASE}/core-hero`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
@@ -86,26 +71,23 @@ export async function fetchCoreMembers(): Promise<ApiTeamMember[]> {
     return apiFetch<ApiTeamMember[]>(`${BASE}/core-members`);
 }
 
-export async function createCoreMember(data: Omit<ApiTeamMember, 'id' | 'isActive'>, headers: Headers): Promise<void> {
+export async function createCoreMember(data: Omit<ApiTeamMember, 'id'|'isActive'>): Promise<void> {
     await apiFetch(`${BASE}/core-members`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function updateCoreMember(id: number, data: Partial<ApiTeamMember>, headers: Headers): Promise<void> {
+export async function updateCoreMember(id: number, data: Partial<ApiTeamMember>): Promise<void> {
     await apiFetch(`${BASE}/core-members/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function deleteCoreMember(id: number, headers: Headers): Promise<void> {
+export async function deleteCoreMember(id: number): Promise<void> {
     await apiFetch(`${BASE}/core-members/${id}`, {
         method: 'DELETE',
-        headers: { ...headers },
     });
 }
 
@@ -117,10 +99,9 @@ export async function fetchVolunteersHero(): Promise<ApiHeroGallery> {
     return apiFetch<ApiHeroGallery>(`${BASE}/volunteers-hero`);
 }
 
-export async function updateVolunteersHero(data: ApiHeroGallery, headers: Headers): Promise<void> {
+export async function updateVolunteersHero(data: ApiHeroGallery): Promise<void> {
     await apiFetch(`${BASE}/volunteers-hero`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
@@ -129,26 +110,23 @@ export async function fetchVolunteerMembers(): Promise<ApiTeamMember[]> {
     return apiFetch<ApiTeamMember[]>(`${BASE}/volunteer-members`);
 }
 
-export async function createVolunteerMember(data: Omit<ApiTeamMember, 'id' | 'isActive'>, headers: Headers): Promise<void> {
+export async function createVolunteerMember(data: Omit<ApiTeamMember, 'id'|'isActive'>): Promise<void> {
     await apiFetch(`${BASE}/volunteer-members`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function updateVolunteerMember(id: number, data: Partial<ApiTeamMember>, headers: Headers): Promise<void> {
+export async function updateVolunteerMember(id: number, data: Partial<ApiTeamMember>): Promise<void> {
     await apiFetch(`${BASE}/volunteer-members/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function deleteVolunteerMember(id: number, headers: Headers): Promise<void> {
+export async function deleteVolunteerMember(id: number): Promise<void> {
     await apiFetch(`${BASE}/volunteer-members/${id}`, {
         method: 'DELETE',
-        headers: { ...headers },
     });
 }
 
@@ -156,10 +134,9 @@ export async function fetchVolunteerCta(): Promise<ApiVolunteerCta> {
     return apiFetch<ApiVolunteerCta>(`${BASE}/volunteer-cta`);
 }
 
-export async function updateVolunteerCta(data: ApiVolunteerCta, headers: Headers): Promise<void> {
+export async function updateVolunteerCta(data: ApiVolunteerCta): Promise<void> {
     await apiFetch(`${BASE}/volunteer-cta`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
@@ -172,10 +149,9 @@ export async function fetchMentorsHero(): Promise<ApiHeroGallery> {
     return apiFetch<ApiHeroGallery>(`${BASE}/mentors-hero`);
 }
 
-export async function updateMentorsHero(data: ApiHeroGallery, headers: Headers): Promise<void> {
+export async function updateMentorsHero(data: ApiHeroGallery): Promise<void> {
     await apiFetch(`${BASE}/mentors-hero`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
@@ -184,26 +160,23 @@ export async function fetchMentorMembers(): Promise<ApiTeamMember[]> {
     return apiFetch<ApiTeamMember[]>(`${BASE}/mentor-members`);
 }
 
-export async function createMentorMember(data: Omit<ApiTeamMember, 'id' | 'isActive'>, headers: Headers): Promise<void> {
+export async function createMentorMember(data: Omit<ApiTeamMember, 'id'|'isActive'>): Promise<void> {
     await apiFetch(`${BASE}/mentor-members`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function updateMentorMember(id: number, data: Partial<ApiTeamMember>, headers: Headers): Promise<void> {
+export async function updateMentorMember(id: number, data: Partial<ApiTeamMember>): Promise<void> {
     await apiFetch(`${BASE}/mentor-members/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function deleteMentorMember(id: number, headers: Headers): Promise<void> {
+export async function deleteMentorMember(id: number): Promise<void> {
     await apiFetch(`${BASE}/mentor-members/${id}`, {
         method: 'DELETE',
-        headers: { ...headers },
     });
 }
 
@@ -211,10 +184,9 @@ export async function fetchMentorRoleMedia(): Promise<ApiSingleImage> {
     return apiFetch<ApiSingleImage>(`${BASE}/mentor-role-media`);
 }
 
-export async function updateMentorRoleMedia(data: ApiSingleImage, headers: Headers): Promise<void> {
+export async function updateMentorRoleMedia(data: ApiSingleImage): Promise<void> {
     await apiFetch(`${BASE}/mentor-role-media`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
@@ -223,13 +195,13 @@ export async function fetchMentorCta(): Promise<ApiMentorCta> {
     return apiFetch<ApiMentorCta>(`${BASE}/mentor-cta`);
 }
 
-export async function updateMentorCta(data: ApiMentorCta, headers: Headers): Promise<void> {
+export async function updateMentorCta(data: ApiMentorCta): Promise<void> {
     await apiFetch(`${BASE}/mentor-cta`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
+
 // ═══════════════════════════════════════════════════════════════════════
 // AMBASSADORS
 // ═══════════════════════════════════════════════════════════════════════
@@ -238,10 +210,9 @@ export async function fetchAmbassadorsHero(): Promise<ApiSingleImage> {
     return apiFetch<ApiSingleImage>(`${BASE}/ambassadors-hero`);
 }
 
-export async function updateAmbassadorsHero(data: ApiSingleImage, headers: Headers): Promise<void> {
+export async function updateAmbassadorsHero(data: ApiSingleImage): Promise<void> {
     await apiFetch(`${BASE}/ambassadors-hero`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
@@ -250,26 +221,23 @@ export async function fetchAmbassadorMembers(): Promise<ApiAmbassadorMember[]> {
     return apiFetch<ApiAmbassadorMember[]>(`${BASE}/ambassador-members`);
 }
 
-export async function createAmbassadorMember(data: Omit<ApiAmbassadorMember, 'id' | 'isActive'>, headers: Headers): Promise<void> {
+export async function createAmbassadorMember(data: Omit<ApiAmbassadorMember, 'id'|'isActive'>): Promise<void> {
     await apiFetch(`${BASE}/ambassador-members`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function updateAmbassadorMember(id: number, data: Partial<ApiAmbassadorMember>, headers: Headers): Promise<void> {
+export async function updateAmbassadorMember(id: number, data: Partial<ApiAmbassadorMember>): Promise<void> {
     await apiFetch(`${BASE}/ambassador-members/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
 
-export async function deleteAmbassadorMember(id: number, headers: Headers): Promise<void> {
+export async function deleteAmbassadorMember(id: number): Promise<void> {
     await apiFetch(`${BASE}/ambassador-members/${id}`, {
         method: 'DELETE',
-        headers: { ...headers },
     });
 }
 
@@ -277,10 +245,9 @@ export async function fetchAmbassadorCta(): Promise<ApiAmbassadorCta> {
     return apiFetch<ApiAmbassadorCta>(`${BASE}/ambassador-cta`);
 }
 
-export async function updateAmbassadorCta(data: ApiAmbassadorCta, headers: Headers): Promise<void> {
+export async function updateAmbassadorCta(data: ApiAmbassadorCta): Promise<void> {
     await apiFetch(`${BASE}/ambassador-cta`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }

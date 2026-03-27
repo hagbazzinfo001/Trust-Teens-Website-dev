@@ -50,7 +50,7 @@ const tabs = ['Hero Section', 'Metrics Grid', 'Video Highlight'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminImpactPage() {
-    const { getAuthHeaders } = useAdmin();
+    const { } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Hero Section');
     const [saved, setSaved] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -103,7 +103,7 @@ export default function AdminImpactPage() {
     const handleSaveHero = async () => {
         setLoading(true);
         try {
-            await updateImpactHero(hero, getAuthHeaders());
+            await updateImpactHero(hero);
             flash();
         } catch (e) {
             console.error(e);
@@ -124,7 +124,7 @@ export default function AdminImpactPage() {
             // Delete removed metrics
             for (const id of deletedIds) {
                 if (id !== undefined) {
-                    await deleteImpactMetric(id, getAuthHeaders());
+                    await deleteImpactMetric(id);
                 }
             }
 
@@ -133,10 +133,10 @@ export default function AdminImpactPage() {
                 const data = { metricValue: m.metricValue, metricLabel: m.metricLabel };
                 if (m.id === undefined) {
                     // New metric
-                    await createImpactMetric(data, getAuthHeaders());
+                    await createImpactMetric(data);
                 } else {
                     // Update existing
-                    await updateImpactMetric(m.id, data, getAuthHeaders());
+                    await updateImpactMetric(m.id, data);
                 }
             }
             // Reload metrics to get accurate IDs after creations
@@ -162,7 +162,7 @@ export default function AdminImpactPage() {
     const handleSaveVideo = async () => {
         setLoading(true);
         try {
-            await updateImpactVideo(video, getAuthHeaders());
+            await updateImpactVideo(video);
             flash();
         } catch (e) {
             console.error(e);

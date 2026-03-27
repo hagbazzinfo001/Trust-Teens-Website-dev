@@ -90,7 +90,7 @@ type ImpactWithApi = MissionImpactStat & { _apiId?: number; _position?: number }
 type CampaignWithApi = PastCampaignItem & { _apiId?: number };
 
 export default function AdminCampaignsPage() {
-    const { getAuthHeaders } = useAdmin();
+    const { } = useAdmin();
     const [activeTab, setActiveTab] = useState<Tab>('Impact Stats');
     const [saved, setSaved] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -199,7 +199,6 @@ export default function AdminCampaignsPage() {
         setSaving(true);
         setImpactError('');
         try {
-            const headers = getAuthHeaders();
             // Fetch current remote list to determine creates vs. updates vs. deletes
             const remote = await fetchImpactStats();
             const remoteIds = new Set(remote.map((r) => r.id));
@@ -208,7 +207,7 @@ export default function AdminCampaignsPage() {
             // Delete stats that no longer exist locally
             for (const r of remote) {
                 if (!localIds.has(r.id)) {
-                    await deleteImpactStat(r.id, headers);
+                    await deleteImpactStat(r.id);
                 }
             }
 
@@ -217,9 +216,9 @@ export default function AdminCampaignsPage() {
                 const stat = impact[i];
                 const payload = { statNumber: stat.stat_number, statLabel: stat.stat_label, position: i };
                 if (stat._apiId && remoteIds.has(stat._apiId)) {
-                    await updateImpactStat(stat._apiId, payload, headers);
+                    await updateImpactStat(stat._apiId, payload);
                 } else {
-                    await createImpactStat(payload, headers);
+                    await createImpactStat(payload);
                 }
             }
 
@@ -246,7 +245,7 @@ export default function AdminCampaignsPage() {
             setSaving(true);
             setPastError('');
             try {
-                await deletePastCampaign(item._apiId, getAuthHeaders());
+                await deletePastCampaign(item._apiId);
                 setPastItems(pastItems.filter((c) => c.campaign_id !== item.campaign_id));
                 flash();
             } catch (e: unknown) {
@@ -264,7 +263,6 @@ export default function AdminCampaignsPage() {
         setSaving(true);
         setPastError('');
         try {
-            const headers = getAuthHeaders();
             for (const item of pastItems) {
                 const payload = {
                     campaignTitle: item.campaign_title,
@@ -273,9 +271,9 @@ export default function AdminCampaignsPage() {
                     isActive: true,
                 };
                 if (item._apiId) {
-                    await updatePastCampaign(item._apiId, payload, headers);
+                    await updatePastCampaign(item._apiId, payload);
                 } else {
-                    await createPastCampaign(payload, headers);
+                    await createPastCampaign(payload);
                 }
             }
             flash();
@@ -293,16 +291,13 @@ export default function AdminCampaignsPage() {
         setSaving(true);
         setUpcomingError('');
         try {
-            await updateUpcoming(
-                {
-                    missionTitle: upcoming.name,
-                    missionDate: upcoming.date_time,
-                    missionLink: upcoming.register_url,
-                    missionDescription: upcoming.description,
-                    missionImage: upcoming.promo_image || '',
-                },
-                getAuthHeaders(),
-            );
+            await updateUpcoming({
+                missionTitle: upcoming.name,
+                missionDate: upcoming.date_time,
+                missionLink: upcoming.register_url,
+                missionDescription: upcoming.description,
+                missionImage: upcoming.promo_image || '',
+            });
             flash();
             await loadUpcoming();
         } catch (e: unknown) {
