@@ -34,10 +34,10 @@ export default function Footer() {
                   <Link href="/missions/campaigns">Campaigns</Link>
                 </li>
                 <li>
-                  <Link href="/school-clubs">School Clubs</Link>
+                  <Link href="/team/coming">School Clubs</Link>
                 </li>
                 <li>
-                  <Link href="/community-clubs">Community Clubs</Link>
+                  <Link href="/team/coming">Community Clubs</Link>
                 </li>
               </ul>
             </div>
@@ -56,13 +56,13 @@ export default function Footer() {
                   <Link href="/community/hangout">Hangout</Link>
                 </li>
                 <li>
-                  <Link href="/community/trust-teens-tv">Trust Teens TV</Link>
+                  <Link href="/team/coming">Trust Teens TV</Link>
                 </li>
               </ul>
             </div>
 
             {/* Team */}
-            {/* <div>
+            <div>
               <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
               <ul className="space-y-2 text-sm">
                 <li>
@@ -75,24 +75,8 @@ export default function Footer() {
                   <Link href="/team/Ambassadors">Ambassadors</Link>
                 </li>
               </ul>
-            </div> */}
- 
-   <div>
-              <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  
-                   <Link href="/team/coming">Core Team</Link>
+            </div>
 
-                </li>
-                <li>
-                  <Link href="/team/coming">Volunteers</Link>
-                </li>
-                <li>
-                  <Link href="/team/coming">Ambassadors</Link>
-                </li>
-              </ul>
-            </div>  
 
             {/* Follow Us */}
             <div>
@@ -138,118 +122,78 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Missions */}
-          {/* <div>
+          <div>
             <h3 className="font-semibold mb-4 text-blue-400">Missions</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/conferences">Conferences</Link>
+                <Link href="/missions/conferences">Conferences</Link>
               </li>
               <li>
-                <Link href="/summits">Summits</Link>
+                <Link href="/missions/summit">Summits</Link>
               </li>
               <li>
-                <Link href="/campaigns">Campaigns</Link>
+                <Link href="/missions/campaigns">Campaigns</Link>
               </li>
               <li>
-                <Link href="/school-clubs">School Clubs</Link>
+                <Link href="/team/coming">School Clubs</Link>
               </li>
               <li>
-                <Link href="/community-clubs">Community Clubs</Link>
+                <Link href="/team/coming">Community Clubs</Link>
               </li>
             </ul>
-          </div> */}
-     <div>
-              <h3 className="font-semibold mb-4 text-blue-400">Missions</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/missions/conferences">Conferences</Link>
-                </li>
-                <li>
-                  <Link href="/missions/summit">Summits</Link>
-                </li>
-                <li>
-                  <Link href="/missions/campaigns">Campaigns</Link>
-                </li>
-                <li>
-                  <Link href="/school-clubs">School Clubs</Link>
-                </li>
-                <li>
-                  <Link href="/community-clubs">Community Clubs</Link>
-                </li>
-              </ul>
-            </div>
+          </div>
 
-          {/* Community */}
-          {/* <div>
+
+          <div>
             <h3 className="font-semibold mb-4 text-blue-400">Community</h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/curriculum">Curriculum</Link>
+                <Link href="https://glacier-dogsled-9b5.notion.site/Trust-Teens-Curriculum-209a6df594508026a95af038b05e4da5?source=copy_link">Curriculum</Link>
               </li>
               <li>
-                <Link href="/community-service">Community Service</Link>
+                <Link href="/community/community-service">Community Service</Link>
               </li>
               <li>
-                <Link href="/hangout">Hangout</Link>
+                <Link href="/community/hangout">Hangout</Link>
               </li>
               <li>
-                <Link href="/trust-teens-tv">Trust Teens TV</Link>
+                <Link href="/team/coming">Trust Teens TV</Link>
               </li>
             </ul>
-          </div> */}
-     <div>
-              <h3 className="font-semibold mb-4 text-blue-400">Community</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="https://glacier-dogsled-9b5.notion.site/Trust-Teens-Curriculum-209a6df594508026a95af038b05e4da5?source=copy_link">Curriculum</Link>
-                </li>
-                <li>
-                  <Link href="/community/community-service">Community Service</Link>
-                </li>
-                <li>
-                  <Link href="/community/hangout">Hangout</Link>
-                </li>
-                <li>
-                  <Link href="/community/trust-teens-tv">Trust Teens TV</Link>
-                </li>
-              </ul>
-            </div>
- 
-   <div>
-              <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  
-                   <Link href="/team/coming">Core Team</Link>
+          </div>
 
-                </li>
-                <li>
-                  <Link href="/team/coming">Volunteers</Link>
-                </li>
-                <li>
-                  <Link href="/team/coming">Ambassadors</Link>
-                </li>
-              </ul>
-            </div>  
-                 <div>
-              <h3 className="font-semibold mb-4 text-blue-400">Follow us</h3>
-              <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="https://www.tiktok.com/@trustteens_">TikTok</Link>
-                </li>
-                <li>
-                  <Link href="https://x.com/trustteens_?s=21">Twitter</Link>
-                  {/* 𝕏 */}
-                </li>
-                <li>
-                  <a href="https://www.instagram.com/trustteens_?igsh=MWFnZ3IyN3Ixd2lhYQ==">Instagram</a>
-                </li>
-                <li>
-                  <a href="https://www.linkedin.com/company/trust-teens-community/">LinkedIn</a>
-                </li>
-              </ul>
-            </div>
+          <div>
+            <h3 className="font-semibold mb-4 text-blue-400">Team</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/team/coreTeam">Core Team</Link>
+              </li>
+              <li>
+                <Link href="/team/volunteers">Volunteers</Link>
+              </li>
+              <li>
+                <Link href="/team/Ambassadors">Ambassadors</Link>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="font-semibold mb-4 text-blue-400">Follow us</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="https://www.tiktok.com/@trustteens_">TikTok</Link>
+              </li>
+              <li>
+                <Link href="https://x.com/trustteens_?s=21">Twitter</Link>
+                {/* 𝕏 */}
+              </li>
+              <li>
+                <a href="https://www.instagram.com/trustteens_?igsh=MWFnZ3IyN3Ixd2lhYQ==">Instagram</a>
+              </li>
+              <li>
+                <a href="https://www.linkedin.com/company/trust-teens-community/">LinkedIn</a>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </footer>

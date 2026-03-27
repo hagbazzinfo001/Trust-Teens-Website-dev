@@ -19,7 +19,19 @@ type Headers = Record<string, string>;
 // ─── Helper ─────────────────────────────────────────────────────────
 
 async function apiFetch<T>(url: string, init?: RequestInit): Promise<T> {
-    const res = await fetch(url, init);
+    // const res = await fetch(url, init);
+    const token = typeof window !== 'undefined'
+        ? localStorage.getItem('admin_access_token')
+        : null;
+
+    const res = await fetch(url, {
+        ...init,
+        headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(init?.headers || {}),
+        },
+    });
     if (!res.ok) {
         const body = await res.text().catch(() => '');
         throw new Error(`API ${init?.method ?? 'GET'} ${url} → ${res.status}: ${body}`);

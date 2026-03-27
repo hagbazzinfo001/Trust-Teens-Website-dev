@@ -110,10 +110,10 @@ export default function TestimonialCarousel() {
     <section className="relative py-24 px-4 overflow-hidden text-white">
       {/* 🔁 Replace background later */}
       <img
-  src="/images/impactBlue.svg"
-  alt="impact background"
-  className="absolute inset-0 -z-10 h-full w-full object-cover"
-/>
+        src="/images/ImpactBlue.svg"
+        alt="impact background"
+        className="absolute inset-0 -z-10 h-full w-full object-cover"
+      />
 
       {/* Heading */}
       <div className="text-center max-w-3xl mx-auto mb-16">
@@ -184,9 +184,8 @@ export default function TestimonialCarousel() {
             <button
               key={i}
               onClick={() => setIndex([i, i > index ? 1 : -1])}
-              className={`w-3 h-3 rounded-full transition ${
-                i === index ? 'bg-white' : 'bg-white/40'
-              }`}
+              className={`w-3 h-3 rounded-full transition ${i === index ? 'bg-white' : 'bg-white/40'
+                }`}
             />
           ))}
         </div>

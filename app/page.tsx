@@ -80,7 +80,7 @@ export default function Home() {
       title: "TT School Clubs",
       description: "Personal development platform for secondary school students. Each meeting combines storytelling, peer mentorship, and practical activities that strengthen character.",
       icon: icon2,
-      href: "/missions/school-clubs",
+      href: "/team/coming",
     },
     {
       title: "TT Hangouts",
