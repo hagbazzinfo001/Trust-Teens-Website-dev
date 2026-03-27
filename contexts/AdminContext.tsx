@@ -65,18 +65,22 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       if (!res.ok) return false;
 
       const data = await res.json();
-      const token = data.accessToken || data.access_token;
+      const token = data.accessToken || data.access_token || data.token || data.token_data?.access_token;
 
-      if (token) {
-        localStorage.setItem('admin_access_token', token);
+      if (!token) {
+        console.error('No token received from API:', data);
+        return false;
       }
+
+      localStorage.setItem('admin_access_token', token);
 
       const adminUser = { email };
       localStorage.setItem('admin_user', JSON.stringify(adminUser));
       setUser(adminUser);
 
       return true;
-    } catch {
+    } catch (err) {
+      console.error('Login error:', err);
       return false;
     }
   };
