@@ -64,9 +64,12 @@ export async function updateTestimonial(
     data: Omit<ApiTestimonial, 'id' | '_id'>,
     headers: Headers,
 ): Promise<void> {
+    // await apiFetch(`${BASE}/${id}`, {
+    //     method: 'PUT',
+    //     headers: { 'Content-Type': 'application/json', ...headers },
+    //     body: JSON.stringify(data),
     await apiFetch(`${BASE}/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', ...headers },
         body: JSON.stringify(data),
     });
 }
