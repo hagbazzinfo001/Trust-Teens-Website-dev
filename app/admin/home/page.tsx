@@ -15,6 +15,7 @@ import {
 import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
 import { useAdmin } from '@/contexts/AdminContext';
 import { fetchTestimonials, createTestimonial, updateTestimonial, deleteTestimonial } from '@/lib/testimonialsApi';
+import { fetchHeroStats, createHeroStat, updateHeroStat, deleteHeroStat } from '@/lib/heroStatsApi';
 
 // ─── Defaults (match the hardcoded values in client page) ────────────
 
@@ -56,6 +57,7 @@ const tabs = ['Hero Metrics', 'Impact Stats', 'Testimonials'] as const;
 type Tab = (typeof tabs)[number];
 
 type LocalTestimonial = Testimonial & { apiId?: string | number };
+type LocalHeroMetric = { apiId?: string | number, metric_value: string, metric_label: string, position: number };
 
 export default function AdminHomePage() {
     const { getAuthHeaders } = useAdmin();
@@ -64,7 +66,10 @@ export default function AdminHomePage() {
     const [loading, setLoading] = useState(false);
 
     // ── Hero Metrics ──
-    const [heroMetrics, setHeroMetrics] = useState<HeroMetric[]>(DEFAULT_HERO);
+    const [heroMetrics, setHeroMetrics] = useState<LocalHeroMetric[]>(
+        DEFAULT_HERO.map((h, i) => ({ ...h, position: i + 1 }))
+    );
+    const [initialHeroMetrics, setInitialHeroMetrics] = useState<LocalHeroMetric[]>([]);
 
     // ── Impact Stats ──
     const [impactStats, setImpactStats] = useState<ImpactStat[]>(DEFAULT_IMPACT);
@@ -75,14 +80,40 @@ export default function AdminHomePage() {
 
     // ── Load from localStorage and API ──
     useEffect(() => {
-        const h = getHeroMetrics();
-        if (h) setHeroMetrics(h);
+        loadHeroStats();
 
         const s = getImpactStats();
         if (s) setImpactStats(s);
 
         loadTestimonials();
     }, []);
+
+    const loadHeroStats = async () => {
+        try {
+            const apiData = await fetchHeroStats().catch(() => null);
+            if (apiData && apiData.length > 0) {
+                // Ensure proper positions (1, 2, 3) mapped to exactly 3 items
+                const mapped = Array.from({ length: 3 }).map((_, i) => {
+                    const pos = i + 1;
+                    const found = apiData.find(d => d.position === pos);
+                    return {
+                        apiId: found?._id || found?.id,
+                        metric_value: found?.metricValue || '',
+                        metric_label: found?.metricLabel || '',
+                        position: pos,
+                    };
+                });
+                setHeroMetrics(mapped);
+                setInitialHeroMetrics(JSON.parse(JSON.stringify(mapped)));
+            } else {
+                const defaults = DEFAULT_HERO.map((h, i) => ({ ...h, position: i + 1 }));
+                setHeroMetrics(defaults);
+                setInitialHeroMetrics(defaults);
+            }
+        } catch (e) {
+            console.error("Failed to load hero stats", e);
+        }
+    };
 
     const loadTestimonials = async () => {
         try {
@@ -114,9 +145,29 @@ export default function AdminHomePage() {
         setTimeout(() => setSaved(false), 2000);
     };
 
-    const handleSaveHero = () => {
-        saveHeroMetrics(heroMetrics);
-        flash();
+    const handleSaveHero = async () => {
+        setLoading(true);
+        try {
+            for (const m of heroMetrics) {
+                const data = {
+                    metricValue: m.metric_value,
+                    metricLabel: m.metric_label,
+                    position: m.position,
+                };
+                if (m.apiId === undefined) {
+                    await createHeroStat(data, getAuthHeaders());
+                } else {
+                    await updateHeroStat(m.apiId, data, getAuthHeaders());
+                }
+            }
+            await loadHeroStats();
+            flash();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to save Hero Metrics");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSaveImpact = () => {
@@ -221,9 +272,11 @@ export default function AdminHomePage() {
                         </div>
                         <button
                             onClick={handleSaveHero}
-                            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                            disabled={loading}
+                            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
                         >
-                            <Save size={16} /> Save
+                            {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+                            Save
                         </button>
                     </div>
 

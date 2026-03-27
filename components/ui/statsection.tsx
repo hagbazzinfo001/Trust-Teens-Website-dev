@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
+import { fetchHeroStats } from "@/lib/heroStatsApi";
 
 interface CountUpProps {
   end: number;
@@ -54,7 +55,7 @@ export default function StatsSection() {
     small: "h-[180px] md:h-[200px]",
   };
 
-  const stats: StatCard[] = [
+  const INIT_STATS: StatCard[] = [
     {
       type: "image",
       img: "/images/schchild.svg",
@@ -85,6 +86,36 @@ export default function StatsSection() {
         "Communities in Africa, expanding presence across cities and schools.",
     },
   ];
+
+  const [stats, setStats] = useState<StatCard[]>(INIT_STATS);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const data = await fetchHeroStats();
+        if (data && data.length > 0) {
+          const newStats = [...INIT_STATS];
+          const statIndices = [1, 2, 4]; // The indices of the "stat" objects in INIT_STATS
+
+          data.forEach((apiStat) => {
+            if (apiStat.position >= 1 && apiStat.position <= 3) {
+              const arrayIndex = statIndices[apiStat.position - 1];
+              const existing = newStats[arrayIndex] as StatItem;
+              newStats[arrayIndex] = {
+                ...existing,
+                value: parseInt(apiStat.metricValue) || existing.value,
+                label: apiStat.metricLabel || existing.label,
+              };
+            }
+          });
+          setStats(newStats);
+        }
+      } catch (err) {
+        console.error("Failed to load hero stats:", err);
+      }
+    };
+    loadStats();
+  }, []);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 mt-10 items-end">

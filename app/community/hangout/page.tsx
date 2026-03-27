@@ -1,283 +1,3 @@
-// "use client";
-// import Image from "next/image";
-// import { motion, AnimatePresence } from "framer-motion";
-// import { useInView } from "react-intersection-observer";
-// import CountUp from "react-countup";
-// import { useState, useEffect } from "react";
-// import { Card, CardContent } from "@/components/ui/card";
-// import PastHangouts from '@/components/PastHangouts';
-// import UpcomingHangouts from "@/components/ui/UpcomingHangouts";
-// import {
-//   getHangoutHero,
-//   getHangoutApproach,
-//   getHangoutImpact,
-//   HangoutHero,
-//   HangoutApproach,
-//   MissionImpactStat
-// } from "@/lib/adminData";
-
-// import icon1 from "@/public/images/icon1.svg";
-// import icon3 from "@/public/images/icon3.svg";
-// import icon4 from "@/public/images/icon4.svg";
-// import icon2 from "@/public/images/icon2.svg";
-// import icon5 from "@/public/images/icon5.svg";
-// import icon6 from "@/public/images/icon6.svg";
-
-// export default function HangoutsPage() {
-//   const defaultHero = {
-//     hero_gallery_images: ["/images/conferenceheader.svg", "/images/yellowImage.svg", "/images/conferenceheader.svg"]
-//   };
-//   const [hero, setHero] = useState<HangoutHero>(defaultHero);
-
-//   const defaultStats = [
-//     { icon: icon1, label: "Teenagers Reached", value: "500+" },
-//     { icon: icon2, label: "Sessions Delivered", value: "12+" },
-//     { icon: icon3, label: "Communities engaged", value: "5+" },
-//     { icon: icon4, label: "Volunteers Mobilised", value: "20+" },
-//   ];
-//   const [stats, setStats] = useState(defaultStats);
-
-//   const approachFeatures = [
-//     {
-//       title: "Safe Environment",
-//       description: "Providing a secure space where teenagers can express themselves without judgment.",
-//       icon: icon1,
-//     },
-//     {
-//       title: "Fun Activities",
-//       description: "Engaging games and interactive sessions that build teamwork and joy.",
-//       icon: icon2,
-//     },
-//     {
-//       title: "Personal Growth",
-//       description: "Mentorship-driven conversations that help teens discover their potential.",
-//       icon: icon3,
-//     }
-//   ];
-
-//   const [approach, setApproach] = useState<HangoutApproach>({
-//     approach_image: "/images/yellowImage.svg",
-//     feature_list: [
-//       "Building a safe and inclusive environment",
-//       "Engaging and fun interactive sessions",
-//       "Mentorship and peer support",
-//       "Empowering personal and social development"
-//     ]
-//   });
-
-//   useEffect(() => {
-//     const adminHero = getHangoutHero();
-//     if (adminHero && adminHero.hero_gallery_images.some(img => img !== "")) {
-//       setHero(adminHero);
-//     }
-
-//     const adminImpact = getHangoutImpact();
-//     if (adminImpact && adminImpact.length > 0) {
-//       const icons = [icon1, icon2, icon3, icon4];
-//       setStats(adminImpact.map((s, i) => ({
-//         icon: icons[i] || icon1,
-//         label: s.stat_label,
-//         value: s.stat_number,
-//       })));
-//     }
-
-//     const adminApproach = getHangoutApproach();
-//     if (adminApproach && adminApproach.approach_image !== "") {
-//       setApproach(adminApproach);
-//     }
-//   }, []);
-
-//   const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.3 });
-
-//   const itemVariants = {
-//     hidden: { opacity: 0, y: 40 },
-//     show: { opacity: 1, y: 0 },
-//   };
-
-//   return (
-//     <>
-//       <section className="pb-4 pt-4 md:py-10 bg-white mx-3 lg:mx-12 mb-12">
-//         <div className="w-full rounded-[2rem] overflow-hidden h-auto sm:h-[50vh] lg:h-[70vh] shadow-xl">
-//           <motion.img
-//             src={hero.hero_gallery_images[0] || "/images/conferenceheader.svg"}
-//             alt="Hangouts Header"
-//             className="w-full h-auto sm:h-full object-cover"
-//             initial={{ opacity: 0, x: -80 }}
-//             animate={{ opacity: 1, x: 0 }}
-//             transition={{ duration: 0.8, ease: 'easeOut' }}
-//           />
-//         </div>
-
-//         <div className="flex flex-col lg:flex-row gap-8 w-full mt-8 items-start lg:items-center">
-//           <h1 className="text-4xl md:text-6xl font-black lg:w-[50%] text-gray-950">
-//             Trusted Spaces for <br /> <span className="text-orange-500">Teen Hangouts</span>
-//           </h1>
-//           <p className="text-gray-600 text-lg max-w-2xl lg:w-[40%] font-medium leading-relaxed">
-//             Our hangouts are safe, fun, and empowering environments designed for teenagers
-//             to bond, learn, and grow together through community and shared experiences.
-//           </p>
-//         </div>
-//       </section>
-
-//       <section className="pb-8 md:py-20 bg-white">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <div className="relative flex flex-col lg:flex-row items-center lg:items-stretch">
-//             <div className="bg-yellow-400 rounded-[2.5rem] p-8 md:p-16 z-10 shadow-2xl">
-//               <div className="lg:w-[45%]">
-//                 <h2 className="text-3xl md:text-5xl font-black text-black mb-6 leading-tight">
-//                   Why Our <br /> Hangouts Matter
-//                 </h2>
-//                 <div className="space-y-6 text-black/90 font-medium text-lg leading-relaxed">
-//                   <p>
-//                     Trust Teens Hangouts provide a much-needed bridge between formal education
-//                     and social life. We create environments where teens feel heard, understood,
-//                     and supported.
-//                   </p>
-//                   <p>
-//                     Every hangout session is intentionally curated to blend recreation with
-//                     reflection, ensuring that every participant leaves with new friends,
-//                     fresh perspectives, and a stronger sense of self.
-//                   </p>
-//                 </div>
-//               </div>
-
-//               <div className="overflow-hidden rounded-[2rem] lg:absolute lg:right-0 lg:top-1/2 lg:-translate-y-1/2 lg:w-[50%] w-full mt-10 lg:mt-0 shadow-xl">
-//                 <img
-//                   src={approach.approach_image || "/images/yellowImage.svg"}
-//                   alt="Hangout in action"
-//                   className="w-full h-full object-cover lg:p-10 p-0"
-//                 />
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </section>
-
-//       <section className="py-20 md:py-32 bg-white">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <h2 className="text-4xl md:text-6xl font-black text-gray-950 mb-16 text-center lg:text-left">
-//             Core Components <br /> <span className="text-orange-500">of our experiences</span>
-//           </h2>
-
-//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-//             {approachFeatures.map((item, index) => (
-//               <div key={index} className="flex flex-col items-start gap-4 p-8 bg-gray-50 rounded-[2rem] hover:bg-orange-50 transition-colors shadow-sm">
-//                 <div className="p-4 rounded-2xl bg-orange-100 mb-2">
-//                   <Image
-//                     src={item.icon}
-//                     alt={item.title}
-//                     width={32}
-//                     height={32}
-//                     className="w-8 h-8 object-contain"
-//                   />
-//                 </div>
-//                 <div>
-//                   <h3 className="text-2xl font-black text-gray-950 mb-3">
-//                     {item.title}
-//                   </h3>
-//                   <p className="text-gray-600 text-lg leading-relaxed font-medium">
-//                     {item.description}
-//                   </p>
-//                 </div>
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       </section>
-
-//       <section className="py-16 md:py-24 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-//           <h2 className="text-3xl md:text-5xl font-black text-white text-center mb-16">
-//             Our Collective Impact
-//           </h2>
-//           <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-8">
-//             {stats.map((stat, index) => {
-//               const isLast = index === stats.length - 1;
-//               return (
-//                 <motion.div
-//                   key={index}
-//                   variants={itemVariants}
-//                   initial="hidden"
-//                   animate={inView ? "show" : "hidden"}
-//                   transition={{ duration: 0.6, delay: index * 0.2 }}
-//                   className="text-center"
-//                 >
-//                   <Card className="border-0 bg-transparent rounded-none relative">
-//                     {!isLast && (
-//                       <span className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-16 w-[1px] bg-white/20"></span>
-//                     )}
-//                     <CardContent className="p-2 flex flex-col items-center">
-//                       <div className="mb-6 p-4 rounded-full bg-white/5">
-//                         <Image
-//                           src={stat.icon}
-//                           alt={stat.label}
-//                           width={48}
-//                           height={48}
-//                           className="w-12 h-12 object-contain filter invert opacity-80"
-//                         />
-//                       </div>
-//                       <div className="text-4xl md:text-5xl font-black text-white mb-2">
-//                         {inView ? (
-//                           <CountUp
-//                             end={parseInt(stat.value.replace(/\D/g, ""))}
-//                             duration={2.5}
-//                             separator=","
-//                           />
-//                         ) : (
-//                           "0"
-//                         )}
-//                         {stat.value.includes("+") ? "+" : ""}
-//                       </div>
-//                       <div className="text-sm font-bold uppercase tracking-widest text-white/60">
-//                         {stat.label}
-//                       </div>
-//                     </CardContent>
-//                   </Card>
-//                 </motion.div>
-//               );
-//             })}
-//           </div>
-//         </div>
-//       </section>
-
-//       <PastHangouts />
-//       <UpcomingHangouts />
-
-//       <section className="relative overflow-hidden bg-[#257CFF] text-white py-24 px-6 mt-20">
-//         <Image
-//           src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764815863/Rectangle_usvu7i.png"
-//           alt="background texture"
-//           fill
-//           className="object-cover opacity-30 pointer-events-none"
-//         />
-//         <motion.div
-//           initial={{ opacity: 0, y: 30 }}
-//           whileInView={{ opacity: 1, y: 0 }}
-//           viewport={{ once: true }}
-//           transition={{ duration: 0.8, ease: "easeOut" }}
-//           className="relative z-10 max-w-4xl mx-auto text-center"
-//         >
-//           <h2 className="text-4xl md:text-5xl font-black leading-tight mb-8">
-//             Partner with us to support <br /> meaningful teen impact.
-//           </h2>
-//           <p className="text-xl leading-relaxed max-w-3xl mx-auto mb-12 font-medium opacity-90">
-//             Together, we influence teenagers and help them grow into responsible leaders. Join us in making a difference.
-//           </p>
-//           <motion.a
-//             href="mailto:info@trustteens.com"
-//             whileHover={{ scale: 1.05 }}
-//             className="relative inline-block px-12 py-5 bg-orange-500 rounded-xl text-xl font-black overflow-hidden shadow-2xl active:scale-95 transition-transform"
-//           >
-//             <span className="relative z-10">We await your message</span>
-//           </motion.a>
-//         </motion.div>
-//       </section>
-//     </>
-//   );
-// }
-
-
-
 
 "use client";
 import Image from "next/image";
@@ -390,12 +110,15 @@ export default function HangoutsPage() {
     },
   ];
 
+  const defaultHeroImages = ["/images/fsummit.svg", "/images/msummit.svg", "/images/Ssummit.svg"];
+  const [heroImages, setHeroImages] = useState(defaultHeroImages);
+
 
   const stats = [
-    { icon: icon1, label: "Teenagers Attended", value: "4000+" },
-    { icon: icon2, label: "Schools Mobilised", value: "29+" },
-    { icon: icon3, label: "Speakers and Guests", value: "30+" },
-    { icon: icon4, label: "Volunteers Deployed", value: "50+" },
+    { icon: icon1, label: "Teenagers Attended", value: "30+" },
+    { icon: icon2, label: "Volunteers Mobilised", value: "1+" },
+    { icon: icon3, label: "Sessions Delivered", value: "1+" },
+    { icon: icon4, label: "Communities Engaged", value: "1+" },
   ];
   const [activeSet, setActiveSet] = useState(0);
   const featuresPerPage = 3;
@@ -416,236 +139,208 @@ export default function HangoutsPage() {
 
   return (
     <>
-      <section className="pb-4 pt-4 md:py-10 bg-white mx-3 lg:mx-12 mb-12">
-        <div
-          className="
-    w-full
-    rounded-3xl
-    overflow-hidden
-    h-auto
-    sm:h-[50vh]
-    lg:h-[70vh]
-  "
-        >
-          <motion.img
-            src="/images/conferenceheader.svg"
-            alt="Conference Header"
-            className="
-      w-full
-      h-auto
-      sm:h-full
-      object-contain
-      sm:object-cover
+
+
+
+      <section className="w-full bg-white py-20 px-6 lg:px-20">
+        <div className="max-w-7xl mx-auto relative">
+
+
+          <div className="relative overflow-hidden">
+            {/* Background Image */}
+            <img
+              src="/images/dots-bg.svg" // replace with your actual image path
+              alt=""
+              className="
+      pointer-events-none
+      absolute
+      bottom-0
+      right-0
+      w-40
+      md:w-56
+      lg:w-72
+      opacity-90
     "
-            initial={{ opacity: 0, x: -80 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-          />
-        </div>
+            />
+
+            {/* Content */}
+            <div className="max-w-3xl relative z-10">
+              <p className="tracking-[0.3em] text-sm font-medium text-gray-700 mb-4">
+                TRUST TEENS HANGOUTS
+              </p>
+
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6">
+                Joy, exposure, and <br />
+                connection
+              </h1>
+
+              <p className="text-gray-600 text-lg leading-relaxed" style={{ maxWidth: "600px" }}>
+                Fun, relaxed outings where teenagers explore, laugh, and experience life together for the first time.
+              </p>
+            </div>
+          </div>
+
+          {/* DOT PATTERNS */}
 
 
-        <div className="
-  flex
-  flex-col
-  lg:flex-row
-  gap-8
-  w-full
-  mt-8
-  items-start
-  lg:items-center
- ">
-          <h1 className="text-3xl md:text-5xl font-bold lg:w-[50%]">
-            The Biggest Teenage Conference in Africa
-          </h1>
 
-          <p className="text-gray-600 max-w-2xl lg:w-[40%]">
-            Our annual conference brings together thousands of teenagers for a full day of inspiration,
-            learning, creativity, and values-driven leadership.
-          </p>
-        </div>
-
-      </section>
-
-      <section className="pb-8 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative flex flex-col lg:flex-row items-center lg:items-stretch">
-
-            {/* TEXT CARD */}
-            <div className="
-        bg-yellow-400
-        rounded-3xl
-        p-5 md:p-12
-        z-10
-      ">
-              <div className="lg:w-[45%]">
-
-                <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
-                  Why Trust Teens Conference
-                </h2>
-
-                <p className="text-black/80 leading-relaxed mb-4">
-                  The Trust Teens Conference is our largest annual gathering for
-                  teenagers across Africa. It brings together students, teachers,
-                  mentors and community leaders for a powerful, high-energy
-                  experience built around one theme each year.
-                </p>
-
-                <p className="text-black/80 leading-relaxed">
-                  Every edition is designed to give young people the tools, stories,
-                  and opportunities they need to grow, influence, and make better
-                  decisions in a rapidly changing world.
-                </p>
-              </div>
-
-
-              <div className="overflow-hidden rounded-3xl  lg:absolute
-        lg:right-0
-        lg:top-1/2
-        lg:-translate-y-1/2
-        lg:w-[50%]
-        w-full
-        mt-6 lg:mt-0">
-                <img
-                  src="/images/yellowImage.svg" // replace with your image path
-                  alt="Trust Teens Conference"
-                  className="w-full h-full object-cover lg:p-9 p-0"
-                />
-              </div>
+          {/* IMAGES */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="rounded-3xl overflow-hidden">
+              <img
+                src={heroImages[0]}
+                alt="Summit audience"
+                className="w-full h-full object-cover"
+              />
             </div>
 
+            <div className="rounded-3xl overflow-hidden">
+              <img
+                src={heroImages[1]}
+                alt="Workshop session"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="rounded-3xl overflow-hidden">
+              <img
+                src={heroImages[2]}
+                alt="Group celebration"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-12 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-          {/* Heading */}
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 mb-12">
-            Core Components <br /> of the conference
-          </h2>
+      <section className="py-16 md:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          {/* LEFT — Content */}
+          <div className="space-y-6">
 
-          {/* Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {coreComponents.map((item, index) => (
-              <div key={index} className="flex items-start gap-4">
+            {/* Eyebrow */}
 
-                {/* Icon */}
-                <div className="flex gap-1 mt-1">
+            {/* Heading */}
+            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900">
+              What Hangouts Look Like            </h2>
+
+            {/* Description */}
+            <p className="text-gray-700 leading-relaxed max-w-xl">
+              Many teenagers have limited access to recreational spaces and new experiences. Hangouts create opportunities for fun, discovery, and confidence-building through everyday joy.
+
+            </p>
+
+            {/* Sub-text */}
+            <div className="space-y-4">
+              <p className="font-medium text-gray-900">
+
+                Our hangouts often include:
+              </p>
+
+              <ul className="list-disc list-inside space-y-2 text-gray-700 pl-4">
+                <li>Cinema outings
+                </li>
+                <li>Zoo visits
+                </li>
+                <li>Recreational centres
+
+                </li>
+                <li>Group games and fun activities
+
+                </li>
+                <li>Simple shared meals
+
+                </li>
+
+              </ul>
+            </div>
+
+            {/* Closing */}
+            <p className="text-gray-700 leading-relaxed max-w-xl">
+              These moments are relaxed and teen-led. The goal is enjoyment            </p>
+
+          </div>
+
+
+
+          {/* RIGHT — Image */}
+          <div className="relative w-full h-[420px] md:h-[520px] rounded-2xl overflow-hidden">
+            <Image
+              src="/images/communityImage4.svg" // replace with your image path
+              alt="Community service in action"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+
+
+        </div>
+      </section>
+
+      <section className="
+p-12 md:py-20
+bg-[url(/images/impactsolidblack.png)] bg-contain bg-center bg-no-repeat
+flex flex-col md:flex-row
+justify-center md:justify-between
+items-center
+">
+        <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white   mb-8 mt-12
+  mx-auto
+  text-center
+  w-auto
+  lg:w-[40%]
+  lg:text-left">
+          The impact of our Hangouts
+        </h2>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+          <div ref={ref} className="grid grid-cols-2">
+            {stats.map((stat, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                initial="hidden"
+                animate={inView ? "show" : "hidden"}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                className="flex flex-row gap-2 items-center text-center"
+              >
+                <div className="inline-flex p-3 md:p-4 rounded-full mb-4 bg-transparent">
                   <Image
-                    src={item.icon}
-                    alt={item.title}
-                    width={30}
-                    height={30}
-                    className="w-8 h-8 object-contain"
+                    src={stat.icon}
+                    alt={stat.label}
+                    width={60}
+                    height={60}
+                    className="w-16 h-16 object-contain"
                   />
                 </div>
-
-                {/* Text */}
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
-                    {item.description}
-                  </p>
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-2 text-start">
+                    {inView ? (
+                      <CountUp
+                        end={parseInt(stat.value.replace("+", ""))}
+                        duration={2.5}
+                        separator=","
+                      />
+                    ) : (
+                      "0"
+                    )}
+                    {stat.value.includes("+") && "+"}
+                  </div>
+
+                  <div className="text-sm md:text-base text-white/80">
+                    {stat.label}
+                  </div>
                 </div>
 
-              </div>
+              </motion.div>
             ))}
           </div>
-
         </div>
       </section>
 
 
-
-      <section
-        // className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat"
-        className="py-12 md:py-20 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
-
-      >
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white text-left px-4 sm:px-6 lg:px-8">
-            Big Impact Metrics          </h2>
-          <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => {
-              const isLast = index === stats.length - 1;
-
-
-
-              return (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  initial="hidden"
-                  animate={inView ? "show" : "hidden"}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                >
-                  <Card className="border-0 bg-transparent rounded-none relative">
-
-                    {/* Right border — only on DESKTOP (md+) & not last item */}
-                    {!isLast && (
-                      <span className="hidden md:block absolute right-0 top-0 h-full w-[1px] bg-gray-300"></span>
-                    )}
-
-                    <CardContent className="p-2 text-center bg-transparent text-white rounded-none">
-                      {/* Icon */}
-                      {/* Icon */}
-                      <div className="flex flex-row items-center justify-center gap-4">
-                        {/* <div className="inline-flex p-4 rounded-full mb-4"> */}
-                        <Image
-                          src={stat.icon}
-                          alt={stat.label}
-                          width={30}
-                          height={30}
-                          className="w-8 h-8 object-contain"
-                        />
-                        {/* </div> */}
-                        {/* Label */}
-                        <div className="text-left">
-                          <div className="text-3xl font-bold text-white">
-                            {inView ? (
-                              <CountUp
-                                end={parseInt(stat.value.replace("+", ""))}
-                                duration={2.5}
-                                separator=","
-                              />
-                            ) : (
-                              "0"
-                            )}
-                            +
-                          </div>
-                          <div className="text-sm mb-2 text-white/80">
-                            {stat.label}
-                          </div>
-                        </div>
-                      </div>
-
-
-                      {/* CountUp */}
-
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-
-
-      {/* <UpcomingCampaigns
-      title={data.title}
-      subtitle={data.subtitle}
-      description={data.description}
-      datetime={data.datetime}
-      location={data.location}
-      image={data.image}
-      buttonLabel={data.buttonLabel}
-    /> */}
       <PastHangouts />
 
       <UpcomingHangouts />

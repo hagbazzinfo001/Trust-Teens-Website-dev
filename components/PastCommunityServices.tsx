@@ -33,7 +33,6 @@ export default function PastCommunityServices() {
             setFeaturedProject(converted[0]);
         }
     }, []);
-
     // Effect to load full details for the featured project if it's from admin
     useEffect(() => {
         if (featuredProject && featuredProject.objectives.length === 0) {
@@ -60,9 +59,10 @@ export default function PastCommunityServices() {
             <section className="py-12 md:py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="mb-12">
-                        <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-widest">Past Initiatives</p>
+                        <p className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-widest">PAST COMMUNITY SERVICE</p>
                         <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-4 tracking-tight">
-                            Community Projects <span className="text-orange-500">& Outcomes</span>
+                            Below are some of the community  <br />
+                            service initiatives carried out
                         </h2>
                     </div>
 
@@ -111,7 +111,7 @@ export default function PastCommunityServices() {
 
                                 <button
                                     onClick={() => setSelectedProject(featuredProject)}
-                                    className={`w-full py-5 px-8 rounded-2xl bg-[#257CFF] text-white font-black text-lg hover:bg-orange-500 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-between shadow-xl shadow-blue-200 hover:shadow-orange-200`}
+                                    className={`w-full py-5 px-8 rounded-2xl bg-[#257CFF] text-white font-black hover:bg-orange-500 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-between shadow-xl shadow-blue-200 hover:shadow-orange-200`}
                                 >
                                     <span className="tracking-tight">Explore Full Project Discovery</span>
                                     <ChevronRight size={28} />

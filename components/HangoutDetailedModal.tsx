@@ -1,176 +1,3 @@
-// 'use client';
-
-// import { Hangout } from '@/lib/mockHangout';
-// import { X } from 'lucide-react';
-// import Image from "next/image";
-// import { motion } from "framer-motion";
-// import { Card, CardContent } from "@/components/ui/card";
-// import CountUp from "react-countup";
-// import { useInView } from "react-intersection-observer";
-
-// interface HangoutDetailsModalProps {
-//   hangout: Hangout | null;
-//   onClose: () => void;
-// }
-
-// export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetailsModalProps) {
-//   const { ref, inView } = useInView({ triggerOnce: true, threshold: 0.1 });
-
-//   if (!hangout) return null;
-
-//   const itemVariants = {
-//     hidden: { opacity: 0, y: 20 },
-//     show: { opacity: 1, y: 0 },
-//   };
-
-//   return (
-//     <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 overflow-y-auto flex items-center justify-center p-4">
-//       <div className="relative w-full max-w-5xl bg-white rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-//         {/* Close Button */}
-//         <button
-//           onClick={onClose}
-//           className="absolute top-6 right-6 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full p-2 text-white transition-all shadow-lg border border-white/20"
-//         >
-//           <X size={24} />
-//         </button>
-
-//         {/* Hero Section */}
-//         <div className="relative h-[50vh] min-h-[400px]">
-//           <Image
-//             src={hangout.headerImage}
-//             alt={hangout.name}
-//             fill
-//             className="object-cover"
-//             priority
-//           />
-//           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-//           <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
-//             <h1 className="text-4xl md:text-6xl font-black mb-4 tracking-tight leading-tight">
-//               {hangout.name}
-//             </h1>
-//             <p className="text-lg md:text-xl text-white/90 max-w-2xl font-medium leading-relaxed">
-//               {hangout.fullDescription}
-//             </p>
-//           </div>
-//         </div>
-
-//         <div className="p-8 md:p-12 space-y-16">
-//           {/* About Section */}
-//           <div className="grid lg:grid-cols-5 gap-12 items-start">
-//             <div className="lg:col-span-3 space-y-6">
-//               <h2 className="text-3xl font-extrabold text-gray-900 border-l-4 border-orange-500 pl-4 uppercase tracking-tighter">
-//                 What we did
-//               </h2>
-//               <p className="text-gray-700 leading-relaxed text-lg font-medium">
-//                 {hangout.fullDescription}
-//               </p>
-//               <div className="space-y-4">
-//                 {hangout.objectives.map((point, i) => (
-//                   <div key={i} className="flex items-start gap-4 group">
-//                     <div className="mt-1.5 w-6 h-6 rounded-lg flex-shrink-0 bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-black group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
-//                       {String(i + 1).padStart(2, '0')}
-//                     </div>
-//                     <span className="text-gray-800 font-semibold group-hover:text-orange-600 transition-colors">
-//                       {point}
-//                     </span>
-//                   </div>
-//                 ))}
-//               </div>
-//             </div>
-//             {hangout.featuredImage && (
-//               <div className="lg:col-span-2 relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl skew-y-1 hover:skew-y-0 transition-transform duration-500">
-//                 <Image
-//                   src={hangout.featuredImage}
-//                   alt="Hangout highlight"
-//                   fill
-//                   className="object-cover"
-//                 />
-//               </div>
-//             )}
-//           </div>
-
-//           {/* Impact Metrics */}
-//           <div ref={ref} className="rounded-[2.5rem] bg-gray-950 p-12 text-white relative overflow-hidden">
-//             <div className="absolute inset-0 opacity-10 bg-[url('/images/Background.svg')] bg-cover pointer-events-none" />
-
-//             <h3 className="text-2xl font-black mb-12 text-center relative z-10 text-orange-500 tracking-widest uppercase">
-//               Hangout Impact
-//             </h3>
-
-//             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 relative z-10">
-//               {hangout.impact.map((stat, i) => (
-//                 <div key={i} className="text-center group">
-//                   <div className="text-4xl md:text-5xl font-black mb-2 text-white group-hover:text-orange-500 transition-colors">
-//                     {inView ? (
-//                       <CountUp
-//                         end={stat.value}
-//                         duration={2.5}
-//                         suffix={stat.value >= 10 ? '+' : ''}
-//                       />
-//                     ) : '0'}
-//                   </div>
-//                   <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 group-hover:text-white/80 transition-colors">
-//                     {stat.label}
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Partners & Gallery */}
-//           <div className="space-y-16">
-//             {hangout.partners && hangout.partners.length > 0 && (
-//               <div className="space-y-8">
-//                 <h2 className="text-3xl font-extrabold text-gray-900">Our Strategic Partners</h2>
-//                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-//                   {hangout.partners.map((partner, i) => (
-//                     <div key={i} className="flex items-center justify-center p-6 bg-gray-50 rounded-2xl hover:bg-orange-50 transition-colors border border-transparent hover:border-orange-200 group">
-//                       <img
-//                         src={partner.logo}
-//                         alt={partner.name}
-//                         className="h-10 w-auto object-contain opacity-60 group-hover:opacity-100 transition-all duration-300"
-//                       />
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-//             )}
-
-//             {hangout.gallery && hangout.gallery.length > 0 && (
-//               <div className="space-y-8">
-//                 <h2 className="text-3xl font-extrabold text-gray-900">Captured Moments</h2>
-//                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-//                   {hangout.gallery.map((img, i) => (
-//                     <div key={i} className="aspect-square relative rounded-3xl overflow-hidden shadow-lg group">
-//                       <Image
-//                         src={img}
-//                         alt={`Moment ${i + 1}`}
-//                         fill
-//                         className="object-cover group-hover:scale-110 transition-transform duration-700"
-//                       />
-//                       <div className="absolute inset-0 bg-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-
-//         {/* Footer */}
-//         <div className="bg-orange-500 p-8 flex justify-center">
-//           <button
-//             onClick={onClose}
-//             className="bg-white text-orange-600 px-12 py-4 rounded-2xl font-black text-lg hover:scale-105 transition-transform shadow-xl active:scale-95"
-//           >
-//             CLOSE RECAP
-//           </button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 
 
 'use client';
@@ -178,13 +5,9 @@
 import { Hangout } from '@/lib/mockHangout';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import cleanCummunity from '/images/community/cleanCummunity.svg'
-import projectCommunity from '/images/community/projectCommunity.svg'
-import teenagerCommunity from '/images/community/teenagerCommunitty.svg'
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-
 
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
@@ -193,10 +16,9 @@ interface HangoutDetailsModalProps {
   onClose: () => void;
 }
 const stats = [
-  { icon: teenagerCommunity, label: "Teenagers actively participating in service projects", value: "25" },
-  { icon: cleanCummunity, label: "Cleaner, safer community spaces", value: "3" },
-  { icon: projectCommunity, label: "Community Projects Delivered", value: "2" },
-
+  { icon: "/images/teenagerCommunitty.svg", label: "Teenagers actively participating in service projects", value: "25" },
+  { icon: "/images/cleanCummunity.svg", label: "Cleaner, safer community spaces", value: "3" },
+  { icon: "/images/projectCommunity.svg", label: "Community Projects Delivered", value: "2" },
 ];
 export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetailsModalProps) {
   if (!hangout) return null;
@@ -230,7 +52,7 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
 
 
 
-            <div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/images/orange_bg.svg)]">
+            <div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/images/hangoutbluebg.png)]">
               <div className="space-y-4 ml-0 md:ml-[50%] tranform md:-translate-x-1/2 w-full md:w-3/5 text-center md:text-left">
                 <h1 className="text-4xl md:text-5xl font-bold">{hangout.name}</h1>
                 <p className="text-lg opacity-90">{hangout.fullDescription}</p>
@@ -274,18 +96,19 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
             </div>
 
 
-            <div className="p-8 md:p-10 space-y-12">
-              <div>
+            <div className="space-y-12">
+              <div className="p-8 md:p-10">
                 <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-2xl font text-gray-900">ABOUT EVENT</h2>
+                  <h2 className="text-2xl font text-gray-900">ABOUT HANGOUT</h2>
                 </div>
                 <div className="flex flex-col lg:flex-row items-start gap-8">
                   <div className="w-full lg:w-3/5">
                     <h3 className="text-xl font-bold text-gray-900 mb-4">{hangout.objective}</h3>
-                    <ul className="space-y-3">
+                    <p className="text-lg opacity-90">{hangout.objectiveDetails}</p>
+                    <ul className="space-y-3 mt-5 pl-7">
                       {hangout.objectives.map((objective, index) => (
                         <li key={index} className="flex items-start gap-3 text-gray-600">
-                          <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r ${hangout.color}`}>
+                          <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r`}>
                             <img
                               src={iconsArray[index % iconsArray.length]}
                               alt="icon"
@@ -311,36 +134,20 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
 
               <div>
 
-                <div className={`bg-gradient-to-r ${hangout.color} text-white rounded-2xl p-8 `}
+                <div className={`bg-gradient-to-r ${hangout.color} text-white rounded-2xl`}
                   style={{
                     backgroundImage: `url('/Background.svg')`,
                     backgroundSize: "contain",
-                    // backgroundRepeat: "no-repeat",
                     backgroundPosition: "center",
                   }}>
-                  {/* <h3 className="text-2xl font-bold mb-8 text-center">Impact of this hangout</h3>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {hangout.impact.map((stat, index) => (
-                      <div key={index} className="text-center">
-                        <div className="text-3xl md:text-4xl font-bold mb-2">{stat.value}</div>
-                        <div className="text-sm opacity-90">{stat.label}</div>
-                      </div>
-                    ))}
-                  </div> */}
 
                   <section
-                    // className="py-12 md:py-20 bg-[url('https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764438624/Background_sfdpyy.png')] bg-cover bg-center bg-no-repeat"
-                    className="py-12 md:py-20 bg-[url(/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
-
+                    className="py-12 md:py-20 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
                   >
-
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                       <div ref={ref} className="grid grid-cols-2 md:grid-cols-3 gap-6">
                         {stats.map((stat, index) => {
                           const isLast = index === stats.length - 1;
-
-
-
                           return (
                             <motion.div
                               key={index}
@@ -368,7 +175,6 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
                                       className="w-16 h-16 object-contain"
                                     />
                                   </div>
-
 
                                   {/* Label */}
                                   <div className="text-sm mb-2 text-white/80">
@@ -400,7 +206,7 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
                 </div>
               </div>
 
-              <div className="flex flex-row gap-4 flex-wrap lg:flex-nowrap">
+              <div className="flex flex-row gap-4 flex-wrap lg:flex-nowrap p-8 md:p-10">
                 {/* LEFT SECTION */}
                 <div className="flex flex-col items-start gap-3 mb-2 w-full lg:w-auto">
                   <h2 className="text-2xl font-bold text-gray-900">OUR PARTNERS</h2>
@@ -430,7 +236,7 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
               </div>
 
 
-              <div>
+              <div className="p-8 md:p-10">
                 <div className="flex items-center gap-3 mb-2">
                   <h2 className="text-2xl font text-gray-900">GALLERY</h2>
                 </div>

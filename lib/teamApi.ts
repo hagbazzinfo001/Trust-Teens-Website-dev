@@ -1,9 +1,6 @@
 // ─── Team API Service ──────────────────────────────────────────────────
-// Wraps the trustteens backend endpoints for Team (Core, Mentors, Volunteers, Ambassadors)
 
 const BASE = 'https://trustteens-api.onrender.com/api/v1/team';
-
-// ─── Types (Backend Shapes) ─────────────────────────────────────────
 
 export interface ApiTeamMember {
     id: number;

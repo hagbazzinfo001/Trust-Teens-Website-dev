@@ -110,13 +110,17 @@ export default function PastHangouts() {
                   </div>
                 </div>
 
+
                 <button
                   onClick={() => setSelectedHangout(featuredHangout)}
-                  className={`w-full py-5 px-8 rounded-2xl bg-orange-500 text-white font-black text-lg hover:rotate-1 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-between shadow-xl shadow-orange-100`}
+                  // className={`w-full bg-gradient-to-r ${featuredHangout.color} text-black font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group bg-green-500`}
+                  className={`w-full bg-gradient-to-r text-black font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group bg-green-500`}
+
                 >
-                  <span className="tracking-tight uppercase">View Full Hangout Recap</span>
-                  <ChevronRight size={28} />
+                  <span className='text-white'>View Full Hangout Details</span>
+                  <ChevronRight size={30} className="group-hover:translate-x-1 transition-transform " />
                 </button>
+
               </div>
             </div>
           </div>
