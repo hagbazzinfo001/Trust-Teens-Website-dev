@@ -1,10 +1,29 @@
 
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { hangoutApi, UpcomingHangout } from '@/lib/hangoutApi';
 
 export default function UpcomingHangouts() {
   const revealRefs = useRef<HTMLElement[]>([]);
+  const [upcoming, setUpcoming] = useState<UpcomingHangout | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUpcoming = async () => {
+      try {
+        const u = await hangoutApi.getUpcomingHangout();
+        if (u && u.isActive) {
+          setUpcoming(u);
+        }
+      } catch (error) {
+        console.error('Error fetching upcoming hangout:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUpcoming();
+  }, []);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -23,13 +42,15 @@ export default function UpcomingHangouts() {
     });
 
     return () => observer.disconnect();
-  }, []);
+  }, [upcoming]); // Re-observe when data loads
 
   const addToRefs = (el: HTMLElement | null) => {
     if (el && !revealRefs.current.includes(el)) {
       revealRefs.current.push(el);
     }
   };
+
+  if (loading || !upcoming) return null;
 
   return (
     <section className="w-full bg-white py-20 px-6 lg:px-20">
@@ -40,8 +61,8 @@ export default function UpcomingHangouts() {
             className="w-[280px] sm:w-[340px] lg:w-[420px] float-animation opacity-0 translate-y-8 transition-all duration-[1200ms]"
           >
             <img
-              src="https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764810649/Phone_Mockup_cxmgpl.png"
-              alt="Campaign Preview"
+              src={upcoming.promoImage || "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764810649/Phone_Mockup_cxmgpl.png"}
+              alt={upcoming.hangoutName}
               className="rounded-3xl shadow-xl w-full"
             />
           </div>
@@ -61,25 +82,30 @@ export default function UpcomingHangouts() {
             </p>
 
             <h2 className="text-4xl font-bold text-gray-900 leading-tight mb-6">
-              Hangout Name
+              {upcoming.hangoutName}
             </h2>
 
             <p className="text-gray-600 leading-relaxed mb-6">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Condimentum diam orci
-              pretium a pharetra, feugiat cursus. Dictumst risus, sem egestas odio cras
-              adipiscing vulputate.
+              {upcoming.description}
             </p>
 
             <p className="font-semibold text-gray-800">
-              Saturday, 21st November 2025; 02:00 PM
+              {upcoming.dateTime}
             </p>
 
-            <p className="text-gray-900 font-medium mt-2">Location???</p>
+            <p className="text-gray-900 font-medium mt-2">{upcoming.location}</p>
 
             {/* Button with Scale + Shine Hover Effect */}
-            <button className="relative mt-8 bg-orange-500 text-white font-semibold px-10 py-3 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:bg-orange-600 shine-btn">
-              Register Now
-            </button>
+            {upcoming.registerUrl && (
+              <a 
+                href={upcoming.registerUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block relative mt-8 bg-orange-500 text-white font-semibold px-10 py-3 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:bg-orange-600 shine-btn"
+              >
+                Register Now
+              </a>
+            )}
           </div>
         </div>
       </div>

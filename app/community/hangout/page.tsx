@@ -280,8 +280,8 @@ export default function HangoutsPage() {
       </section>
 
       <section className="
-p-12 md:py-20
-bg-[url(/images/impactsolidblack.png)] bg-contain bg-center bg-no-repeat
+p-8 md:py-20
+bg-[url(/images/impactsolidblack.svg)] bg-cover bg-center bg-no-repeat
 flex flex-col md:flex-row
 justify-center md:justify-between
 items-center

@@ -146,10 +146,15 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
                   <section
                     className="py-12 md:py-20 bg-[url(/images/BackgroundBlack.svg)] bg-cover bg-center bg-no-repeat"
                   >
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <div ref={ref} className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                        {stats.map((stat, index) => {
-                          const isLast = index === stats.length - 1;
+                    <div className="max-w-8xl mx-auto px-2 sm:px-4 lg:px-6">
+                      <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        {(hangout.impact && hangout.impact.length > 0 ? hangout.impact : stats).map((stat: any, index: number) => {
+                          const isLast = index === (hangout.impact?.length || stats.length) - 1;
+                          const icon = stats[index % stats.length].icon;
+                          const label = stat.label || (stat as any).stat_label || (stat as any).statLabel;
+                          const valueAttr = stat.value !== undefined ? stat.value : (stat as any).stat_number || (stat as any).statNumber;
+                          const value = String(valueAttr || "0");
+                          
                           return (
                             <motion.div
                               key={index}
@@ -167,11 +172,10 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
 
                                 <CardContent className="p-2 text-center bg-transparent text-white rounded-none">
                                   {/* Icon */}
-                                  {/* Icon */}
                                   <div className="inline-flex p-4 rounded-full mb-4">
                                     <Image
-                                      src={stat.icon}
-                                      alt={stat.label}
+                                      src={icon}
+                                      alt={label}
                                       width={60}
                                       height={60}
                                       className="w-16 h-16 object-contain"
@@ -180,21 +184,21 @@ export default function HangoutDetailsModal({ hangout, onClose }: HangoutDetails
 
                                   {/* Label */}
                                   <div className="text-sm mb-2 text-white/80">
-                                    {stat.label}
+                                    {label}
                                   </div>
 
                                   {/* CountUp */}
                                   <div className="text-3xl font-bold text-white">
                                     {inView ? (
                                       <CountUp
-                                        end={parseInt(stat.value.replace("+", ""))}
+                                        end={parseInt(value.replace(/\D/g, '')) || 0}
                                         duration={2.5}
                                         separator=","
                                       />
                                     ) : (
                                       "0"
                                     )}
-                                    +
+                                    {value.includes('+') ? '+' : ''}
                                   </div>
                                 </CardContent>
                               </Card>
