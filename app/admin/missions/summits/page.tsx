@@ -10,8 +10,6 @@ import {
     SummitDetail,
     getSummitsHeroGallery,
     saveSummitsHeroGallery,
-    getSummitDetail,
-    saveSummitDetail,
     generateId,
 } from '@/lib/adminData';
 import {
@@ -27,6 +25,8 @@ import {
     deletePastSummit,
     fetchUpcoming,
     updateUpcoming,
+    getSummitById,
+    updateSummitDetail,
 } from '@/lib/summitsApi';
 import { Save, Plus, Trash2, Check, Loader2 } from 'lucide-react';
 
@@ -82,9 +82,9 @@ function apiImpactToLocal(a: ApiImpactStat): MissionImpactStat & { _apiId: numbe
 function apiSummitToLocal(a: ApiPastSummit): PastSummitItem & { _apiId: number } {
     return {
         summit_id: String(a.id),
-        summit_title: a.campaignTitle,
-        summit_date: a.campaignDate,
-        summit_image: a.campaignImage,
+        summit_title: a.summitTitle,
+        summit_date: a.summitDate,
+        summit_image: a.summitImage,
         _apiId: a.id,
     };
 }
@@ -159,12 +159,12 @@ export default function AdminSummitsPage() {
             const data = await fetchUpcoming();
             if (data) {
                 setUpcoming({
-                    is_active: true,
-                    name: data.missionTitle || '',
-                    description: data.missionDescription || '',
-                    date_time: data.missionDate || '',
-                    location: '',
-                    register_url: data.missionLink || '',
+                    is_active: data.isActive,
+                    name: data.summitName || '',
+                    description: data.description || '',
+                    date_time: data.dateTime || '',
+                    location: data.location || '',
+                    register_url: data.registerUrl || '',
                 });
             }
         } catch (e: unknown) {
@@ -188,8 +188,36 @@ export default function AdminSummitsPage() {
 
     useEffect(() => {
         if (selectedSummitId) {
-            const d = getSummitDetail(selectedSummitId);
-            setDetail(d || { ...EMPTY_DETAIL });
+            const loadDetail = async () => {
+                setSaving(true);
+                try {
+                    const { getSummitById, getSpeakersBySummit, getPartnersBySummit, getGalleryBySummit } = await import('@/lib/summitsApi');
+                    const apiId = parseInt(selectedSummitId);
+                    const [d, speakers, partners, gallery] = await Promise.all([
+                        getSummitById(apiId),
+                        getSpeakersBySummit(apiId),
+                        getPartnersBySummit(apiId),
+                        getGalleryBySummit(apiId)
+                    ]);
+                    setDetail({
+                        summit_name: d.summitName,
+                        short_description: d.shortDescription,
+                        hero_video_url: d.heroVideoUrl,
+                        about_text_body: d.aboutTextBody,
+                        event_highlights: d.eventHighlights || [],
+                        event_side_image: d.eventSideImage,
+                        impact: d.impactMetrics?.map(m => ({ stat_number: m.impactValue, stat_label: m.impactLabel })) || [],
+                        speakers: speakers.map(s => ({ id: String(s.id), speaker_name: s.speakerName, speaker_role: s.speakerRole, speaker_image: s.speakerImage, _apiId: s.id })),
+                        partners: partners.map(p => ({ name: '', logo: p.partnerLogo, _apiId: p.id })),
+                        gallery: gallery.map(g => ({ url: g.imageUrl, _apiId: g.id })),
+                    } as any);
+                } catch (e) {
+                    console.error('Failed to load summit detail:', e);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            loadDetail();
         }
     }, [selectedSummitId]);
 
@@ -260,9 +288,9 @@ export default function AdminSummitsPage() {
         try {
             for (const item of pastItems) {
                 const payload = {
-                    campaignTitle: item.summit_title,
-                    campaignDate: item.summit_date,
-                    campaignImage: item.summit_image,
+                    summitTitle: item.summit_title,
+                    summitDate: item.summit_date,
+                    summitImage: item.summit_image,
                     isActive: true,
                 };
                 if (item._apiId) {
@@ -287,11 +315,12 @@ export default function AdminSummitsPage() {
         setUpcomingError('');
         try {
             await updateUpcoming({
-                missionTitle: upcoming.name,
-                missionDate: upcoming.date_time,
-                missionLink: upcoming.register_url,
-                missionDescription: upcoming.description,
-                missionImage: '',
+                isActive: upcoming.is_active,
+                summitName: upcoming.name,
+                dateTime: upcoming.date_time,
+                registerUrl: upcoming.register_url,
+                description: upcoming.description,
+                location: upcoming.location,
             });
             flash();
             await loadUpcoming();
@@ -302,7 +331,65 @@ export default function AdminSummitsPage() {
         }
     };
 
-    // ─── Detail helpers (still localStorage) ────────────────────────
+    // ─── Detail helpers ─────────────────────────────────────────────
+    
+    const handleSaveDetail = async () => {
+        if (!selectedSummitId) return;
+        setSaving(true);
+        try {
+            const apiId = parseInt(selectedSummitId);
+            const { updateSummitDetail, addSpeakerToSummit, updateSpeaker, deleteSpeaker, addPartnerToSummit, deletePartner, addGalleryImage, deleteGalleryImage, getSpeakersBySummit, getPartnersBySummit, getGalleryBySummit } = await import('@/lib/summitsApi');
+
+            await updateSummitDetail(apiId, {
+                summitName: detail.summit_name,
+                shortDescription: detail.short_description,
+                heroVideoUrl: detail.hero_video_url,
+                aboutTextBody: detail.about_text_body,
+                eventSideImage: detail.event_side_image,
+                eventHighlights: detail.event_highlights,
+                impactMetrics: detail.impact.map((m, idx) => ({ id: idx, impactValue: m.stat_number, impactLabel: m.stat_label }))
+            });
+
+            // Speakers
+            const remoteSpeakers = await getSpeakersBySummit(apiId);
+            const localSpeakerIds = new Set(detail.speakers.filter(s => (s as any)._apiId).map(s => (s as any)._apiId!));
+            for (const rs of remoteSpeakers) {
+                if (!localSpeakerIds.has(rs.id)) await deleteSpeaker(apiId, rs.id);
+            }
+            for (const ls of detail.speakers) {
+                const payload = { speakerName: ls.speaker_name, speakerRole: ls.speaker_role, speakerImage: ls.speaker_image };
+                if ((ls as any)._apiId) await updateSpeaker(apiId, (ls as any)._apiId, payload);
+                else await addSpeakerToSummit(apiId, payload);
+            }
+
+            // Partners
+            const remotePartners = await getPartnersBySummit(apiId);
+            const localPartnerIds = new Set(detail.partners.filter(p => (p as any)._apiId).map(p => (p as any)._apiId!));
+            for (const rp of remotePartners) {
+                if (!localPartnerIds.has(rp.id)) await deletePartner(apiId, rp.id);
+            }
+            for (const lp of detail.partners) {
+                if (!(lp as any)._apiId) await addPartnerToSummit(apiId, { partnerLogo: lp.logo });
+            }
+
+            // Gallery
+            const remoteGallery = await getGalleryBySummit(apiId);
+            const localGalleryIds = new Set(detail.gallery.filter(g => (g as any)._apiId).map(g => (g as any)._apiId!));
+            for (const rg of remoteGallery) {
+                if (!localGalleryIds.has(rg.id)) await deleteGalleryImage(apiId, rg.id);
+            }
+            for (const lg of detail.gallery) {
+                const url = typeof lg === 'string' ? lg : (lg as any).url;
+                if (!(lg as any)._apiId) await addGalleryImage(apiId, { imageUrl: url });
+            }
+
+            flash();
+        } catch (e) {
+            console.error('Save failed:', e);
+        } finally {
+            setSaving(false);
+        }
+    };
 
     const addHighlight = () => setDetail({ ...detail, event_highlights: [...detail.event_highlights, ''] });
     const removeHighlight = (idx: number) => setDetail({ ...detail, event_highlights: detail.event_highlights.filter((_, i) => i !== idx) });
@@ -524,8 +611,8 @@ export default function AdminSummitsPage() {
                             <p className="text-sm text-gray-500">Select a past summit to edit its full detail page</p>
                         </div>
                         <button
-                            onClick={() => { if (selectedSummitId) { saveSummitDetail(selectedSummitId, detail); flash(); } }}
-                            disabled={!selectedSummitId}
+                            onClick={handleSaveDetail}
+                            disabled={!selectedSummitId || saving}
                             className={`${btnSave} ${!selectedSummitId ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             <Save size={16} /> Save Detail

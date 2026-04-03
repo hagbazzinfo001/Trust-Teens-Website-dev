@@ -1,60 +1,101 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { mockSummit, Summit } from '@/lib/mockSummit';
+import { Summit } from '@/lib/mockSummit';
 import SubmitDetailsModal from '@/components/SubmitDetailedModal';
 import { ChevronRight } from 'lucide-react';
-import { getPastSummits, getSummitDetail } from '@/lib/adminData';
+import { 
+  fetchPastSummits, 
+  getSummitById, 
+  getSpeakersBySummit, 
+  getPartnersBySummit, 
+  getGalleryBySummit 
+} from '@/lib/summitsApi';
 
 export default function PastSummit() {
-  const [summits, setSummits] = useState<Summit[]>(mockSummit);
+  const [summits, setSummits] = useState<Summit[]>([]);
   const [selectedSummit, setSelectedSummit] = useState<Summit | null>(null);
-  const [featuredSummit, setFeaturedSummit] = useState<Summit>(mockSummit[0]);
+  const [featuredSummit, setFeaturedSummit] = useState<Summit | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const adminPast = getPastSummits();
-    if (adminPast && adminPast.length > 0) {
-      const converted: Summit[] = adminPast.map(ps => ({
-        id: ps.summit_id,
-        name: ps.summit_title,
-        date: ps.summit_date,
-        description: ps.summit_title, // Placeholder until full detail is loaded
-        fullDescription: ps.summit_title,
-        objective: 'What we did',
-        objectives: [],
-        featuredImage: ps.summit_image,
-        headerImage: ps.summit_image,
-        impact: [],
-        partners: [],
-        gallery: [],
-        color: 'from-orange-500 to-orange-600'
-      }));
-      setSummits(converted);
-      setFeaturedSummit(converted[0]);
-    }
+    const loadSummits = async () => {
+      try {
+        const data = await fetchPastSummits();
+        if (data && data.length > 0) {
+          const converted: Summit[] = data.map(ps => ({
+            id: String(ps.id),
+            name: ps.summitTitle,
+            date: ps.summitDate,
+            description: '', 
+            fullDescription: '',
+            objective: 'What we did',
+            objectives: [],
+            featuredImage: ps.summitImage,
+            headerImage: ps.summitImage,
+            impact: [],
+            partners: [],
+            gallery: [],
+            color: 'from-orange-500 to-orange-600'
+          }));
+          setSummits(converted);
+          setFeaturedSummit(converted[0]);
+        }
+      } catch (e) {
+        console.error('Failed to fetch past summits:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSummits();
   }, []);
 
-  // Effect to load full details for the featured summit if it's from admin
   useEffect(() => {
-    if (featuredSummit && featuredSummit.objectives.length === 0) {
-      const detail = getSummitDetail(featuredSummit.id);
-      if (detail) {
-        setFeaturedSummit(prev => ({
-          ...prev,
-          name: detail.summit_name,
-          description: detail.short_description,
-          fullDescription: detail.about_text_body,
-          objectives: detail.event_highlights,
-          featuredImage: detail.event_side_image || prev.featuredImage,
-          headerImage: detail.hero_video_url || prev.headerImage,
-          impact: detail.impact.map(s => ({ label: s.stat_label, value: parseInt(s.stat_number) || 0 })),
-          partners: detail.partners.map(p => ({ name: p.name, logo: p.logo })),
-          speakers: detail.speakers.map(s => ({ name: s.speaker_name, role: s.speaker_role, image: s.speaker_image })),
-          gallery: detail.gallery
-        }));
-      }
+    if (featuredSummit && featuredSummit.id && featuredSummit.objectives.length === 0) {
+      const loadFullDetail = async () => {
+        try {
+          const id = parseInt(featuredSummit.id);
+          const [detail, speakers, partners, gallery] = await Promise.all([
+            getSummitById(id),
+            getSpeakersBySummit(id),
+            getPartnersBySummit(id),
+            getGalleryBySummit(id)
+          ]);
+
+          setFeaturedSummit(prev => {
+            if (!prev) return null;
+            return {
+              ...prev,
+              name: detail.summitName,
+              description: detail.shortDescription,
+              fullDescription: detail.aboutTextBody,
+              objectives: detail.eventHighlights,
+              featuredImage: detail.eventSideImage || prev.featuredImage,
+              headerImage: detail.coverImage || prev.headerImage,
+              impact: detail.impactMetrics.map(s => ({ label: s.impactLabel, value: parseInt(s.impactValue) || 0 })),
+              partners: partners.map(p => ({ name: '', logo: p.partnerLogo })),
+              speakers: speakers.map(s => ({ name: s.speakerName, role: s.speakerRole, image: s.speakerImage })),
+              gallery: gallery.map(g => g.imageUrl)
+            };
+          });
+        } catch (e) {
+          console.error('Failed to load featured summit detail:', e);
+        }
+      };
+      loadFullDetail();
     }
-  }, [featuredSummit.id]);
+  }, [featuredSummit?.id]);
+
+  if (loading || !featuredSummit) {
+    return (
+      <div className="flex items-center justify-center py-20 bg-white">
+        <div className="flex flex-col items-center gap-3 text-gray-400">
+          <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm font-medium">Loading summits...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

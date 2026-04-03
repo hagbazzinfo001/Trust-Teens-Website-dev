@@ -119,9 +119,6 @@ export default function ConferenceDetailsModal({
   conference,
   onClose,
 }: ConferenceDetailsModalProps) {
-  const displayNews = (conference?.news && conference.news.length > 0) ? conference.news : news;
-  const displaySpeakers = (conference?.speakers && conference.speakers.length > 0) ? conference.speakers : speakers;
-
   // ✅ HOOKS BELONG HERE
   const [activeSet, setActiveSet] = useState(0);
 
@@ -131,6 +128,9 @@ export default function ConferenceDetailsModal({
   });
 
   if (!conference) return null;
+
+  const displayNews = conference.news || [];
+  const displaySpeakers = conference.speakers || [];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
@@ -361,7 +361,7 @@ export default function ConferenceDetailsModal({
             </section>
 
             {/* Speakers Section */}
-            <section className="relative py-20 bg-[url('/speakersBlue.svg')]     bg-no-repeat
+            <section className="relative py-20 bg-[url('/images/speakersBlue.svg')]     bg-no-repeat
     bg-center
      overflow-hidden mb-12 bg-cover ">
               {/* Decorative background shapes */}

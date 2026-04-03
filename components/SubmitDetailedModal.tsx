@@ -25,13 +25,6 @@ interface SummitDetailsModalProps {
   onClose: () => void;
 }
 
-const stats = [
-  { icon: sessionIcon, label: "Campaign Activities Delivered", value: "6+" },
-  { icon: schoolIcon, label: "Schools & Communities Engaged", value: "15+" },
-  { icon: volunteerIcon, label: "Volunteers Mobilised", value: "30+" },
-  { icon: teenagerIcon, label: "Teenagers Reached", value: "1000+" },
-];
-
 const iconsArray = [
   icon1,
   icon2,
@@ -45,10 +38,14 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 };
 
+const defaultStatsIcons = [teenagerIcon, volunteerIcon, sessionIcon, schoolIcon];
+
 export default function SummitDetailsModal({
   Summit,
   onClose,
 }: SummitDetailsModalProps) {
+  const displayImpact = Summit?.impact || [];
+  const displaySpeakers = Summit?.speakers || [];
 
   // ✅ HOOKS BELONG HERE
   const [activeSet, setActiveSet] = useState(0);
@@ -159,10 +156,8 @@ export default function SummitDetailsModal({
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                   <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    {stats.map((stat, index) => {
-                      const isLast = index === stats.length - 1;
-
-
+                    {displayImpact.map((stat, index) => {
+                      const isLast = index === displayImpact.length - 1;
 
                       return (
                         <motion.div
@@ -181,10 +176,9 @@ export default function SummitDetailsModal({
 
                             <CardContent className="p-2 text-center bg-transparent text-white rounded-none">
                               {/* Icon */}
-                              {/* Icon */}
                               <div className="inline-flex p-4 rounded-full mb-4">
                                 <Image
-                                  src={stat.icon}
+                                  src={defaultStatsIcons[index % defaultStatsIcons.length]}
                                   alt={stat.label}
                                   width={60}
                                   height={60}
@@ -202,7 +196,7 @@ export default function SummitDetailsModal({
                               <div className="text-3xl font-bold text-white">
                                 {inView ? (
                                   <CountUp
-                                    end={parseInt(stat.value.replace("+", ""))}
+                                    end={typeof stat.value === 'string' ? parseInt(stat.value.replace("+", "")) : stat.value}
                                     duration={2.5}
                                     separator=","
                                   />

@@ -13,7 +13,7 @@ export interface Summit {
   aboutImage?: string;
   impact: {
     label: string;
-    value: number;
+    value: number | string;
   }[];
   partners: {
     name: string;

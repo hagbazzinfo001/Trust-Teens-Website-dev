@@ -2,16 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import CloudinaryImageUpload from '@/components/CloudinaryImageUpload';
+import { leadershipApi, LeaderDto } from '@/lib/leadershipApi';
 import {
     AchievementMetric,
-    Leader,
     getAchievementMetric,
     saveAchievementMetric,
-    getLeaders,
-    saveLeaders,
     generateId,
 } from '@/lib/adminData';
-import { Save, Plus, Trash2, ArrowUp, ArrowDown, Check } from 'lucide-react';
+import { Save, Plus, Trash2, ArrowUp, ArrowDown, Check, Loader2 } from 'lucide-react';
 
 // ─── Defaults ────────────────────────────────────────────────────────
 
@@ -20,50 +18,35 @@ const DEFAULT_ACHIEVEMENT: AchievementMetric = {
     metric_label: 'Purpose driven initiatives executed',
 };
 
-const DEFAULT_LEADERS: Leader[] = [
-    {
-        id: '1',
-        leader_name: 'Deborah Dada',
-        leader_title: 'Founder, Trust Teens',
-        leader_image:
-            'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764436920/deborah_yw4azn.png?auto=compress&cs=tinysrgb&w=400',
-        display_order: 1,
-    },
-    {
-        id: '2',
-        leader_name: 'Alex Oyebade',
-        leader_title: 'Founder, Peercheck',
-        leader_image:
-            'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764440281/alex_dbug1a.png?auto=compress&cs=tinysrgb&w=400',
-        display_order: 2,
-    },
-    {
-        id: '3',
-        leader_name: 'Emmanuel Oshowobi',
-        leader_title: 'UX Designer',
-        leader_image:
-            'https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764440305/emeal_ec26gr.png?auto=compress&cs=tinysrgb&w=400',
-        display_order: 3,
-    },
-];
-
 const tabs = ['Achievement Metric', 'Leadership'] as const;
 type Tab = (typeof tabs)[number];
 
 export default function AdminAboutPage() {
     const [activeTab, setActiveTab] = useState<Tab>('Achievement Metric');
     const [saved, setSaved] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [achievement, setAchievement] =
         useState<AchievementMetric>(DEFAULT_ACHIEVEMENT);
-    const [leaders, setLeaders] = useState<Leader[]>(DEFAULT_LEADERS);
+    const [leaders, setLeaders] = useState<LeaderDto[]>([]);
 
     useEffect(() => {
         const a = getAchievementMetric();
         if (a) setAchievement(a);
-        const l = getLeaders();
-        if (l) setLeaders(l);
+        fetchLeaders();
     }, []);
+
+    const fetchLeaders = async () => {
+        try {
+            setLoading(true);
+            const data = await leadershipApi.getLeaders();
+            setLeaders(data.sort((a, b) => a.displayOrder - b.displayOrder));
+        } catch (error) {
+            console.error('Failed to fetch leaders:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const flash = () => {
         setSaved(true);
@@ -75,26 +58,62 @@ export default function AdminAboutPage() {
         flash();
     };
 
-    const handleSaveLeaders = () => {
-        saveLeaders(leaders);
-        flash();
+    const handleSaveLeaders = async () => {
+        try {
+            setLoading(true);
+            // Save each leader
+            const promises = leaders.map((leader, index) => {
+                const data = { ...leader, displayOrder: index + 1 };
+                if (leader.id && !leader.id.startsWith('new-')) {
+                    return leadershipApi.updateLeader(leader.id, data);
+                } else {
+                    const { id, ...createData } = leader;
+                    return leadershipApi.createLeader({ ...createData, displayOrder: index + 1 });
+                }
+            });
+            await Promise.all(promises);
+            await fetchLeaders(); // Refresh to get real IDs
+            flash();
+        } catch (error) {
+            console.error('Failed to save leaders:', error);
+            alert('Error saving leaders. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const addLeader = () => {
         setLeaders([
             ...leaders,
             {
-                id: generateId(),
-                leader_name: '',
-                leader_title: '',
-                leader_image: '',
-                display_order: leaders.length + 1,
+                id: `new-${generateId()}`,
+                leaderName: '',
+                leaderTitle: '',
+                leaderImage: '',
+                displayOrder: leaders.length + 1,
             },
         ]);
     };
 
-    const removeLeader = (id: string) => {
-        setLeaders(leaders.filter((l) => l.id !== id));
+    const removeLeader = async (id: string) => {
+        if (id.startsWith('new-')) {
+            setLeaders(leaders.filter((l) => l.id !== id));
+            return;
+        }
+
+        if (!confirm('Are you sure you want to delete this leader? This action is immediate on the backend.')) return;
+
+        try {
+            setLoading(true);
+            await leadershipApi.deleteLeader(id);
+            setLeaders(leaders.filter((l) => l.id !== id));
+            flash();
+        } catch (error) {
+            console.error('Failed to delete leader:', error);
+            alert('Error deleting leader.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const moveLeader = (index: number, direction: 'up' | 'down') => {
@@ -105,8 +124,8 @@ export default function AdminAboutPage() {
             newLeaders[swapIndex],
             newLeaders[index],
         ];
-        // re-number
-        newLeaders.forEach((l, i) => (l.display_order = i + 1));
+        // re-number locally
+        newLeaders.forEach((l, i) => (l.displayOrder = i + 1));
         setLeaders(newLeaders);
     };
 
@@ -216,15 +235,18 @@ export default function AdminAboutPage() {
                         <div className="flex gap-2">
                             <button
                                 onClick={addLeader}
-                                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                                disabled={loading}
+                                className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
                             >
                                 <Plus size={16} /> Add Leader
                             </button>
                             <button
                                 onClick={handleSaveLeaders}
-                                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                                disabled={loading}
+                                className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
                             >
-                                <Save size={16} /> Save
+                                {loading ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} 
+                                {loading ? 'Saving...' : 'Save'}
                             </button>
                         </div>
                     </div>
@@ -235,7 +257,7 @@ export default function AdminAboutPage() {
                                 <div className="absolute top-3 right-3 flex items-center gap-1">
                                     <button
                                         onClick={() => moveLeader(i, 'up')}
-                                        disabled={i === 0}
+                                        disabled={i === 0 || loading}
                                         className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
                                         title="Move up"
                                     >
@@ -243,15 +265,16 @@ export default function AdminAboutPage() {
                                     </button>
                                     <button
                                         onClick={() => moveLeader(i, 'down')}
-                                        disabled={i === leaders.length - 1}
+                                        disabled={i === leaders.length - 1 || loading}
                                         className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30"
                                         title="Move down"
                                     >
                                         <ArrowDown size={14} />
                                     </button>
                                     <button
-                                        onClick={() => removeLeader(leader.id)}
-                                        className="p-1 text-gray-400 hover:text-red-500"
+                                        onClick={() => leader.id && removeLeader(leader.id)}
+                                        disabled={loading}
+                                        className="p-1 text-gray-400 hover:text-red-500 disabled:opacity-30"
                                         title="Remove"
                                     >
                                         <Trash2 size={14} />
@@ -266,12 +289,12 @@ export default function AdminAboutPage() {
                                         <input
                                             type="text"
                                             maxLength={40}
-                                            value={leader.leader_name}
+                                            value={leader.leaderName}
                                             onChange={(e) => {
                                                 const updated = [...leaders];
                                                 updated[i] = {
                                                     ...updated[i],
-                                                    leader_name: e.target.value,
+                                                    leaderName: e.target.value,
                                                 };
                                                 setLeaders(updated);
                                             }}
@@ -285,12 +308,12 @@ export default function AdminAboutPage() {
                                         <input
                                             type="text"
                                             maxLength={50}
-                                            value={leader.leader_title}
+                                            value={leader.leaderTitle}
                                             onChange={(e) => {
                                                 const updated = [...leaders];
                                                 updated[i] = {
                                                     ...updated[i],
-                                                    leader_title: e.target.value,
+                                                    leaderTitle: e.target.value,
                                                 };
                                                 setLeaders(updated);
                                             }}
@@ -300,12 +323,12 @@ export default function AdminAboutPage() {
                                     <div>
                                         <CloudinaryImageUpload
                                             label="Leader Image"
-                                            value={leader.leader_image}
+                                            value={leader.leaderImage}
                                             onUpload={(url) => {
                                                 const updated = [...leaders];
                                                 updated[i] = {
                                                     ...updated[i],
-                                                    leader_image: url,
+                                                    leaderImage: url,
                                                 };
                                                 setLeaders(updated);
                                             }}

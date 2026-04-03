@@ -191,6 +191,7 @@ export default function ProjectDetailsModal({ project, onClose }: ProjectDetails
                             <div className="w-full lg:w-3/5">
                                 <h2 className="text-2xl font text-gray-900">ABOUT PROJECT</h2>
                                 <h3 className="text-xl font-bold text-gray-900 mb-4">{project.objective}</h3>
+                                <p className="text-lg opacity-90">{project.fullDescription}</p>
                                 <ul className="space-y-3 pl-10">
                                     {project.objectives.map((objective, index) => (
                                         <li key={index} className="flex items-start gap-3 text-gray-600">

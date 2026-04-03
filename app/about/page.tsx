@@ -6,7 +6,9 @@ import { motion } from "framer-motion";
 import AOS from "aos";
 import Image from "next/image";
 import CountUp from "@/components/ui/CountUp2";
-import { getAchievementMetric, getLeaders } from "@/lib/adminData";
+import { getAchievementMetric } from "@/lib/adminData";
+import { leadershipApi } from "@/lib/leadershipApi";
+
 export default function AboutPage() {
   const values = [
     { title: "Influence", image: "/images/bluebg.svg" },
@@ -31,26 +33,7 @@ export default function AboutPage() {
     },
   ];
 
-  const [leaders, setLeaders] = useState([
-    {
-      name: "Deborah Dada",
-      role: "Founder, Trust Teens",
-      image:
-        "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764436920/deborah_yw4azn.png?auto=compress&cs=tinysrgb&w=400",
-    },
-    {
-      name: "Alex Oyebade",
-      role: "Founder, Peercheck",
-      image:
-        "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764440281/alex_dbug1a.png?auto=compress&cs=tinysrgb&w=400",
-    },
-    {
-      name: "Emmanuel Oshowobi",
-      role: "UX Designer",
-      image:
-        "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764440305/emeal_ec26gr.png?auto=compress&cs=tinysrgb&w=400",
-    },
-  ]);
+  const [leaders, setLeaders] = useState<{name: string, role: string, image: string}[]>([]);
 
   const [achievementValue, setAchievementValue] = useState("25");
   const [achievementLabel, setAchievementLabel] = useState("Purpose driven initiatives executed");
@@ -58,16 +41,23 @@ export default function AboutPage() {
   useEffect(() => {
     AOS.init({ duration: 800, once: false });
 
-    const savedLeaders = getLeaders();
-    if (savedLeaders) {
-      setLeaders(
-        savedLeaders.map((l) => ({
-          name: l.leader_name,
-          role: l.leader_title,
-          image: l.leader_image,
-        }))
-      );
-    }
+    const fetchLeaders = async () => {
+      try {
+        const data = await leadershipApi.getLeaders();
+        if (data && data.length > 0) {
+          setLeaders(
+            data.sort((a, b) => a.displayOrder - b.displayOrder).map((l) => ({
+              name: l.leaderName,
+              role: l.leaderTitle,
+              image: l.leaderImage,
+            }))
+          );
+        }
+      } catch (error) {
+        console.error('Failed to fetch leaders:', error);
+      }
+    };
+    fetchLeaders();
 
     const savedAchievement = getAchievementMetric();
     if (savedAchievement) {

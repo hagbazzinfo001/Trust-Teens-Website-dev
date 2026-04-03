@@ -11,8 +11,6 @@ import {
     ConferenceHeroGallery,
     getConferencesHero,
     saveConferencesHero,
-    getConferenceDetail,
-    saveConferenceDetail,
     generateId,
 } from '@/lib/adminData';
 import {
@@ -85,16 +83,6 @@ function apiImpactToLocal(a: ApiImpactStat): MissionImpactStat & { _apiId: numbe
     return { stat_number: a.statNumber, stat_label: a.statLabel, _apiId: a.id, _position: a.position };
 }
 
-function apiConfToLocal(a: ApiPastConference): PastConferenceItem & { _apiId: number } {
-    return {
-        conference_id: String(a.id),
-        conference_title: a.campaignTitle,
-        conference_date: a.campaignDate,
-        conference_image: a.campaignImage,
-        _apiId: a.id,
-    };
-}
-
 type ImpactWithApi = MissionImpactStat & { _apiId?: number; _position?: number };
 type ConfWithApi = PastConferenceItem & { _apiId?: number };
 
@@ -122,9 +110,15 @@ export default function AdminConferencesPage() {
     const [upcomingLoading, setUpcomingLoading] = useState(true);
     const [upcomingError, setUpcomingError] = useState('');
 
-    // Conference Details (localStorage)
+    // Conference Details (Backend)
     const [selectedConfId, setSelectedConfId] = useState<string>('');
     const [detail, setDetail] = useState<ConferenceDetail>(EMPTY_DETAIL);
+    const [detailLoading, setDetailLoading] = useState(false);
+    const [detailError, setDetailError] = useState('');
+
+    const [speakers, setSpeakers] = useState<any[]>([]);
+    const [partners, setPartners] = useState<any[]>([]);
+    const [gallery, setGallery] = useState<any[]>([]);
 
     // ─── Data fetching ──────────────────────────────────────────────
 
@@ -149,7 +143,13 @@ export default function AdminConferencesPage() {
         try {
             const data = await fetchPastConferences();
             if (data) {
-                setPastItems(data.map(apiConfToLocal));
+                setPastItems(data.map((a: any) => ({
+                    conference_id: String(a.id),
+                    conference_title: a.conferenceTitle,
+                    conference_date: a.conferenceDate,
+                    conference_image: a.conferenceImage,
+                    _apiId: a.id,
+                })));
             }
         } catch (e: unknown) {
             setPastError(e instanceof Error ? e.message : 'Failed to load past conferences');
@@ -165,13 +165,13 @@ export default function AdminConferencesPage() {
             const data = await fetchUpcoming();
             if (data) {
                 setUpcoming({
-                    is_active: true,
-                    name: data.missionTitle || '',
-                    description: data.missionDescription || '',
-                    date_time: data.missionDate || '',
-                    location: '',
-                    register_url: data.missionLink || '',
-                    promo_image: data.missionImage || '',
+                    is_active: data.isActive,
+                    name: data.conferenceName || '',
+                    description: data.description || '',
+                    date_time: data.dateTime || '',
+                    location: data.location || '',
+                    register_url: data.registerUrl || '',
+                    promo_image: data.promoImage || '',
                 });
             }
         } catch (e: unknown) {
@@ -180,6 +180,42 @@ export default function AdminConferencesPage() {
             }
         } finally {
             setUpcomingLoading(false);
+        }
+    }, []);
+
+    const loadDetail = useCallback(async (id: number) => {
+        setDetailLoading(true);
+        setDetailError('');
+        try {
+            const [d, sp, pt, gl] = await Promise.all([
+                import('@/lib/conferencesApi').then(m => m.getConferenceById(id)),
+                import('@/lib/conferencesApi').then(m => m.getSpeakersByConference(id)),
+                import('@/lib/conferencesApi').then(m => m.getPartnersByConference(id)),
+                import('@/lib/conferencesApi').then(m => m.getGalleryByConference(id)),
+            ]);
+
+            setDetail({
+                conference_name: d.conferenceName,
+                conference_summary: d.conferenceSummary,
+                hero_main_image: d.heroMainImage,
+                about_text_body: d.aboutTextBody,
+                about_side_image: d.aboutSideImage,
+                event_highlights: d.eventHighlights || [],
+                impact: d.impactMetrics?.map(m => ({ stat_number: m.impactValue, stat_label: m.impactLabel })) || [],
+                news: [], 
+                speakers: [],
+                partners: [],
+                gallery: [],
+            });
+
+            setSpeakers(sp.map(s => ({ ...s, _localId: s.id })));
+            setPartners(pt.map(p => ({ ...p, _localId: p.id })));
+            setGallery(gl.map(g => ({ ...g, _localId: g.id })));
+
+        } catch (e: unknown) {
+            setDetailError(e instanceof Error ? e.message : 'Failed to load conference details');
+        } finally {
+            setDetailLoading(false);
         }
     }, []);
 
@@ -195,10 +231,17 @@ export default function AdminConferencesPage() {
 
     useEffect(() => {
         if (selectedConfId) {
-            const d = getConferenceDetail(selectedConfId);
-            setDetail(d || { ...EMPTY_DETAIL });
+            const apiId = parseInt(selectedConfId);
+            if (!isNaN(apiId)) {
+                loadDetail(apiId);
+            }
+        } else {
+            setDetail({ ...EMPTY_DETAIL });
+            setSpeakers([]);
+            setPartners([]);
+            setGallery([]);
         }
-    }, [selectedConfId]);
+    }, [selectedConfId, loadDetail]);
 
     const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
 
@@ -267,9 +310,9 @@ export default function AdminConferencesPage() {
         try {
             for (const item of pastItems) {
                 const payload = {
-                    campaignTitle: item.conference_title,
-                    campaignDate: item.conference_date,
-                    campaignImage: item.conference_image,
+                    conferenceTitle: item.conference_title,
+                    conferenceDate: item.conference_date,
+                    conferenceImage: item.conference_image,
                     isActive: true,
                 };
                 if (item._apiId) {
@@ -294,11 +337,13 @@ export default function AdminConferencesPage() {
         setUpcomingError('');
         try {
             await updateUpcoming({
-                missionTitle: upcoming.name,
-                missionDate: upcoming.date_time,
-                missionLink: upcoming.register_url,
-                missionDescription: upcoming.description,
-                missionImage: upcoming.promo_image || '',
+                isActive: upcoming.is_active,
+                conferenceName: upcoming.name,
+                dateTime: upcoming.date_time,
+                registerUrl: upcoming.register_url,
+                description: upcoming.description,
+                location: upcoming.location,
+                promoImage: upcoming.promo_image || '',
             });
             flash();
             await loadUpcoming();
@@ -309,22 +354,90 @@ export default function AdminConferencesPage() {
         }
     };
 
-    // ─── Detail helpers (localStorage) ──────────────────────────────
+    // ─── Detail helpers (Backend) ──────────────────────────────
 
     const addHighlight = () => setDetail({ ...detail, event_highlights: [...detail.event_highlights, ''] });
     const removeHighlight = (idx: number) => setDetail({ ...detail, event_highlights: detail.event_highlights.filter((_, i) => i !== idx) });
 
-    const addNewsItem = () => setDetail({ ...detail, news: [...detail.news, { id: generateId(), news_title: '', news_link: '', news_thumbnail: '' }] });
-    const removeNewsItem = (id: string) => setDetail({ ...detail, news: detail.news.filter((n) => n.id !== id) });
+    const handleSaveDetail = async () => {
+        if (!selectedConfId) return;
+        const apiId = parseInt(selectedConfId);
+        if (isNaN(apiId)) return;
 
-    const addSpeaker = () => setDetail({ ...detail, speakers: [...detail.speakers, { id: generateId(), speaker_name: '', speaker_role: '', speaker_image: '' }] });
-    const removeSpeaker = (id: string) => setDetail({ ...detail, speakers: detail.speakers.filter((s) => s.id !== id) });
+        setSaving(true);
+        setDetailError('');
+        try {
+            const { updateConferenceRecap, addSpeakerToConference, updateSpeaker, deleteSpeaker, addPartnerToConference, deletePartner, addGalleryImage, deleteGalleryImage, getSpeakersByConference, getPartnersByConference, getGalleryByConference } = await import('@/lib/conferencesApi');
+            
+            await updateConferenceRecap(apiId, {
+                conferenceName: detail.conference_name,
+                conferenceSummary: detail.conference_summary,
+                heroMainImage: detail.hero_main_image,
+                aboutTextBody: detail.about_text_body,
+                aboutSideImage: detail.about_side_image,
+                eventHighlights: detail.event_highlights,
+                impactMetrics: detail.impact.map((m, idx) => ({ id: idx, impactValue: m.stat_number, impactLabel: m.stat_label }))
+            });
 
-    const addPartner = () => setDetail({ ...detail, partners: [...detail.partners, { name: '', logo: '' }] });
-    const removePartner = (idx: number) => setDetail({ ...detail, partners: detail.partners.filter((_, i) => i !== idx) });
+            const remoteSpeakers = await getSpeakersByConference(apiId);
+            const remoteSpeakerIds = new Set(remoteSpeakers.map(s => s.id));
+            const localSpeakerIds = new Set(speakers.filter(s => s.id).map(s => s.id));
 
-    const addGalleryImage = () => setDetail({ ...detail, gallery: [...detail.gallery, ''] });
-    const removeGalleryImage = (idx: number) => setDetail({ ...detail, gallery: detail.gallery.filter((_, i) => i !== idx) });
+            for (const rs of remoteSpeakers) {
+                if (!localSpeakerIds.has(rs.id)) await deleteSpeaker(apiId, rs.id);
+            }
+            for (const ls of speakers) {
+                const payload = { speakerName: ls.speakerName, speakerRole: ls.speakerRole, speakerImage: ls.speakerImage };
+                if (ls.id && remoteSpeakerIds.has(ls.id)) {
+                    await updateSpeaker(apiId, ls.id, payload);
+                } else {
+                    await addSpeakerToConference(apiId, payload);
+                }
+            }
+
+            const remotePartners = await getPartnersByConference(apiId);
+            const remotePartnerIds = new Set(remotePartners.map(p => p.id));
+            const localPartnerIds = new Set(partners.filter(p => p.id).map(p => p.id));
+
+            for (const rp of remotePartners) {
+                if (!localPartnerIds.has(rp.id)) await deletePartner(apiId, rp.id);
+            }
+            for (const lp of partners) {
+                if (!lp.id || !remotePartnerIds.has(lp.id)) {
+                    await addPartnerToConference(apiId, { partnerLogo: lp.partnerLogo });
+                }
+            }
+
+            const remoteGallery = await getGalleryByConference(apiId);
+            const remoteGalleryIds = new Set(remoteGallery.map(g => g.id));
+            const localGalleryIds = new Set(gallery.filter(g => g.id).map(g => g.id));
+
+            for (const rg of remoteGallery) {
+                if (!localGalleryIds.has(rg.id)) await deleteGalleryImage(apiId, rg.id);
+            }
+            for (const lg of gallery) {
+                if (!lg.id || !remoteGalleryIds.has(lg.id)) {
+                    await addGalleryImage(apiId, { imageUrl: lg.imageUrl });
+                }
+            }
+
+            flash();
+            await loadDetail(apiId);
+        } catch (e: unknown) {
+            setDetailError(e instanceof Error ? e.message : 'Save detail failed');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const addSpeaker = () => setSpeakers([...speakers, { _localId: generateId(), speakerName: '', speakerRole: '', speakerImage: '' }]);
+    const removeSpeaker = (localId: string | number) => setSpeakers(speakers.filter(s => (s.id || s._localId) !== localId));
+
+    const addPartner = () => setPartners([...partners, { _localId: generateId(), partnerLogo: '' }]);
+    const removePartner = (localId: string | number) => setPartners(partners.filter(p => (p.id || p._localId) !== localId));
+
+    const addGalleryImage = () => setGallery([...gallery, { _localId: generateId(), imageUrl: '' }]);
+    const removeGalleryImage = (localId: string | number) => setGallery(gallery.filter(g => (g.id || g._localId) !== localId));
 
     const inputCls = 'w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500';
     const btnSave = 'flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors';
@@ -374,7 +487,6 @@ export default function AdminConferencesPage() {
                 ))}
             </div>
 
-            {/* ──── HERO IMAGES (localStorage) ──── */}
             {activeTab === 'Hero Images' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -403,7 +515,6 @@ export default function AdminConferencesPage() {
                 </div>
             )}
 
-            {/* ──── IMPACT STATS ──── */}
             {activeTab === 'Impact Stats' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -435,7 +546,6 @@ export default function AdminConferencesPage() {
                 </div>
             )}
 
-            {/* ──── PAST CONFERENCES ──── */}
             {activeTab === 'Past Conferences' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -481,7 +591,6 @@ export default function AdminConferencesPage() {
                 </div>
             )}
 
-            {/* ──── UPCOMING CONFERENCE ──── */}
             {activeTab === 'Upcoming' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -533,7 +642,6 @@ export default function AdminConferencesPage() {
                 </div>
             )}
 
-            {/* ──── CONFERENCE DETAILS (localStorage) ──── */}
             {activeTab === 'Conference Details' && (
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                     <div className="flex items-center justify-between mb-6">
@@ -542,17 +650,18 @@ export default function AdminConferencesPage() {
                             <p className="text-sm text-gray-500">Select a past conference to edit its full detail page</p>
                         </div>
                         <button
-                            onClick={() => { if (selectedConfId) { saveConferenceDetail(selectedConfId, detail); flash(); } }}
-                            disabled={!selectedConfId}
-                            className={`${btnSave} ${!selectedConfId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            onClick={handleSaveDetail}
+                            disabled={!selectedConfId || saving || detailLoading}
+                            className={`${btnSave} ${(!selectedConfId || saving || detailLoading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                            <Save size={16} /> Save Detail
+                            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />} 
+                            {saving ? 'Saving...' : 'Save Detail'}
                         </button>
                     </div>
 
                     <div className="mb-6">
                         <label className="block text-xs font-medium text-gray-500 mb-1">Select Conference</label>
-                        <select value={selectedConfId} onChange={(e) => setSelectedConfId(e.target.value)} className={inputCls}>
+                        <select value={selectedConfId} onChange={(e) => setSelectedConfId(e.target.value)} className={inputCls} disabled={saving || detailLoading}>
                             <option value="">— Choose a conference —</option>
                             {pastItems.map((c) => (
                                 <option key={c.conference_id} value={c.conference_id}>{c.conference_title || `Conference ${c.conference_id}`}</option>
@@ -560,9 +669,12 @@ export default function AdminConferencesPage() {
                         </select>
                     </div>
 
-                    {selectedConfId && (
+                    <ErrorBanner message={detailError} />
+
+                    {detailLoading ? (
+                        <SectionLoader />
+                    ) : selectedConfId ? (
                         <div className="space-y-6">
-                            {/* Hero */}
                             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Hero Section</h3>
                                 <div className="grid grid-cols-2 gap-4">
@@ -585,7 +697,6 @@ export default function AdminConferencesPage() {
                                 </div>
                             </div>
 
-                            {/* About */}
                             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">What We Did</h3>
                                 <div>
@@ -614,7 +725,6 @@ export default function AdminConferencesPage() {
                                 </div>
                             </div>
 
-                            {/* Impact */}
                             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
                                 <h3 className="font-semibold text-gray-800 text-sm">Impact Metrics</h3>
                                 {detail.impact.map((imp, i) => (
@@ -631,59 +741,28 @@ export default function AdminConferencesPage() {
                                 ))}
                             </div>
 
-                            {/* News */}
-                            <div className="p-4 bg-gray-50 rounded-xl space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="font-semibold text-gray-800 text-sm">News Highlights (3 cards)</h3>
-                                    <button onClick={addNewsItem} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add News</button>
-                                </div>
-                                {detail.news.map((n, i) => (
-                                    <div key={n.id} className="p-3 bg-white rounded-lg border border-gray-200 relative">
-                                        <button onClick={() => removeNewsItem(n.id)} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
-                                        <div className="grid grid-cols-3 gap-3">
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1">Title (max 60)</label>
-                                                <input type="text" maxLength={60} value={n.news_title} onChange={(e) => { const u = [...detail.news]; u[i] = { ...u[i], news_title: e.target.value }; setDetail({ ...detail, news: u }); }} className={inputCls} />
-                                            </div>
-                                            <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1">Link URL</label>
-                                                <input type="text" value={n.news_link} onChange={(e) => { const u = [...detail.news]; u[i] = { ...u[i], news_link: e.target.value }; setDetail({ ...detail, news: u }); }} className={inputCls} />
-                                            </div>
-                                            <div>
-                                                <CloudinaryImageUpload
-                                                    label="News Thumbnail"
-                                                    value={n.news_thumbnail}
-                                                    onUpload={(url) => { const u = [...detail.news]; u[i] = { ...u[i], news_thumbnail: url }; setDetail({ ...detail, news: u }); }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            {/* Speakers */}
                             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold text-gray-800 text-sm">Speakers</h3>
                                     <button onClick={addSpeaker} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Speaker</button>
                                 </div>
-                                {detail.speakers.map((sp, i) => (
-                                    <div key={sp.id} className="p-3 bg-white rounded-lg border border-gray-200 relative">
-                                        <button onClick={() => removeSpeaker(sp.id)} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
+                                {speakers.map((sp, i) => (
+                                    <div key={sp.id || sp._localId} className="p-3 bg-white rounded-lg border border-gray-200 relative">
+                                        <button onClick={() => removeSpeaker(sp.id || sp._localId)} className="absolute top-2 right-2 text-gray-400 hover:text-red-500"><Trash2 size={14} /></button>
                                         <div className="grid grid-cols-3 gap-3">
                                             <div>
                                                 <label className="block text-xs font-medium text-gray-500 mb-1">Name (max 40)</label>
-                                                <input type="text" maxLength={40} value={sp.speaker_name} onChange={(e) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_name: e.target.value }; setDetail({ ...detail, speakers: u }); }} className={inputCls} />
+                                                <input type="text" maxLength={40} value={sp.speakerName} onChange={(e) => { const u = [...speakers]; u[i] = { ...u[i], speakerName: e.target.value }; setSpeakers(u); }} className={inputCls} />
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-medium text-gray-500 mb-1">Role (max 50)</label>
-                                                <input type="text" maxLength={50} value={sp.speaker_role} onChange={(e) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_role: e.target.value }; setDetail({ ...detail, speakers: u }); }} className={inputCls} />
+                                                <input type="text" maxLength={50} value={sp.speakerRole} onChange={(e) => { const u = [...speakers]; u[i] = { ...u[i], speakerRole: e.target.value }; setSpeakers(u); }} className={inputCls} />
                                             </div>
                                             <div>
                                                 <CloudinaryImageUpload
                                                     label="Speaker Image"
-                                                    value={sp.speaker_image}
-                                                    onUpload={(url) => { const u = [...detail.speakers]; u[i] = { ...u[i], speaker_image: url }; setDetail({ ...detail, speakers: u }); }}
+                                                    value={sp.speakerImage}
+                                                    onUpload={(url) => { const u = [...speakers]; u[i] = { ...u[i], speakerImage: url }; setSpeakers(u); }}
                                                 />
                                             </div>
                                         </div>
@@ -691,64 +770,49 @@ export default function AdminConferencesPage() {
                                 ))}
                             </div>
 
-                            {/* Partners */}
                             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold text-gray-800 text-sm">Partners</h3>
                                     <button onClick={addPartner} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Partner</button>
                                 </div>
-                                {detail.partners.map((p, i) => (
-                                    <div key={i} className="flex gap-2 items-start">
-                                        <input
-                                            type="text"
-                                            placeholder="Partner Name"
-                                            value={p.name}
-                                            onChange={(e) => {
-                                                const u = [...detail.partners];
-                                                u[i] = { ...p, name: e.target.value };
-                                                setDetail({ ...detail, partners: u });
-                                            }}
-                                            className={`${inputCls} flex-1`}
-                                        />
+                                {partners.map((p, i) => (
+                                    <div key={p.id || p._localId} className="flex gap-2 items-start">
                                         <div className="flex-1">
                                             <CloudinaryImageUpload
-                                                label="Partner Logo"
-                                                value={p.logo}
+                                                label={`Partner Logo ${i + 1}`}
+                                                value={p.partnerLogo}
                                                 onUpload={(url) => {
-                                                    const u = [...detail.partners];
-                                                    u[i] = { ...p, logo: url };
-                                                    setDetail({ ...detail, partners: u });
+                                                    const u = [...partners];
+                                                    u[i] = { ...p, partnerLogo: url };
+                                                    setPartners(u);
                                                 }}
                                             />
                                         </div>
-                                        <button onClick={() => removePartner(i)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
+                                        <button onClick={() => removePartner(p.id || p._localId)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Gallery */}
                             <div className="p-4 bg-gray-50 rounded-xl space-y-4">
                                 <div className="flex items-center justify-between">
                                     <h3 className="font-semibold text-gray-800 text-sm">Gallery</h3>
                                     <button onClick={addGalleryImage} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Image</button>
                                 </div>
-                                {detail.gallery.map((url, i) => (
-                                    <div key={i} className="flex gap-2 items-start">
+                                {gallery.map((img, i) => (
+                                    <div key={img.id || img._localId} className="flex gap-2 items-start">
                                         <div className="flex-1">
                                             <CloudinaryImageUpload
                                                 label={`Gallery Image ${i + 1}`}
-                                                value={url}
-                                                onUpload={(newUrl) => { const u = [...detail.gallery]; u[i] = newUrl; setDetail({ ...detail, gallery: u }); }}
+                                                value={img.imageUrl}
+                                                onUpload={(newUrl) => { const u = [...gallery]; u[i] = { ...img, imageUrl: newUrl }; setGallery(u); }}
                                             />
                                         </div>
-                                        <button onClick={() => removeGalleryImage(i)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
+                                        <button onClick={() => removeGalleryImage(img.id || img._localId)} className="text-gray-400 hover:text-red-500 mt-6"><Trash2 size={14} /></button>
                                     </div>
                                 ))}
                             </div>
                         </div>
-                    )}
-
-                    {!selectedConfId && (
+                    ) : (
                         <p className="text-gray-400 text-sm text-center py-8">Add past conferences first, then select one here to edit its detail page.</p>
                     )}
                 </div>

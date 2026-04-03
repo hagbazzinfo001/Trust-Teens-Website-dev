@@ -1,3 +1,5 @@
+const BASE_URL = 'https://trustteens-api.onrender.com';
+
 export async function apiFetch<T>(
     url: string,
     init?: RequestInit
@@ -7,10 +9,12 @@ export async function apiFetch<T>(
             ? localStorage.getItem('admin_access_token')
             : null;
 
-    console.log('TOKEN USED:', token);
-    console.log('REQUEST:', url, init);
+    const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`;
 
-    const res = await fetch(url, {
+    console.log('TOKEN USED:', token);
+    console.log('REQUEST:', fullUrl, init);
+
+    const res = await fetch(fullUrl, {
         ...init,
         headers: {
             'Content-Type': 'application/json',
