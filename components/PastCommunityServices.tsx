@@ -1,58 +1,98 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { mockProjects, Project } from '@/lib/mockCommunityService';
 import ProjectDetailsModal from '@/components/ProjectDetailsModal';
-import { ChevronRight } from 'lucide-react';
-import { getPastCommunityServices, getCommunityServiceDetail } from '@/lib/adminData';
+import { ChevronRight, Loader2 } from 'lucide-react';
+import { fetchPastProjects, getProjectById, getPartnersByProject, getGalleryByProject } from '@/lib/communityServiceApi';
 
 export default function PastCommunityServices() {
-    const [projects, setProjects] = useState<Project[]>(mockProjects);
+    const [projects, setProjects] = useState<Project[]>([]);
     const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-    const [featuredProject, setFeaturedProject] = useState<Project>(mockProjects[0]);
+    const [featuredProject, setFeaturedProject] = useState<Project | null>(null);
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const adminPast = getPastCommunityServices();
-        if (adminPast && adminPast.length > 0) {
-            const converted: Project[] = adminPast.map(p => ({
-                id: p.project_id,
-                name: p.project_title,
-                date: p.project_date,
-                description: p.project_title,
-                fullDescription: p.project_title,
-                objective: 'What we did',
-                objectives: [],
-                featuredImage: p.project_image,
-                headerImage: p.project_image,
-                impact: [],
-                partners: [],
-                gallery: [],
-                color: 'from-blue-500 to-blue-600'
-            }));
-            setProjects(converted);
-            setFeaturedProject(converted[0]);
+    const loadProjects = useCallback(async () => {
+        setLoading(true);
+        try {
+            const apiProjects = await fetchPastProjects();
+            if (apiProjects && apiProjects.length > 0) {
+                const converted: Project[] = apiProjects.map(p => ({
+                    id: String(p.id),
+                    name: p.projectTitle,
+                    date: p.projectDate,
+                    description: p.projectTitle,
+                    fullDescription: p.projectTitle,
+                    objective: 'What we did',
+                    objectives: [],
+                    featuredImage: p.projectImage,
+                    headerImage: p.projectImage,
+                    impact: [],
+                    partners: [],
+                    gallery: [],
+                    color: 'from-blue-500 to-blue-600'
+                }));
+                setProjects(converted);
+                setFeaturedProject(converted[0]);
+            } else {
+                setProjects(mockProjects);
+                setFeaturedProject(mockProjects[0]);
+            }
+        } catch (err) {
+            console.error('Failed to load past projects', err);
+            setProjects(mockProjects);
+            setFeaturedProject(mockProjects[0]);
+        } finally {
+            setLoading(false);
         }
     }, []);
-    // Effect to load full details for the featured project if it's from admin
+
     useEffect(() => {
-        if (featuredProject && featuredProject.objectives.length === 0) {
-            const detail = getCommunityServiceDetail(featuredProject.id);
-            if (detail) {
-                setFeaturedProject(prev => ({
-                    ...prev,
-                    name: detail.project_name,
-                    fullDescription: detail.project_summary,
-                    objective: 'What we did',
-                    objectives: detail.project_highlights,
-                    featuredImage: detail.side_action_image || prev.featuredImage,
-                    headerImage: detail.hero_main_image || prev.headerImage,
-                    impact: detail.impact.map(s => ({ label: s.impact_label, value: s.impact_value })),
-                    partners: detail.partners.map(p => ({ name: p.name, logo: p.logo })),
-                    gallery: detail.gallery
-                }));
+        loadProjects();
+    }, [loadProjects]);
+
+    // Load full details for the featured project
+    useEffect(() => {
+        async function loadDetail() {
+            if (featuredProject && featuredProject.objectives.length === 0 && featuredProject.id.match(/^\d+$/)) {
+                try {
+                    const pid = parseInt(featuredProject.id);
+                    const detail = await getProjectById(pid);
+                    if (detail) {
+                        const [partners, gallery] = await Promise.all([
+                            getPartnersByProject(pid),
+                            getGalleryByProject(pid)
+                        ]);
+
+                        setFeaturedProject(prev => prev ? ({
+                            ...prev,
+                            name: detail.projectName,
+                            fullDescription: detail.projectSummary,
+                            objective: 'What we did',
+                            objectives: detail.projectHighlights,
+                            featuredImage: detail.sideActionImage || prev.featuredImage,
+                            headerImage: detail.heroMainImage || prev.headerImage,
+                            impact: detail.impactMetrics.map(s => ({ label: s.impactLabel, value: s.impactValue })),
+                            partners: partners.map(p => ({ name: '', logo: p.partnerLogo })),
+                            gallery: gallery.map(g => g.imageUrl)
+                        }) : null);
+                    }
+                } catch (err) {
+                    console.error('Failed to load project detail', err);
+                }
             }
         }
-    }, [featuredProject.id]);
+        loadDetail();
+    }, [featuredProject?.id]);
+
+    if (loading) {
+        return (
+            <div className="py-20 flex flex-col items-center justify-center text-gray-500">
+                <Loader2 className="animate-spin mb-4" size={48} />
+                <p>Loading community service projects...</p>
+            </div>
+        );
+    }
+
+    if (!featuredProject) return null;
 
     return (
         <>

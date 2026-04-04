@@ -7,90 +7,51 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useInView } from "react-intersection-observer";
 import CountUp from "react-countup";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import PastCommunityServices from '@/components/PastCommunityServices';
-import bb from '@/public/images/bb.svg'
-import gg from '@/public/images/gg.svg'
-import oo from '@/public/images/oo.svg'
-import pp from '@/public/images/pp.svg'
-import icon1 from "@/public/images/icon1.svg";
-import icon3 from "@/public/images/icon3.svg";
-import icon4 from "@/public/images/icon4.svg";
-import icon2 from "@/public/images/icon2.svg";
-import icon5 from "@/public/images/icon5.svg";
-import icon6 from "@/public/images/icon6.svg";
-import {
-  ArrowRight,
-  Users,
-  GraduationCap,
-  BookOpen,
-  Package,
-} from "lucide-react";
-import { use } from "react";
+import { fetchHero, fetchApproach, fetchImpact } from "@/lib/communityServiceApi";
+import teenagerCommunity from '@/public/images/teenagerCommunitty.svg'
 import cleanCummunity from '@/public/images/cleanCummunity.svg'
 import projectCommunity from '@/public/images/projectCommunity.svg'
-import teenagerCommunity from '@/public/images/teenagerCommunitty.svg'
-
 
 export default function CommunityServicePage() {
+  const [heroImages, setHeroImages] = useState<string[]>([]);
+  const [approach, setApproach] = useState({ image: "", focusPoints: [] as string[] });
+  const [stats, setStats] = useState<{ icon: string, label: string, value: string }[]>([]);
 
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [h, a, i] = await Promise.all([
+          fetchHero(),
+          fetchApproach(),
+          fetchImpact(),
+        ]);
 
-  const features = [
-    {
-      title: "Health & Wellness",
-      description:
-        "Helping teens build healthy habits, stay active, and improve wellbeing.",
-      icon: icon1,
-    },
-    {
-      title: "Digital Literacy",
-      description:
-        "Teaching safe online behaviour, smart tech use, and digital awareness.",
-      icon: icon2,
-    },
-    {
-      title: "Social justice",
-      description:
-        "Helping teens understand fairness, challenge inequality, serve others, support justice.",
-      icon: icon3,
-    },
-    {
-      title: "Emotions & Relationships",
-      description:
-        "Helping teens understand emotions, build respect, strengthen friendships, set boundaries.",
-      icon: icon4,
-    },
-    {
-      title: "Creativity",
-      description:
-        "Encouraging teens to explore ideas, express themselves, create new work.",
-      icon: icon5,
-    },
-    {
-      title: "Food & Nutrition",
-      description:
-        "Teaching teens healthy eating habits, food awareness, simple nutrition knowledge.",
-      icon: icon6,
-    },
-  ];
-
-
-  const stats = [
-    { icon: teenagerCommunity, label: "Teenagers actively participating in service projects", value: "25" },
-    { icon: cleanCummunity, label: "Cleaner, safer community spaces", value: "3" },
-    { icon: projectCommunity, label: "Community Projects Delivered", value: "2" },
-
-  ];
-  const [activeSet, setActiveSet] = useState(0);
-  const featuresPerPage = 3;
-
-  // Slice out the current 3 features
-  const displayedFeatures = features.slice(
-    activeSet * featuresPerPage,
-    activeSet * featuresPerPage + featuresPerPage
-  );
-
+        if (h) setHeroImages(h.images);
+        if (a) setApproach({ image: a.approachImage, focusPoints: a.focusPoints });
+        
+        if (i && i.length > 0) {
+          const icons = [teenagerCommunity, cleanCummunity, projectCommunity];
+          setStats(i.map((item, idx) => ({
+            icon: icons[idx % icons.length],
+            label: item.statLabel,
+            value: item.statNumber
+          })));
+        } else {
+          setStats([
+            { icon: teenagerCommunity, label: "Teenagers actively participating in service projects", value: "25" },
+            { icon: cleanCummunity, label: "Cleaner, safer community spaces", value: "3" },
+            { icon: projectCommunity, label: "Community Projects Delivered", value: "2" },
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to load community service data", err);
+      }
+    }
+    loadData();
+  }, []);
 
   const { ref, inView } = useInView({ triggerOnce: false, threshold: 0.3 });
 
@@ -111,7 +72,7 @@ export default function CommunityServicePage() {
               {/* Image 1 – Top Left */}
               <div className=" absolute top-0 left-0 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
                 <Image
-                  src="/images/communityImage1.svg"
+                  src={heroImages[0] || "/images/communityImage1.svg"}
                   alt="Community service"
                   fill
                   className="object-cover"
@@ -121,7 +82,7 @@ export default function CommunityServicePage() {
               {/* Image 2 – Middle (diagonal down + right) */}
               <div className="absolute top-28 left-40 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
                 <Image
-                  src="/images/communityImage2.svg"
+                  src={heroImages[1] || "/images/communityImage2.svg"}
                   alt="Teen volunteers"
                   fill
                   className="object-cover"
@@ -131,7 +92,7 @@ export default function CommunityServicePage() {
               {/* Image 3 – Bottom Right */}
               <div className="absolute top-[360px] left-20 w-80 h-72 rounded-2xl overflow-hidden shadow-xl">
                 <Image
-                  src="/images/communityImage1.svg"
+                  src={heroImages[2] || "/images/communityImage1.svg"}
                   alt="Street cleanup"
                   fill
                   className="object-cover"
@@ -168,7 +129,7 @@ export default function CommunityServicePage() {
           {/* LEFT — Image */}
           <div className="relative w-full h-[420px] md:h-[520px] rounded-2xl overflow-hidden">
             <Image
-              src="/images/communityImage4.svg" // replace with your image path
+              src={approach.image || "/images/communityImage4.svg"} // replace with your image path
               alt="Community service in action"
               fill
               className="object-cover"
@@ -204,10 +165,16 @@ export default function CommunityServicePage() {
               </p>
 
               <ul className="list-disc list-inside space-y-2 text-gray-700 pl-4">
-                <li>Encourage responsibility and initiative</li>
-                <li>Build teamwork and leadership skills</li>
-                <li>Promote environmental and social awareness</li>
-                <li>Strengthen relationships with local communities</li>
+                {approach.focusPoints.length > 0 ? (
+                  approach.focusPoints.map((p, i) => <li key={i}>{p}</li>)
+                ) : (
+                  <>
+                    <li>Encourage responsibility and initiative</li>
+                    <li>Build teamwork and leadership skills</li>
+                    <li>Promote environmental and social awareness</li>
+                    <li>Strengthen relationships with local communities</li>
+                  </>
+                )}
               </ul>
             </div>
 
@@ -279,14 +246,14 @@ export default function CommunityServicePage() {
                       <div className="text-3xl font-bold text-white">
                         {inView ? (
                           <CountUp
-                            end={parseInt(stat.value.replace("+", ""))}
+                            end={parseInt(String(stat.value).replace(/\D/g, ""))}
                             duration={2.5}
                             separator=","
                           />
                         ) : (
                           "0"
                         )}
-                        +
+                        {String(stat.value).includes("+") ? "+" : ""}
                       </div>
                     </CardContent>
                   </Card>

@@ -2,6 +2,6 @@
 - `[x]` Update `app/admin/missions/summits/page.tsx` Upcoming section mapping
 - `[x]` Update `app/admin/missions/summits/page.tsx` Summit Details API integration
 - `[x]` Update `app/admin/missions/summits/page.tsx` Speakers/Partners/Gallery sync logic
-- `[ ]` Update `components/pastSummit.tsx` client-side API fetching and mapping
-- `[ ]` Clean up `components/SubmitDetailedModal.tsx` mock data
-- `[ ]` Verify by adding a summit in Admin and checking Client
+- `[x]` Update `components/pastSummit.tsx` client-side API fetching and mapping
+- `[x]` Clean up `components/SubmitDetailedModal.tsx` mock data
+- `[x]` Verify by adding a summit in Admin and checking Client

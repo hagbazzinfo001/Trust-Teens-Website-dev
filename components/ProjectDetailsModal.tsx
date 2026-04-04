@@ -233,11 +233,12 @@ items-center
   w-auto
   lg:w-[40%]
   lg:text-left">
-                                Summit impact                            </h2>
+                                Project Impact
+                            </h2>
 
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-                                <div ref={ref} className="grid grid-cols-2">
-                                    {stats.map((stat, index) => (
+                                <div ref={ref} className="grid grid-cols-2 gap-4">
+                                    {(project.impact.length > 0 ? project.impact : stats).map((stat, index) => (
                                         <motion.div
                                             key={index}
                                             variants={itemVariants}
@@ -246,30 +247,30 @@ items-center
                                             transition={{ duration: 0.6, delay: index * 0.2 }}
                                             className="flex flex-row gap-2 items-center text-center"
                                         >
-                                            <div className="inline-flex p-3 md:p-4 rounded-full mb-4 bg-transparent">
+                                            <div className="inline-flex p-3 md:p-4 rounded-full mb-4 bg-transparent shrink-0">
                                                 <Image
-                                                    src={stat.icon}
+                                                    src={(stat as any).icon || teenagerIcon}
                                                     alt={stat.label}
                                                     width={60}
                                                     height={60}
-                                                    className="w-16 h-16 object-contain"
+                                                    className="w-12 h-12 md:w-16 md:h-16 object-contain"
                                                 />
                                             </div>
-                                            <div>
-                                                <div className="text-3xl md:text-4xl font-bold text-white mb-2 text-start">
+                                            <div className="text-left">
+                                                <div className="text-2xl md:text-4xl font-bold text-white mb-1">
                                                     {inView ? (
                                                         <CountUp
-                                                            end={parseInt(stat.value.replace("+", ""))}
+                                                            end={parseInt(String(stat.value).replace(/\D/g, ""))}
                                                             duration={2.5}
                                                             separator=","
                                                         />
                                                     ) : (
                                                         "0"
                                                     )}
-                                                    {stat.value.includes("+") && "+"}
+                                                    {String(stat.value).includes("+") && "+"}
                                                 </div>
 
-                                                <div className="text-sm md:text-base text-white/80">
+                                                <div className="text-xs md:text-sm text-white/80 leading-tight">
                                                     {stat.label}
                                                 </div>
                                             </div>
@@ -307,23 +308,21 @@ items-center
                                 ))}
                             </div>
                         </div>
-                        <section className="bg-[#f2f2f2] py-20 px-6 lg:px-20">
+                        {/* <section className="bg-[#f2f2f2] py-20 px-6 lg:px-20">
                             <div className="max-w-7xl mx-auto">
 
-                                {/* Title */}
-                                <h2 className="text-4xl font-bold text-gray-900 mb-12">
+                                 <h2 className="text-4xl font-bold text-gray-900 mb-12">
                                     News Highlight
                                 </h2>
 
-                                {/* Grid */}
+                                {/* Grid  
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                                     {displayNews.map((item, idx) => (
                                         <article
                                             key={idx}
                                             className="bg-white shadow-sm hover:shadow-lg transition-shadow duration-300"
                                         >
-                                            {/* Image */}
-                                            <div className="h-56 w-full overflow-hidden">
+                                             <div className="h-56 w-full overflow-hidden">
                                                 <img
                                                     src={item.image}
                                                     alt={item.title}
@@ -331,8 +330,7 @@ items-center
                                                 />
                                             </div>
 
-                                            {/* Content */}
-                                            <div className="p-5 space-y-3">
+                                             <div className="p-5 space-y-3">
                                                 <h3 className="text-lg font-semibold text-gray-900 leading-snug">
                                                     {item.title}
                                                 </h3>
@@ -345,29 +343,24 @@ items-center
                                 </div>
 
                             </div>
-                        </section>
+                        </section> */}
 
-                        {/* Speakers Section */}
-                        <section className="relative py-20 bg-[url('/speakersBlue.svg')]     bg-no-repeat
+                        {/* <section className="relative py-20 bg-[url('/speakersBlue.svg')]     bg-no-repeat
             bg-center
              overflow-hidden mb-12 bg-cover ">
-                            {/* Decorative background shapes */}
-
+ 
                             <div className="relative max-w-7xl mx-auto px-6">
-                                {/* Title */}
-                                <h2 className="text-center text-white text-3xl md:text-5xl font-extrabold mb-11 tracking-wide">
+                                 <h2 className="text-center text-white text-3xl md:text-5xl font-extrabold mb-11 tracking-wide">
                                     MEET OUR SPEAKERS
                                 </h2>
 
-                                {/* Grid */}
-                                <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-14">
+                                 <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-14">
                                     {displaySpeakers.map((speaker, idx) => (
                                         <div
                                             key={idx}
                                             className="group text-center"
                                         >
-                                            {/* Image */}
-                                            <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden mb-6">
+                                             <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden mb-6">
                                                 <Image
                                                     src={speaker.image}
                                                     alt={speaker.name}
@@ -376,20 +369,18 @@ items-center
                                                 />
                                             </div>
 
-                                            {/* Name */}
-                                            <h3 className="text-white text-xl font-bold">
+                                             <h3 className="text-white text-xl font-bold">
                                                 {speaker.name}
                                             </h3>
 
-                                            {/* Role */}
-                                            <p className="text-white/80 text-sm mt-1">
+                                             <p className="text-white/80 text-sm mt-1">
                                                 {speaker.role}
                                             </p>
                                         </div>
                                     ))}
                                 </div>
                             </div>
-                        </section>
+                        </section> */}
 
 
                         <div className="px-6 lg:px-12 pb-11">

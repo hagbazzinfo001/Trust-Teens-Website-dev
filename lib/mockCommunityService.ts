@@ -43,7 +43,16 @@ export const mockProjects: Project[] = [
         ],
         partners: [
             { name: 'Local Govt', logo: '/images/OLA logo.svg' },
+            { name: 'Health First', logo: '/images/Microsoft Logo.svg' },
+            { name: 'Health First', logo: '/images/Microsoft Logo.svg' },
+            { name: 'Health First', logo: '/images/Microsoft Logo.svg' },
+            { name: 'Local Govt', logo: '/images/OLA logo.svg' },
+            { name: 'Health First', logo: '/images/Microsoft Logo.svg' },
+            { name: 'Health First', logo: '/images/Microsoft Logo.svg' },
             { name: 'Health First', logo: '/images/Microsoft Logo.svg' }
+
+
+
         ],
         gallery: [
             '/images/communityImage1.svg',
