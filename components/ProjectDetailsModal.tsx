@@ -238,45 +238,51 @@ items-center
 
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
                                 <div ref={ref} className="grid grid-cols-2 gap-4">
-                                    {(project.impact.length > 0 ? project.impact : stats).map((stat, index) => (
-                                        <motion.div
-                                            key={index}
-                                            variants={itemVariants}
-                                            initial="hidden"
-                                            animate={inView ? "show" : "hidden"}
-                                            transition={{ duration: 0.6, delay: index * 0.2 }}
-                                            className="flex flex-row gap-2 items-center text-center"
-                                        >
-                                            <div className="inline-flex p-3 md:p-4 rounded-full mb-4 bg-transparent shrink-0">
-                                                <Image
-                                                    src={(stat as any).icon || teenagerIcon}
-                                                    alt={stat.label}
-                                                    width={60}
-                                                    height={60}
-                                                    className="w-12 h-12 md:w-16 md:h-16 object-contain"
-                                                />
-                                            </div>
-                                            <div className="text-left">
-                                                <div className="text-2xl md:text-4xl font-bold text-white mb-1">
-                                                    {inView ? (
-                                                        <CountUp
-                                                            end={parseInt(String(stat.value).replace(/\D/g, ""))}
-                                                            duration={2.5}
-                                                            separator=","
-                                                        />
-                                                    ) : (
-                                                        "0"
-                                                    )}
-                                                    {String(stat.value).includes("+") && "+"}
+                                    {(project.impact.length > 0 ? project.impact : stats).map((stat, index) => {
+                                        const value = (stat as any).impactValue || (stat as any).value || "";
+                                        const label = (stat as any).impactLabel || (stat as any).label || "";
+                                        const icon = (stat as any).icon || stats[index % stats.length].icon || volunteerIcon;
+
+                                        return (
+                                            <motion.div
+                                                key={index}
+                                                variants={itemVariants}
+                                                initial="hidden"
+                                                animate={inView ? "show" : "hidden"}
+                                                transition={{ duration: 0.6, delay: index * 0.2 }}
+                                                className="flex flex-row gap-2 items-center text-center"
+                                            >
+                                                <div className="inline-flex p-3 md:p-4 rounded-full mb-4 bg-transparent shrink-0">
+                                                    <Image
+                                                        src={icon}
+                                                        alt={label}
+                                                        width={60}
+                                                        height={60}
+                                                        className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                                                    />
+                                                </div>
+                                                <div className="text-left">
+                                                    <div className="text-2xl md:text-4xl font-bold text-white mb-1">
+                                                        {inView ? (
+                                                            <CountUp
+                                                                end={parseInt(String(value).replace(/\D/g, ""))}
+                                                                duration={2.5}
+                                                                separator=","
+                                                            />
+                                                        ) : (
+                                                            "0"
+                                                        )}
+                                                        {String(value).includes("+") && "+"}
+                                                    </div>
+
+                                                    <div className="text-xs md:text-sm text-white/80 leading-tight">
+                                                        {label}
+                                                    </div>
                                                 </div>
 
-                                                <div className="text-xs md:text-sm text-white/80 leading-tight">
-                                                    {stat.label}
-                                                </div>
-                                            </div>
-
-                                        </motion.div>
-                                    ))}
+                                            </motion.div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </section>

@@ -31,7 +31,7 @@ export default function CommunityServicePage() {
 
         if (h) setHeroImages(h.images);
         if (a) setApproach({ image: a.approachImage, focusPoints: a.focusPoints });
-        
+
         if (i && i.length > 0) {
           const icons = [teenagerCommunity, cleanCummunity, projectCommunity];
           setStats(i.map((item, idx) => ({
@@ -62,15 +62,24 @@ export default function CommunityServicePage() {
 
   return (
     <>
-      <section className="relative bg-white py-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-          <div className="hidden lg:block relative w-full h-[560px]">
+      <section className="relative bg-white pt-12 pb-20 lg:pt-20 lg:pb-32 overflow-hidden px-6">
+        <div className="max-w-7xl mx-auto relative lg:min-h-[700px] flex flex-col gap-12 lg:block">
 
-            {/* LEFT: Images collage */}
-            <div className="relative w-full h-[560px] ">
+          {/* TOP RIGHT: Text content (Subtext) */}
+          <div className="lg:absolute lg:top-0 lg:right-0 lg:w-[40%] flex justify-end">
+            <p className="text-gray-600 text-[15px] md:text-base leading-relaxed text-left lg:text-right max-w-sm">
+              We believe leadership is not taught only through words, but through action.
+              Our community service initiatives give teenagers practical opportunities
+              to serve, lead, and take responsibility for their environment.
+            </p>
+          </div>
 
-              {/* Image 1 – Top Left */}
-              <div className=" absolute top-0 left-0 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
+          {/* CENTER: Staggered Image Cluster */}
+          <div className="relative w-full lg:h-[500px] flex items-center justify-center lg:mt-12">
+            <div className="relative w-full max-w-2xl h-[350px] md:h-[450px] lg:h-full">
+
+              {/* Image 1 – Top Left (Portrait) */}
+              <div className="absolute top-0 left-0 w-[45%] h-[65%] md:w-72 md:h-80 rounded-2xl overflow-hidden shadow-2xl z-20 border-4 border-white">
                 <Image
                   src={heroImages[0] || "/images/communityImage1.svg"}
                   alt="Community service"
@@ -79,8 +88,8 @@ export default function CommunityServicePage() {
                 />
               </div>
 
-              {/* Image 2 – Middle (diagonal down + right) */}
-              <div className="absolute top-28 left-40 w-72 h-72 rounded-2xl overflow-hidden shadow-xl">
+              {/* Image 2 – Middle (Slightly behind, shifted right/down) */}
+              <div className="absolute top-[10%] left-[25%] w-[50%] h-[60%] md:w-80 md:h-72 rounded-2xl overflow-hidden shadow-xl z-10 opacity-90 border-4 border-white">
                 <Image
                   src={heroImages[1] || "/images/communityImage2.svg"}
                   alt="Teen volunteers"
@@ -89,8 +98,8 @@ export default function CommunityServicePage() {
                 />
               </div>
 
-              {/* Image 3 – Bottom Right */}
-              <div className="absolute top-[360px] left-20 w-80 h-72 rounded-2xl overflow-hidden shadow-xl">
+              {/* Image 3 – Bottom Right (Landscape) */}
+              <div className="absolute bottom-0 right-0 w-[55%] h-[60%] md:w-96 md:h-72 rounded-2xl overflow-hidden shadow-2xl z-30 border-4 border-white">
                 <Image
                   src={heroImages[2] || "/images/communityImage1.svg"}
                   alt="Street cleanup"
@@ -102,24 +111,21 @@ export default function CommunityServicePage() {
             </div>
           </div>
 
-          {/* RIGHT: Text content */}
-          <div className="relative">
+          {/* BOTTOM LEFT: Heading */}
+          <div className="lg:absolute lg:bottom-0 lg:left-0 z-40">
+            <h1 className="text-[60px] md:text-[80px] lg:text-[100px] font-black leading-[0.9] tracking-tighter flex flex-col items-start translate-y-6 lg:translate-y-12">
+              <span className="text-[#1a202c]">Community</span>
+              <span className="text-[#ff5c00]">Service</span>
+            </h1>
+          </div>
 
-            <p className="text-gray-600 max-w-lg leading-relaxed mb-10">
-              We believe leadership is not taught only through words, but through action.
-              Our community service initiatives give teenagers practical opportunities
-              to serve, lead, and take responsibility for their environment.
-            </p>
-
-            <h2 className="text-5xl font-extrabold leading-tight mb-8">
-              <span className="text-gray-900">Community</span>{" "}
-              <span className="text-orange-500">Service</span>
-            </h2>
-
-            <button className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-6 py-3 text-white font-medium hover:bg-blue-700 transition">
+          {/* BOTTOM RIGHT: Button */}
+          <div className="lg:absolute lg:bottom-4 lg:right-0 z-40 flex justify-end">
+            <button className="whitespace-nowrap px-8 py-4 bg-[#257CFF] text-white font-bold rounded-lg hover:bg-blue-600 transition-all shadow-lg hover:shadow-blue-200 hover:-translate-y-1 active:translate-y-0">
               Join our Teens Community
             </button>
           </div>
+
         </div>
       </section>
 
