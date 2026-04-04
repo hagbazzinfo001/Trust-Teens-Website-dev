@@ -120,10 +120,21 @@ export default function CommunityServicePage() {
           </div>
 
           {/* BOTTOM RIGHT: Button */}
-          <div className="lg:absolute lg:bottom-4 lg:right-0 z-40 flex justify-end">
+          {/* <div className="lg:absolute lg:bottom-4 lg:right-0 z-40 flex justify-end">
             <button className="whitespace-nowrap px-8 py-4 bg-[#257CFF] text-white font-bold rounded-lg hover:bg-blue-600 transition-all shadow-lg hover:shadow-blue-200 hover:-translate-y-1 active:translate-y-0">
               Join our Teens Community
             </button>
+          </div> */}
+          <div className="lg:absolute lg:bottom-4 lg:right-0 z-40 flex justify-end">
+            <a
+              href="https://chat.whatsapp.com/Cjg5iRW6pZ3Gd5i76oAQdQ"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <button className="whitespace-nowrap px-8 py-4 bg-[#257CFF] text-white font-bold rounded-lg hover:bg-blue-600 transition-all shadow-lg hover:shadow-blue-200 hover:-translate-y-1 active:translate-y-0">
+                Join our Teens Community
+              </button>
+            </a>
           </div>
 
         </div>

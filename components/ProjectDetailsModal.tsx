@@ -1,6 +1,6 @@
 'use client';
 
-import { Project } from '@/lib/mockCommunityService';
+import { CompleteProject, ApiProjectImpact } from '@/lib/communityServiceApi';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 
@@ -21,7 +21,7 @@ import teenagerIcon from '@/public/images/teenagersIcon.svg'
 import schoolIcon from '@/public/images/schoolIcon.svg'
 
 interface ProjectDetailsModalProps {
-    project: Project | null;
+    project: CompleteProject | null;
     onClose: () => void;
 }
 const stats = [
@@ -43,7 +43,7 @@ const itemVariants = {
     hidden: { opacity: 0, y: 40 },
     show: { opacity: 1, y: 0 },
 };
-// speakers.ts
+// speakers.ts (Fallback if needed)
 export const speakers = [
     {
         id: 1,
@@ -62,7 +62,6 @@ export const speakers = [
         name: "Andry Ford",
         role: "CEO at Whatever",
         image: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765931468/Rectangle_39_ca6qnk.png",
-
     },
     {
         id: 4,
@@ -70,31 +69,8 @@ export const speakers = [
         role: "CEO at Whatever",
         image: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765931468/Rectangle_38_q0mdy1.png",
     },
-    {
-        id: 5,
-        name: "Andry Ford",
-        role: "CEO at Whatever",
-        image: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765931469/Rectangle_40_f5hmcz.png",
-    },
-    {
-        id: 6,
-        name: "Andry Ford",
-        role: "CEO at Whatever",
-        image: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765931469/Rectangle_41_ziphlq.png",
-    },
-    {
-        id: 7,
-        name: "Andry Ford",
-        role: "CEO at Whatever",
-        image: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765931468/Rectangle_39_ca6qnk.png",
-    },
-    {
-        id: 8,
-        name: "Andry Ford",
-        role: "CEO at Whatever",
-        image: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765931468/Rectangle_38_q0mdy1.png",
-    },
 ];
+
 const news = [
     {
         image: "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1765932279/Rectangle_39_2_fwmbfr.png",
@@ -112,6 +88,7 @@ const news = [
         link: "",
     },
 ];
+
 export default function ProjectDetailsModal({ project, onClose }: ProjectDetailsModalProps) {
     const { ref, inView } = useInView({
         triggerOnce: false,
@@ -120,11 +97,11 @@ export default function ProjectDetailsModal({ project, onClose }: ProjectDetails
 
     if (!project) return null;
 
+    // Use news/speakers from project if available, otherwise defaults
     const displayNews: { image: string; title: string; link: string }[] = (project as any)?.news?.length > 0 ? (project as any).news : news;
     const displaySpeakers: { name: string; role: string; image: string }[] = (project as any)?.speakers?.length > 0 ? (project as any).speakers : speakers;
 
     return (
-
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
             <div className="min-h-screen py-8 px-4">
                 <div className="max-w-6xl mx-auto bg-white rounded-2xl overflow-hidden">
@@ -136,66 +113,42 @@ export default function ProjectDetailsModal({ project, onClose }: ProjectDetails
                             <X size={24} />
                         </button>
                         <div className="p-5 flex flex-col gap-5 items-left">
-                            <p className="pt-12">PROJECT DETAILS</p>
+                            <p className="pt-12 font-bold tracking-widest text-sm text-gray-500 uppercase">PROJECT DETAILS</p>
                             <div className="h-64 md:h-96 overflow-hidden bg-gray-200 rounded-3xl">
                                 <img
-                                    src={project.headerImage}
-                                    alt={project.name}
+                                    src={project.heroMainImage || "/images/communityImage4.svg"}
+                                    alt={project.projectName}
                                     className="w-full h-full object-cover"
                                 />
                             </div>
                             <div className="text-white p-8 md:p-12 bg-no-repeat bg-center bg-cover bg-[url(/images/conferenceblue.png)] rounded-3xl">
                                 <div className="space-y-4  w-full text-center md:text-left">
-                                    <h1 className="text-4xl md:text-5xl font-bold">{project.name}</h1>
-                                    <p className="text-lg opacity-90">{project.fullDescription}</p>
+                                    <h1 className="text-4xl md:text-5xl font-bold">{project.projectName}</h1>
+                                    <p className="text-lg opacity-90">{project.projectSummary}</p>
 
                                     <button
-                                        className="
-            rounded-xl
-            bg-white
-            px-6
-            py-3
-            font-semibold
-            text-black
-            shadow-md
-            animate-pulse
-            hover:animate-none
-            hover:scale-105
-            transition
-          "
+                                        className="rounded-xl bg-white px-6 py-3 font-semibold text-black shadow-md animate-pulse hover:animate-none hover:scale-105 transition"
                                     >
                                         Watch Highlight
-                                        <span
-                                            className="
-            inline-block
-            transition-transform
-            duration-300
-            group-hover:translate-x-1
-          "
-                                        >
+                                        <span className="inline-block transition-transform duration-300 group-hover:translate-x-1 ml-2">
                                             →
                                         </span>
                                     </button>
-
                                 </div>
-
-
                             </div>
-
                         </div>
-
-
-                        {/* <div className="p-8 md:p-10 space-y-12"> */}
 
                         <div className="flex flex-col lg:flex-row justify-between items-start gap-8 p-10">
                             <div className="w-full lg:w-3/5">
-                                <h2 className="text-2xl font text-gray-900">ABOUT PROJECT</h2>
-                                <h3 className="text-xl font-bold text-gray-900 mb-4">{project.objective}</h3>
-                                <p className="text-lg opacity-90">{project.fullDescription}</p>
-                                <ul className="space-y-3 pl-10">
-                                    {project.objectives.map((objective, index) => (
+                                <h2 className="text-2xl font-bold text-gray-900 mb-2 uppercase tracking-wide">ABOUT PROJECT</h2>
+                                <h3 className="text-xl font-semibold text-gray-700 mb-4 tracking-tight">Mission & Objectives</h3>
+                                <p className="text-lg opacity-90 text-gray-700 mb-6 leading-relaxed">
+                                    {project.projectBodyText || project.projectSummary}
+                                </p>
+                                <ul className="space-y-3 pl-4 md:pl-10">
+                                    {project.projectHighlights.map((highlight, index) => (
                                         <li key={index} className="flex items-start gap-3 text-gray-600">
-                                            <div className={`w-6 h-6 flex items-center justify-center rounded-md bg-gradient-to-r`}>
+                                            <div className="w-6 h-6 flex items-center justify-center rounded-md bg-transparent shrink-0">
                                                 <Image
                                                     src={iconsArray[index % iconsArray.length]}
                                                     alt="icon"
@@ -203,45 +156,32 @@ export default function ProjectDetailsModal({ project, onClose }: ProjectDetails
                                                     height={20}
                                                     className="object-contain"
                                                 />
-
                                             </div>
-
-                                            <span>{objective}</span>
+                                            <span className="text-[17px]">{highlight}</span>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
-                            <img
-                                src={project.featuredImage}
-                                alt={project.name}
-                                className="lg:w-[25%] h-auto rounded-lg object-cover"
-                            />
+                            <div className="w-full lg:w-[35%] shrink-0">
+                                <img
+                                    src={project.sideActionImage || project.heroMainImage}
+                                    alt={project.projectName}
+                                    className="w-full h-auto rounded-2xl object-cover shadow-lg"
+                                />
+                            </div>
                         </div>
 
-
-
-                        <section className="
-p-8 md:py-20
-bg-[url(/images/impactsolidblack.svg)] bg-cover bg-center bg-no-repeat
-flex flex-col md:flex-row
-justify-center md:justify-between
-items-center
-">
-                            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white   mb-8 mt-12
-  mx-auto
-  text-center
-  w-auto
-  lg:w-[40%]
-  lg:text-left">
+                        <section className="p-8 md:py-20 bg-[url(/images/impactsolidblack.svg)] bg-cover bg-center bg-no-repeat flex flex-col md:flex-row justify-center md:justify-between items-center">
+                            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-white mb-8 mt-12 mx-auto text-center w-auto lg:w-[40%] lg:text-left">
                                 Project Impact
                             </h2>
 
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
                                 <div ref={ref} className="grid grid-cols-2 gap-4">
-                                    {(project.impact.length > 0 ? project.impact : stats).map((stat, index) => {
-                                        const value = (stat as any).impactValue || (stat as any).value || "";
-                                        const label = (stat as any).impactLabel || (stat as any).label || "";
-                                        const icon = (stat as any).icon || stats[index % stats.length].icon || volunteerIcon;
+                                    {(project.impactMetrics.length > 0 ? project.impactMetrics : (stats as any)).map((stat: any, index: number) => {
+                                        const value = stat.impactValue || stat.value || "";
+                                        const label = stat.impactLabel || stat.label || "";
+                                        const icon = stat.icon || stats[index % stats.length].icon || volunteerIcon;
 
                                         return (
                                             <motion.div
@@ -252,20 +192,20 @@ items-center
                                                 transition={{ duration: 0.6, delay: index * 0.2 }}
                                                 className="flex flex-row gap-2 items-center text-center"
                                             >
-                                                <div className="inline-flex p-3 md:p-4 rounded-full mb-4 bg-transparent shrink-0">
+                                                <div className="inline-flex p-1.5 md:p-3 rounded-full mb-4 bg-transparent shrink-0">
                                                     <Image
                                                         src={icon}
                                                         alt={label}
-                                                        width={60}
-                                                        height={60}
-                                                        className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                                                        width={50}
+                                                        height={50}
+                                                        className="w-10 h-10 md:w-14 md:h-14 object-contain"
                                                     />
                                                 </div>
                                                 <div className="text-left">
-                                                    <div className="text-2xl md:text-4xl font-bold text-white mb-1">
+                                                    <div className="text-xl md:text-3xl font-bold text-white mb-0.5">
                                                         {inView ? (
                                                             <CountUp
-                                                                end={parseInt(String(value).replace(/\D/g, ""))}
+                                                                end={parseInt(String(value).replace(/\D/g, "") || "0")}
                                                                 duration={2.5}
                                                                 separator=","
                                                             />
@@ -275,28 +215,18 @@ items-center
                                                         {String(value).includes("+") && "+"}
                                                     </div>
 
-                                                    <div className="text-xs md:text-sm text-white/80 leading-tight">
+                                                    <div className="text-[10px] md:text-xs text-white/80 leading-tight uppercase tracking-wider font-semibold">
                                                         {label}
                                                     </div>
                                                 </div>
-
                                             </motion.div>
                                         );
                                     })}
                                 </div>
                             </div>
                         </section>
-                        <div className="flex flex-row gap-4 flex-wrap lg:flex-nowrap p-6 lg:p-12">
-                            {/* LEFT SECTION */}
-                            <div className="flex flex-col items-start gap-3 mb-2 w-full lg:w-auto">
-                                <h2 className="text-2xl font-bold text-gray-900">OUR PARTNERS</h2>
-                                <p className="text-gray-600 mb-8">
-                                    These partners supported this campaign through resources, expertise, and vision
-                                    to reach more teenagers and deliver stronger impact.
-                                </p>
-                            </div>
 
-                            {/* RIGHT SECTION - 60% width on large screens */}
+                        <div className="flex flex-row gap-4 flex-wrap lg:flex-nowrap p-6 lg:p-12">
                             <div className="w-full lg:w-[140%] grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {project.partners.map((partner, index) => (
                                     <div
@@ -304,8 +234,8 @@ items-center
                                         className="flex items-center justify-center p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
                                     >
                                         <img
-                                            src={partner.logo}
-                                            alt={partner.name}
+                                            src={partner.partnerLogo}
+                                            alt="Partner Logo"
                                             width={150}
                                             height={150}
                                             className="w-full h-auto object-contain"
@@ -402,7 +332,7 @@ items-center
                                             className="aspect-square rounded-lg overflow-hidden bg-gray-200 hover:shadow-lg transition-shadow"
                                         >
                                             <img
-                                                src={image}
+                                                src={image.imageUrl}
                                                 alt={`Moment ${index + 1}`}
                                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                             />

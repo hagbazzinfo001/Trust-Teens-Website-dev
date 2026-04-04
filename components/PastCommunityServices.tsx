@@ -1,87 +1,76 @@
 import { useState, useEffect, useCallback } from 'react';
-import { mockProjects, Project } from '@/lib/mockCommunityService';
 import ProjectDetailsModal from '@/components/ProjectDetailsModal';
 import { ChevronRight, Loader2 } from 'lucide-react';
-import { fetchPastProjects, getProjectById, getPartnersByProject, getGalleryByProject } from '@/lib/communityServiceApi';
+import { 
+    fetchPastProjects, 
+    getProjectById, 
+    getPartnersByProject, 
+    getGalleryByProject, 
+    ApiPastProject, 
+    CompleteProject 
+} from '@/lib/communityServiceApi';
 
 export default function PastCommunityServices() {
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-    const [featuredProject, setFeaturedProject] = useState<Project | null>(null);
+    const [projects, setProjects] = useState<ApiPastProject[]>([]);
+    const [selectedProject, setSelectedProject] = useState<CompleteProject | null>(null);
+    const [featuredProject, setFeaturedProject] = useState<CompleteProject | null>(null);
     const [loading, setLoading] = useState(true);
 
     const loadProjects = useCallback(async () => {
         setLoading(true);
         try {
             const apiProjects = await fetchPastProjects();
-            if (apiProjects && apiProjects.length > 0) {
-                const converted: Project[] = apiProjects.map(p => ({
-                    id: String(p.id),
-                    name: p.projectTitle,
-                    date: p.projectDate,
-                    description: p.projectTitle,
-                    fullDescription: p.projectTitle,
-                    objective: 'What we did',
-                    objectives: [],
-                    featuredImage: p.projectImage,
-                    headerImage: p.projectImage,
-                    impact: [],
-                    partners: [],
-                    gallery: [],
-                    color: 'from-blue-500 to-blue-600'
-                }));
-                setProjects(converted);
-                setFeaturedProject(converted[0]);
-            } else {
-                setProjects(mockProjects);
-                setFeaturedProject(mockProjects[0]);
+            if (apiProjects) {
+                setProjects(apiProjects);
+                if (apiProjects.length > 0) {
+                    await loadDetail(apiProjects[0].id!);
+                }
             }
         } catch (err) {
             console.error('Failed to load past projects', err);
-            setProjects(mockProjects);
-            setFeaturedProject(mockProjects[0]);
         } finally {
             setLoading(false);
         }
     }, []);
 
+    const loadDetail = async (id: number) => {
+        try {
+            const detail = await getProjectById(id);
+            if (detail) {
+                const [partners, gallery] = await Promise.all([
+                    getPartnersByProject(id),
+                    getGalleryByProject(id)
+                ]);
+
+                const complete: CompleteProject = {
+                    ...detail,
+                    id,
+                    date: projects.find(p => p.id === id)?.projectDate || '',
+                    partners,
+                    gallery
+                };
+                setFeaturedProject(complete);
+            }
+        } catch (err) {
+            console.error('Failed to load project detail', err);
+        }
+    };
+
     useEffect(() => {
         loadProjects();
     }, [loadProjects]);
 
-    // Load full details for the featured project
-    useEffect(() => {
-        async function loadDetail() {
-            if (featuredProject && featuredProject.objectives.length === 0 && featuredProject.id.match(/^\d+$/)) {
-                try {
-                    const pid = parseInt(featuredProject.id);
-                    const detail = await getProjectById(pid);
-                    if (detail) {
-                        const [partners, gallery] = await Promise.all([
-                            getPartnersByProject(pid),
-                            getGalleryByProject(pid)
-                        ]);
-
-                        setFeaturedProject(prev => prev ? ({
-                            ...prev,
-                            name: detail.projectName,
-                            fullDescription: detail.projectSummary,
-                            objective: 'What we did',
-                            objectives: detail.projectHighlights,
-                            featuredImage: detail.sideActionImage || prev.featuredImage,
-                            headerImage: detail.heroMainImage || prev.headerImage,
-                            impact: detail.impactMetrics.map(s => ({ label: s.impactLabel, value: s.impactValue })),
-                            partners: partners.map(p => ({ name: '', logo: p.partnerLogo })),
-                            gallery: gallery.map(g => g.imageUrl)
-                        }) : null);
-                    }
-                } catch (err) {
-                    console.error('Failed to load project detail', err);
-                }
-            }
+    const handleSelectFeatured = async (p: ApiPastProject) => {
+        if (p.id) {
+            await loadDetail(p.id);
         }
-        loadDetail();
-    }, [featuredProject?.id]);
+    };
+
+    const handleOpenModal = () => {
+        if (featuredProject) {
+            setSelectedProject(featuredProject);
+        }
+    };
 
     if (loading) {
         return (
@@ -91,8 +80,6 @@ export default function PastCommunityServices() {
             </div>
         );
     }
-
-    if (!featuredProject) return null;
 
     return (
         <>
@@ -111,52 +98,54 @@ export default function PastCommunityServices() {
                             {projects.map((project) => (
                                 <button
                                     key={project.id}
-                                    onClick={() => setFeaturedProject(project)}
-                                    className={`w-full p-5 rounded-2xl text-left transition-all duration-300 group relative overflow-hidden ${featuredProject.id === project.id
+                                    onClick={() => handleSelectFeatured(project)}
+                                    className={`w-full p-5 rounded-2xl text-left transition-all duration-300 group relative overflow-hidden ${featuredProject?.id === project.id
                                         ? `bg-gray-900 text-white shadow-xl translate-x-1`
                                         : 'bg-gray-50 text-gray-900 hover:bg-orange-500 hover:text-white'
                                         }`}
                                 >
                                     <div className="flex items-center justify-between relative z-10">
                                         <div>
-                                            <h3 className="font-bold text-lg mb-0.5">{project.name}</h3>
-                                            <p className={`text-xs ${featuredProject.id === project.id
+                                            <h3 className="font-bold text-lg mb-0.5">{project.projectTitle}</h3>
+                                            <p className={`text-xs ${featuredProject?.id === project.id
                                                 ? 'text-white/70'
                                                 : 'text-gray-500 group-hover:text-white/70'
                                                 }`}>
-                                                {project.date}
+                                                {project.projectDate}
                                             </p>
                                         </div>
-                                        <ChevronRight size={20} className={`${featuredProject.id === project.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`} />
+                                        <ChevronRight size={20} className={`${featuredProject?.id === project.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity`} />
                                     </div>
                                 </button>
                             ))}
                         </div>
 
                         <div className="lg:col-span-2">
-                            <div className="space-y-6">
-                                <div
-                                    className="aspect-[16/9] rounded-3xl overflow-hidden bg-gray-100 cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 group relative"
-                                    onClick={() => setSelectedProject(featuredProject)}
-                                >
-                                    <img
-                                        src={featuredProject.headerImage}
-                                        alt={featuredProject.name}
-                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
-                                        <p className="text-white font-medium text-lg">Click to view full report</p>
+                            {featuredProject && (
+                                <div className="space-y-6">
+                                    <div
+                                        className="aspect-[16/9] rounded-3xl overflow-hidden bg-gray-100 cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 group relative"
+                                        onClick={handleOpenModal}
+                                    >
+                                        <img
+                                            src={featuredProject.heroMainImage || "/images/communityImage4.svg"}
+                                            alt={featuredProject.projectName}
+                                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                                            <p className="text-white font-medium text-lg">Click to view full report</p>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <button
-                                    onClick={() => setSelectedProject(featuredProject)}
-                                    className={`w-full py-5 px-8 rounded-2xl bg-[#257CFF] text-white font-black hover:bg-orange-500 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-between shadow-xl shadow-blue-200 hover:shadow-orange-200`}
-                                >
-                                    <span className="tracking-tight">Explore Full Project Discovery</span>
-                                    <ChevronRight size={28} />
-                                </button>
-                            </div>
+                                    <button
+                                        onClick={handleOpenModal}
+                                        className={`w-full py-5 px-8 rounded-2xl bg-[#257CFF] text-white font-black hover:bg-orange-500 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center justify-between shadow-xl shadow-blue-200 hover:shadow-orange-200`}
+                                    >
+                                        <span className="tracking-tight">Explore Full Project Discovery</span>
+                                        <ChevronRight size={28} />
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

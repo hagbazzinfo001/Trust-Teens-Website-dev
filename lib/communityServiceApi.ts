@@ -39,6 +39,13 @@ export interface ApiProjectDetail {
     impactMetrics: ApiProjectImpact[];
 }
 
+export interface CompleteProject extends ApiProjectDetail {
+    id: number;
+    date: string;
+    partners: ApiProjectPartner[];
+    gallery: ApiProjectGallery[];
+}
+
 export interface ApiProjectPartner {
     id?: number;
     partnerLogo: string;
