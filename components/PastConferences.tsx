@@ -3,13 +3,12 @@
 import { useState, useEffect } from 'react';
 import { ChevronRight, Loader2 } from 'lucide-react';
 import ConferenceDetailsModal from './ConferenceDetailsModal';
-import { fetchPastConferences, getConferenceById, getSpeakersByConference, getPartnersByConference, getGalleryByConference } from '@/lib/conferencesApi';
-import { Conference } from '@/lib/mockConferences';
+import { fetchPastConferences, getConferenceById, getSpeakersByConference, getPartnersByConference, getGalleryByConference, CompleteConference } from '@/lib/conferencesApi';
 
 export default function PastConferences() {
-  const [conferences, setConferences] = useState<Conference[]>([]);
-  const [selectedConference, setSelectedConference] = useState<Conference | null>(null);
-  const [featuredConference, setFeaturedConference] = useState<Conference | null>(null);
+  const [conferences, setConferences] = useState<any[]>([]);
+  const [selectedConference, setSelectedConference] = useState<CompleteConference | null>(null);
+  const [featuredConference, setFeaturedConference] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [detailsLoading, setDetailsLoading] = useState(false);
 
@@ -18,20 +17,12 @@ export default function PastConferences() {
       try {
         const data = await fetchPastConferences();
         if (data && data.length > 0) {
-          const converted: Conference[] = data.map(cp => ({
+          const converted = data.map(cp => ({
             id: String(cp.id),
             name: cp.conferenceTitle,
             date: cp.conferenceDate,
-            description: '', 
-            fullDescription: '',
-            objective: 'What we did',
-            objectives: [],
             featuredImage: cp.conferenceImage,
             headerImage: cp.conferenceImage,
-            impact: [],
-            partners: [],
-            gallery: [],
-            color: 'from-orange-500 to-orange-600'
           }));
           setConferences(converted);
           setFeaturedConference(converted[0]);
@@ -45,7 +36,7 @@ export default function PastConferences() {
     loadConferences();
   }, []);
 
-  const loadFullDetails = async (conf: Conference) => {
+  const loadFullDetails = async (conf: any) => {
     setDetailsLoading(true);
     try {
       const id = parseInt(conf.id);
@@ -56,25 +47,23 @@ export default function PastConferences() {
         getGalleryByConference(id)
       ]);
 
-      const fullConf: Conference = {
-        ...conf,
-        name: detail.conferenceName,
-        description: detail.conferenceSummary,
-        fullDescription: detail.aboutTextBody,
-        objectives: detail.eventHighlights,
-        featuredImage: detail.aboutSideImage || conf.featuredImage,
-        headerImage: detail.heroMainImage || conf.headerImage,
-        impact: detail.impactMetrics.map(m => ({ label: m.impactLabel, value: parseInt(m.impactValue) || 0 })),
-        partners: partners.map(p => ({ name: '', logo: p.partnerLogo })),
-        speakers: speakers.map(s => ({ name: s.speakerName, role: s.speakerRole, image: s.speakerImage })),
-        gallery: gallery.map(g => g.imageUrl),
+      const fullConf: CompleteConference = {
+        id: conf.id,
+        conferenceName: detail.conferenceName,
+        conferenceSummary: detail.conferenceSummary,
+        heroMainImage: detail.heroMainImage || conf.headerImage,
+        aboutTextBody: detail.aboutTextBody,
+        aboutSideImage: detail.aboutSideImage || conf.featuredImage,
+        eventHighlights: detail.eventHighlights || [],
+        impactMetrics: detail.impactMetrics || [],
+        speakers: speakers || [],
+        partners: partners || [],
+        gallery: gallery || [],
       };
       
       setSelectedConference(fullConf);
     } catch (e) {
       console.error('Failed to load conference details:', e);
-      // Fallback to partial data if fetch fails
-      setSelectedConference(conf);
     } finally {
       setDetailsLoading(false);
     }

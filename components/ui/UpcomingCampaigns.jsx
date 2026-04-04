@@ -1,16 +1,31 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { getUpcomingCampaign } from "@/lib/adminData";
+import { fetchUpcoming } from "@/lib/campaignsApi";
 
 export default function UpcomingCampaigns() {
   const [data, setData] = useState(null);
   const revealRefs = useRef([]);
 
   useEffect(() => {
-    const adminData = getUpcomingCampaign();
-    if (adminData && adminData.is_active) {
-      setData(adminData);
-    }
+    const loadData = async () => {
+      try {
+        const adminData = await fetchUpcoming();
+        if (adminData) {
+          // Map backend fields to component expectations
+          setData({
+            name: adminData.missionTitle,
+            description: adminData.missionDescription,
+            date_time: adminData.missionDate,
+            promo_image: adminData.missionImage,
+            register_url: adminData.missionLink,
+            location: "" // Not present in ApiUpcoming currently
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load upcoming campaign", err);
+      }
+    };
+    loadData();
   }, []);
 
   useEffect(() => {

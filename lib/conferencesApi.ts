@@ -57,6 +57,20 @@ export interface ApiConferenceDetail {
     impactMetrics: { id: number; impactValue: string; impactLabel: string }[];
 }
 
+export interface CompleteConference {
+    id: string;
+    conferenceName: string;
+    conferenceSummary: string;
+    heroMainImage: string;
+    aboutTextBody: string;
+    aboutSideImage: string;
+    eventHighlights: string[];
+    impactMetrics: { id: number; impactValue: string; impactLabel: string }[];
+    speakers: ApiSpeaker[];
+    partners: ApiPartner[];
+    gallery: ApiGalleryImage[];
+}
+
 // ═══════════════════════════════════════════════════════════════════════
 // IMPACT STATS
 // ═══════════════════════════════════════════════════════════════════════

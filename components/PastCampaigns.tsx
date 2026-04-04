@@ -1,59 +1,87 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { mockCampaigns, Campaign } from '@/lib/mockCampaigns';
+import { useState, useEffect, useCallback } from 'react';
 import CampaignDetailsModal from '@/components/CampaignDetailsModal';
-import { ChevronRight } from 'lucide-react';
-import { getPastCampaigns, getCampaignDetail } from '@/lib/adminData';
+import { ChevronRight, Loader2 } from 'lucide-react';
+import { 
+    fetchPastCampaigns, 
+    getCampaignById, 
+    getPartnersByCampaign, 
+    getGalleryByCampaign, 
+    ApiPastCampaign, 
+    CompleteCampaign 
+} from '@/lib/campaignsApi';
 
 export default function PastCampaigns() {
-  const [campaigns, setCampaigns] = useState<Campaign[]>(mockCampaigns);
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
-  const [featuredCampaign, setFeaturedCampaign] = useState<Campaign>(mockCampaigns[0]);
+    const [campaigns, setCampaigns] = useState<ApiPastCampaign[]>([]);
+    const [selectedCampaign, setSelectedCampaign] = useState<CompleteCampaign | null>(null);
+    const [featuredCampaign, setFeaturedCampaign] = useState<CompleteCampaign | null>(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const adminPast = getPastCampaigns();
-    if (adminPast && adminPast.length > 0) {
-      const converted: Campaign[] = adminPast.map(cp => ({
-        id: cp.campaign_id.toString(),
-        name: cp.campaign_title,
-        date: cp.campaign_date,
-        description: cp.campaign_title, // Placeholder until full detail is loaded
-        fullDescription: cp.campaign_title,
-        objective: 'What we did',
-        objectives: [],
-        featuredImage: cp.campaign_image,
-        headerImage: cp.campaign_image,
-        impact: [],
-        partners: [],
-        gallery: [],
-        color: 'from-orange-500 to-orange-600'
-      }));
-      setCampaigns(converted);
-      setFeaturedCampaign(converted[0]);
-    }
-  }, []);
+    const loadProjects = useCallback(async () => {
+        setLoading(true);
+        try {
+            const apiCampaigns = await fetchPastCampaigns();
+            if (apiCampaigns) {
+                setCampaigns(apiCampaigns);
+                if (apiCampaigns.length > 0) {
+                    await loadDetail(apiCampaigns[0].id!);
+                }
+            }
+        } catch (err) {
+            console.error('Failed to load past campaigns', err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-  // Effect to load full details for the featured campaign if it's from admin
-  useEffect(() => {
-    if (featuredCampaign && featuredCampaign.objectives.length === 0) {
-      const detail = getCampaignDetail(featuredCampaign.id);
-      if (detail) {
-        setFeaturedCampaign(prev => ({
-          ...prev,
-          name: detail.campaign_name,
-          description: detail.short_description,
-          fullDescription: detail.about_text_body,
-          objectives: detail.action_items,
-          featuredImage: detail.about_side_image || prev.featuredImage,
-          headerImage: detail.about_side_image || prev.headerImage, // Modal uses headerImage
-          impact: detail.impact.map(s => ({ label: s.stat_label, value: parseInt(s.stat_number) || 0 })),
-          partners: detail.partners.map(p => ({ name: p.name, logo: p.logo })),
-          gallery: detail.gallery
-        }));
-      }
+    const loadDetail = async (id: number) => {
+        try {
+            const detail = await getCampaignById(id);
+            if (detail) {
+                const [partners, gallery] = await Promise.all([
+                    getPartnersByCampaign(id),
+                    getGalleryByCampaign(id)
+                ]);
+
+                const complete: CompleteCampaign = {
+                    ...detail,
+                    id,
+                    date: campaigns.find(p => p.id === id)?.campaignDate || '',
+                    partners,
+                    gallery
+                };
+                setFeaturedCampaign(complete);
+            }
+        } catch (err) {
+            console.error('Failed to load campaign detail', err);
+        }
+    };
+
+    useEffect(() => {
+        loadProjects();
+    }, [loadProjects]);
+
+    const handleSelectFeatured = async (p: ApiPastCampaign) => {
+        if (p.id) {
+            await loadDetail(p.id);
+        }
+    };
+
+    const handleOpenModal = () => {
+        if (featuredCampaign) {
+            setSelectedCampaign(featuredCampaign);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="py-20 flex flex-col items-center justify-center text-gray-500">
+                <Loader2 className="animate-spin mb-4" size={48} />
+                <p>Loading past campaigns...</p>
+            </div>
+        );
     }
-  }, [featuredCampaign.id]);
 
   return (
     <>
@@ -71,23 +99,23 @@ export default function PastCampaigns() {
               {campaigns.map((campaign) => (
                 <button
                   key={campaign.id}
-                  onClick={() => setFeaturedCampaign(campaign)}
-                  className={`w-full p-4 rounded-xl text-left transition-all duration-200 group ${featuredCampaign.id === campaign.id
+                  onClick={() => handleSelectFeatured(campaign)}
+                  className={`w-full p-4 rounded-xl text-left transition-all duration-200 group ${featuredCampaign?.id === campaign.id
                     ? `bg-orange-300 text-black shadow-lg`
                     : 'bg-white-500 text-gray-900 hover:bg-orange-500'
                     }`}
                 >
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-bold text-lg text-black">{campaign.name}</h3>
-                      <p className={`text-sm ${featuredCampaign.id === campaign.id
+                      <h3 className="font-bold text-lg text-black">{campaign.campaignTitle}</h3>
+                      <p className={`text-sm ${featuredCampaign?.id === campaign.id
                         ? 'opacity-90'
                         : 'text-gray-600'
                         }`}>
-                        {campaign.date}
+                        {campaign.campaignDate}
                       </p>
                     </div>
-                    {featuredCampaign.id === campaign.id && (
+                    {featuredCampaign?.id === campaign.id && (
                       <ChevronRight size={20} />
                     )}
                   </div>
@@ -96,26 +124,28 @@ export default function PastCampaigns() {
             </div>
 
             <div className="lg:col-span-2">
-              <div className="space-y-4">
-                <div
-                  className="aspect-video md:aspect-auto md:h-96 rounded-2xl overflow-hidden bg-gray-200 cursor-pointer hover:shadow-lg transition-shadow group"
-                  onClick={() => setSelectedCampaign(featuredCampaign)}
-                >
-                  <img
-                    src={featuredCampaign.featuredImage}
-                    alt={featuredCampaign.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
+              {featuredCampaign && (
+                <div className="space-y-4">
+                  <div
+                    className="aspect-video md:aspect-auto md:h-96 rounded-2xl overflow-hidden bg-gray-200 cursor-pointer hover:shadow-lg transition-shadow group"
+                    onClick={handleOpenModal}
+                  >
+                    <img
+                      src={featuredCampaign.aboutSideImage || featuredCampaign.coverImage}
+                      alt={featuredCampaign.campaignName}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
 
-                <button
-                  onClick={() => setSelectedCampaign(featuredCampaign)}
-                  className={`w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group`}
-                >
-                  <span>View Full Campaign Details</span>
-                  <ChevronRight size={30} className="group-hover:translate-x-1 transition-transform " />
-                </button>
-              </div>
+                  <button
+                    onClick={handleOpenModal}
+                    className={`w-full bg-orange-500 text-white font-bold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-200 flex items-center justify-between group`}
+                  >
+                    <span>View Full Campaign Details</span>
+                    <ChevronRight size={30} className="group-hover:translate-x-1 transition-transform " />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

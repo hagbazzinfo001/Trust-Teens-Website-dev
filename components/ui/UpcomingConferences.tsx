@@ -1,17 +1,24 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { getUpcomingConference } from '@/lib/adminData';
+import { fetchUpcoming, ApiUpcoming } from '@/lib/conferencesApi';
 
 export default function UpcomingConferences() {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<ApiUpcoming | null>(null);
   const revealRefs = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
-    const adminData = getUpcomingConference();
-    if (adminData && adminData.is_active) {
-      setData(adminData);
-    }
+    const loadUpcoming = async () => {
+      try {
+        const upcoming = await fetchUpcoming();
+        if (upcoming && upcoming.isActive) {
+          setData(upcoming);
+        }
+      } catch (e) {
+        console.error('Failed to load upcoming conference:', e);
+      }
+    };
+    loadUpcoming();
   }, []);
 
   useEffect(() => {
@@ -52,8 +59,8 @@ export default function UpcomingConferences() {
             className="w-[280px] sm:w-[340px] lg:w-[420px] float-animation opacity-0 translate-y-8 transition-all duration-[1200ms]"
           >
             <img
-              src={data.promo_image || "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764810649/Phone_Mockup_cxmgpl.png"}
-              alt={data.name}
+              src={data.promoImage || "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764810649/Phone_Mockup_cxmgpl.png"}
+              alt={data.conferenceName}
               className="rounded-3xl shadow-xl w-full"
             />
           </div>
@@ -72,7 +79,7 @@ export default function UpcomingConferences() {
             </p>
 
             <h2 className="text-4xl font-bold text-gray-900 leading-tight mb-6">
-              {data.name}
+              {data.conferenceName}
             </h2>
 
             <p className="text-gray-600 leading-relaxed mb-6">
@@ -80,7 +87,7 @@ export default function UpcomingConferences() {
             </p>
 
             <p className="font-semibold text-gray-800">
-              {data.date_time}
+              {data.dateTime}
             </p>
 
             {data.location && (
@@ -88,9 +95,9 @@ export default function UpcomingConferences() {
             )}
 
             {/* Button with Scale + Shine Hover Effect */}
-            {data.register_url && (
+            {data.registerUrl && (
               <a
-                href={data.register_url}
+                href={data.registerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block relative mt-8 bg-orange-500 text-white font-semibold px-10 py-3 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-105 hover:bg-orange-600 shine-btn"

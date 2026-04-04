@@ -7,14 +7,22 @@ import {
     MissionImpactStat,
     PastCampaignItem,
     UpcomingEvent,
-    CampaignDetail,
-    getCampaignDetail,
-    saveCampaignDetail,
     generateId,
 } from '@/lib/adminData';
 import {
     ApiImpactStat,
     ApiPastCampaign,
+    ApiCampaignDetail,
+    ApiCampaignPartner,
+    ApiCampaignGallery,
+    getCampaignById,
+    updateCampaignDetail,
+    getPartnersByCampaign,
+    addPartnerToCampaign,
+    deletePartnerFromCampaign,
+    getGalleryByCampaign,
+    addGalleryToCampaign,
+    deleteGalleryFromCampaign,
     fetchImpactStats,
     createImpactStat,
     updateImpactStat,
@@ -47,7 +55,19 @@ const DEFAULT_UPCOMING: UpcomingEvent = {
     promo_image: '',
 };
 
-const EMPTY_DETAIL: CampaignDetail = {
+interface LocalCampaignDetail {
+    campaign_name: string;
+    short_description: string;
+    hero_video_url: string;
+    about_text_body: string;
+    action_items: string[];
+    about_side_image: string;
+    impact: { stat_number: string; stat_label: string; _apiId?: number }[];
+    partners: { name: string; logo: string; _apiId?: number }[];
+    gallery: { url: string; _apiId?: number }[];
+}
+
+const EMPTY_DETAIL: LocalCampaignDetail = {
     campaign_name: '',
     short_description: '',
     hero_video_url: '',
@@ -55,10 +75,10 @@ const EMPTY_DETAIL: CampaignDetail = {
     action_items: [''],
     about_side_image: '',
     impact: [
-        { stat_number: '', stat_label: '' },
-        { stat_number: '', stat_label: '' },
-        { stat_number: '', stat_label: '' },
-        { stat_number: '', stat_label: '' },
+        { stat_number: '', stat_label: '', _apiId: undefined },
+        { stat_number: '', stat_label: '', _apiId: undefined },
+        { stat_number: '', stat_label: '', _apiId: undefined },
+        { stat_number: '', stat_label: '', _apiId: undefined },
     ],
     partners: [],
     gallery: [],
@@ -111,9 +131,10 @@ export default function AdminCampaignsPage() {
     const [upcomingLoading, setUpcomingLoading] = useState(true);
     const [upcomingError, setUpcomingError] = useState('');
 
-    // Campaign Details (still localStorage)
+    // Campaign Details (Live API)
     const [selectedCampaignId, setSelectedCampaignId] = useState<string>('');
-    const [detail, setDetail] = useState<CampaignDetail>(EMPTY_DETAIL);
+    const [detail, setDetail] = useState<LocalCampaignDetail>(EMPTY_DETAIL);
+    const [detailError, setDetailError] = useState('');
 
     // ─── Data fetching ──────────────────────────────────────────────
 
@@ -180,13 +201,51 @@ export default function AdminCampaignsPage() {
         loadUpcoming();
     }, [loadImpact, loadPast, loadUpcoming]);
 
-    // Load detail when selecting a campaign (localStorage)
+    const loadDetail = useCallback(async (idStr: string) => {
+        const id = parseInt(idStr);
+        if (isNaN(id)) return;
+
+        setSaving(true);
+        setDetailError('');
+        try {
+            const apiDetail = await getCampaignById(id);
+            if (apiDetail) {
+                const [partners, gallery] = await Promise.all([
+                    getPartnersByCampaign(id),
+                    getGalleryByCampaign(id)
+                ]);
+
+                setDetail({
+                    campaign_name: apiDetail.campaignName,
+                    short_description: apiDetail.shortDescription,
+                    hero_video_url: apiDetail.heroVideoUrl,
+                    about_text_body: apiDetail.aboutTextBody,
+                    about_side_image: apiDetail.aboutSideImage,
+                    action_items: apiDetail.actionItems || [],
+                    impact: apiDetail.impactMetrics.map(m => ({
+                        stat_number: m.impactValue,
+                        stat_label: m.impactLabel,
+                        _apiId: m.id
+                    })),
+                    partners: partners.map(p => ({ name: '', logo: p.partnerLogo, _apiId: p.id })),
+                    gallery: gallery.map(g => ({ url: g.imageUrl, _apiId: g.id })),
+                });
+            }
+        } catch (e: unknown) {
+            setDetailError(e instanceof Error ? e.message : 'Failed to load campaign detail');
+        } finally {
+            setSaving(false);
+        }
+    }, []);
+
+    // Load detail when selecting a campaign (Live API)
     useEffect(() => {
         if (selectedCampaignId) {
-            const d = getCampaignDetail(selectedCampaignId);
-            setDetail(d || { ...EMPTY_DETAIL });
+            loadDetail(selectedCampaignId);
+        } else {
+            setDetail({ ...EMPTY_DETAIL });
         }
-    }, [selectedCampaignId]);
+    }, [selectedCampaignId, loadDetail]);
 
     const flash = () => {
         setSaved(true);
@@ -307,7 +366,74 @@ export default function AdminCampaignsPage() {
         }
     };
 
-    // ─── Detail helpers (still localStorage) ────────────────────────
+    // ─── Campaign Details save ──────────────────────────────────────
+
+    const handleSaveDetail = async () => {
+        const id = parseInt(selectedCampaignId);
+        if (isNaN(id)) return;
+
+        setSaving(true);
+        setDetailError('');
+        try {
+            // 1. Update main detail
+            const payload: ApiCampaignDetail = {
+                campaignName: detail.campaign_name,
+                shortDescription: detail.short_description,
+                heroVideoUrl: detail.hero_video_url,
+                coverImage: pastItems.find(p => p.campaign_id === selectedCampaignId)?.campaign_image || detail.about_side_image,
+                aboutTextBody: detail.about_text_body,
+                aboutSideImage: detail.about_side_image,
+                actionItems: detail.action_items.filter(i => i.trim() !== ''),
+                impactMetrics: detail.impact.filter(i => i.stat_label || i.stat_number).map(m => ({
+                    id: m._apiId || 0,
+                    impactValue: m.stat_number,
+                    impactLabel: m.stat_label
+                }))
+            };
+            await updateCampaignDetail(id, payload);
+
+            // 2. Sync Partners
+            const remotePartners = await getPartnersByCampaign(id);
+            const localPartnerIds = new Set(detail.partners.map(p => p._apiId).filter(Boolean));
+
+            // Delete removed
+            for (const rp of remotePartners) {
+                if (!localPartnerIds.has(rp.id)) {
+                    await deletePartnerFromCampaign(id, rp.id);
+                }
+            }
+            // Add new
+            for (const lp of detail.partners) {
+                if (!lp._apiId && lp.logo) {
+                    await addPartnerToCampaign(id, { partnerLogo: lp.logo });
+                }
+            }
+
+            // 3. Sync Gallery
+            const remoteGallery = await getGalleryByCampaign(id);
+            const localGalleryIds = new Set(detail.gallery.map(g => g._apiId).filter(Boolean));
+
+            // Delete removed
+            for (const rg of remoteGallery) {
+                if (!localGalleryIds.has(rg.id)) {
+                    await deleteGalleryFromCampaign(id, rg.id);
+                }
+            }
+            // Add new
+            for (const lg of detail.gallery) {
+                if (!lg._apiId && lg.url) {
+                    await addGalleryToCampaign(id, { imageUrl: lg.url });
+                }
+            }
+
+            flash();
+            await loadDetail(selectedCampaignId);
+        } catch (e: unknown) {
+            setDetailError(e instanceof Error ? e.message : 'Save failed');
+        } finally {
+            setSaving(false);
+        }
+    };
 
     const addActionItem = () => setDetail({ ...detail, action_items: [...detail.action_items, ''] });
     const removeActionItem = (idx: number) =>
@@ -317,7 +443,7 @@ export default function AdminCampaignsPage() {
     const removePartner = (idx: number) =>
         setDetail({ ...detail, partners: detail.partners.filter((_, i) => i !== idx) });
 
-    const addGalleryImage = () => setDetail({ ...detail, gallery: [...detail.gallery, ''] });
+    const addGalleryImage = () => setDetail({ ...detail, gallery: [...detail.gallery, { url: '' }] });
     const removeGalleryImage = (idx: number) =>
         setDetail({ ...detail, gallery: detail.gallery.filter((_, i) => i !== idx) });
 
@@ -588,18 +714,14 @@ export default function AdminCampaignsPage() {
                             <p className="text-sm text-gray-500">Select a past campaign to edit its full detail page</p>
                         </div>
                         <button
-                            onClick={() => {
-                                if (selectedCampaignId) {
-                                    saveCampaignDetail(selectedCampaignId, detail);
-                                    flash();
-                                }
-                            }}
-                            disabled={!selectedCampaignId}
+                            onClick={handleSaveDetail}
+                            disabled={!selectedCampaignId || saving}
                             className={`${btnSave} ${!selectedCampaignId ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                             <Save size={16} /> Save Detail
                         </button>
                     </div>
+                    <ErrorBanner message={detailError} />
 
                     {/* Campaign selector */}
                     <div className="mb-6">
@@ -761,15 +883,15 @@ export default function AdminCampaignsPage() {
                                     <h3 className="font-semibold text-gray-800 text-sm">Gallery</h3>
                                     <button onClick={addGalleryImage} className="text-xs text-orange-500 hover:text-orange-600 font-medium">+ Add Image</button>
                                 </div>
-                                {detail.gallery.map((url, i) => (
+                                {detail.gallery.map((g, i) => (
                                     <div key={i} className="flex gap-2 items-start">
                                         <div className="flex-1">
                                             <CloudinaryImageUpload
                                                 label={`Gallery Image ${i + 1}`}
-                                                value={url}
+                                                value={g.url}
                                                 onUpload={(newUrl) => {
                                                     const u = [...detail.gallery];
-                                                    u[i] = newUrl;
+                                                    u[i] = { ...u[i], url: newUrl };
                                                     setDetail({ ...detail, gallery: u });
                                                 }}
                                             />
