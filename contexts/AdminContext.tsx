@@ -118,7 +118,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       }
 
       const data = await res.json();
-      return { success: true, resetToken: data.resetToken, message: 'OTP verified successfully.' };
+      return { success: true, resetToken: data.resetToken || data.data?.resetToken, message: 'OTP verified successfully.' };
     } catch {
       return { success: false, message: 'Network error. Please try again.' };
     }
