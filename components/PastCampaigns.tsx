@@ -99,7 +99,13 @@ export default function PastCampaigns() {
               {campaigns.map((campaign) => (
                 <button
                   key={campaign.id}
-                  onClick={() => handleSelectFeatured(campaign)}
+                  onClick={() => {
+                    if (featuredCampaign?.id === campaign.id) {
+                      handleOpenModal();
+                    } else {
+                      handleSelectFeatured(campaign);
+                    }
+                  }}
                   className={`w-full p-4 rounded-xl text-left transition-all duration-200 group ${featuredCampaign?.id === campaign.id
                     ? `bg-orange-300 text-black shadow-lg`
                     : 'bg-white-500 text-gray-900 hover:bg-orange-500'
@@ -131,7 +137,7 @@ export default function PastCampaigns() {
                     onClick={handleOpenModal}
                   >
                     <img
-                      src={featuredCampaign.aboutSideImage || featuredCampaign.coverImage}
+                      src={featuredCampaign.aboutSideImage || featuredCampaign.coverImage || campaigns.find(c => c.id === featuredCampaign.id)?.campaignImage || "https://res.cloudinary.com/dd6pd8dsc/image/upload/v1764810649/Phone_Mockup_cxmgpl.png"}
                       alt={featuredCampaign.campaignName}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />

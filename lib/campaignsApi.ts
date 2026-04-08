@@ -21,12 +21,13 @@ export interface ApiPastCampaign {
 }
 
 export interface ApiUpcoming {
-    id: number;
-    missionTitle: string;
-    missionDate: string;
-    missionLink: string;
-    missionDescription: string;
-    missionImage: string;
+    isActive?: boolean;
+    campaignName: string;
+    description: string;
+    dateTime: string;
+    location: string;
+    registerUrl: string;
+    promoImage: string;
 }
 
 export interface ApiCampaignImpact {
@@ -138,13 +139,7 @@ export async function fetchUpcoming(): Promise<ApiUpcoming> {
 }
 
 export async function updateUpcoming(
-    data: {
-        missionTitle: string;
-        missionDate: string;
-        missionLink: string;
-        missionDescription: string;
-        missionImage: string;
-    }
+    data: ApiUpcoming
 ): Promise<void> {
     await apiFetch(`${BASE}/upcoming`, {
         method: 'PUT',

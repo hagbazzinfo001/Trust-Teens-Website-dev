@@ -16,7 +16,11 @@ export const leadershipApi = {
    */
   async getLeaders(): Promise<LeaderDto[]> {
     try {
-      return await apiFetch<LeaderDto[]>(BASE_URL);
+      const data = await apiFetch<any[]>(BASE_URL);
+      return data.map((item) => ({
+        ...item,
+        id: item.id || item._id,
+      }));
     } catch (error) {
       console.error('Error fetching leaders:', error);
       return [];

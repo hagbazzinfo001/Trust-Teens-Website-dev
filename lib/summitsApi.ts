@@ -26,6 +26,7 @@ export interface ApiUpcoming {
     dateTime: string;
     location: string;
     registerUrl: string;
+    promoImage?: string;
 }
 
 export interface ApiSpeaker {

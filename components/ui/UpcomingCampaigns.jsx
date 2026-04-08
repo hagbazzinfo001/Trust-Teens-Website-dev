@@ -13,12 +13,12 @@ export default function UpcomingCampaigns() {
         if (adminData) {
           // Map backend fields to component expectations
           setData({
-            name: adminData.missionTitle,
-            description: adminData.missionDescription,
-            date_time: adminData.missionDate,
-            promo_image: adminData.missionImage,
-            register_url: adminData.missionLink,
-            location: "" // Not present in ApiUpcoming currently
+            name: adminData.campaignName,
+            description: adminData.description,
+            date_time: adminData.dateTime,
+            promo_image: adminData.promoImage,
+            register_url: adminData.registerUrl,
+            location: adminData.location
           });
         }
       } catch (err) {

@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useRef } from 'react';
+import { fetchTestimonials } from '@/lib/testimonialsApi';
 
 type Testimonial = {
   quote: string;
@@ -10,7 +11,7 @@ type Testimonial = {
   avatars: string[];
 };
 
-const testimonials: Testimonial[] = [
+const defaultTestimonials: Testimonial[] = [
   {
     quote:
       'We had an incredible experience working with Landify and were impressed they made such a big difference in only three weeks. Our team is so grateful for the wonderful improvements they made and their ability to get familiar with the product concept so quickly. It acted as a catalyst to take our design to the next level and get more eyes on our product..',
@@ -84,14 +85,30 @@ const variants = {
 };
 
 export default function TestimonialCarousel() {
+  const [dataList, setDataList] = useState<Testimonial[]>(defaultTestimonials);
   const [[index, direction], setIndex] = useState([0, 0]);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const testimonial = testimonials[index];
+  useEffect(() => {
+    fetchTestimonials().then(res => {
+      if (res && res.length > 0) {
+        const avatarsList = res.map(t => t.teenImage || '/images/testimonia1.svg');
+        const mapped = res.map(t => ({
+          quote: t.quoteText,
+          name: t.teenName,
+          age: t.teenAge,
+          avatars: avatarsList
+        }));
+        setDataList(mapped);
+      }
+    }).catch(e => console.error("Failed to fetch testimonials", e));
+  }, []);
+
+  const testimonial = dataList[index] || defaultTestimonials[0];
 
   const paginate = (dir: number) => {
     setIndex(([prev]) => [
-      (prev + dir + testimonials.length) % testimonials.length,
+      (prev + dir + dataList.length) % dataList.length,
       dir,
     ]);
   };
@@ -179,8 +196,8 @@ export default function TestimonialCarousel() {
         </div>
 
         {/* Pagination */}
-        <div className="flex gap-3">
-          {testimonials.map((_, i) => (
+        <div className="flex gap-3 mt-4">
+          {dataList.map((_, i) => (
             <button
               key={i}
               onClick={() => setIndex([i, i > index ? 1 : -1])}

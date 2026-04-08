@@ -176,13 +176,13 @@ export default function AdminCampaignsPage() {
             if (data) {
                 setUpcomingApiId(data.id);
                 setUpcoming({
-                    is_active: true,
-                    name: data.missionTitle || '',
-                    description: data.missionDescription || '',
-                    date_time: data.missionDate || '',
-                    location: '',
-                    register_url: data.missionLink || '',
-                    promo_image: data.missionImage || '',
+                    is_active: data.isActive ?? true,
+                    name: data.campaignName || '',
+                    description: data.description || '',
+                    date_time: data.dateTime || '',
+                    location: data.location || '',
+                    register_url: data.registerUrl || '',
+                    promo_image: data.promoImage || '',
                 });
             }
         } catch (e: unknown) {
@@ -211,8 +211,8 @@ export default function AdminCampaignsPage() {
             const apiDetail = await getCampaignById(id);
             if (apiDetail) {
                 const [partners, gallery] = await Promise.all([
-                    getPartnersByCampaign(id),
-                    getGalleryByCampaign(id)
+                    getPartnersByCampaign(id).catch(() => []),
+                    getGalleryByCampaign(id).catch(() => [])
                 ]);
 
                 setDetail({
@@ -351,11 +351,13 @@ export default function AdminCampaignsPage() {
         setUpcomingError('');
         try {
             await updateUpcoming({
-                missionTitle: upcoming.name,
-                missionDate: upcoming.date_time,
-                missionLink: upcoming.register_url,
-                missionDescription: upcoming.description,
-                missionImage: upcoming.promo_image || '',
+                isActive: upcoming.is_active,
+                campaignName: upcoming.name,
+                dateTime: upcoming.date_time,
+                location: upcoming.location,
+                registerUrl: upcoming.register_url,
+                description: upcoming.description,
+                promoImage: upcoming.promo_image || '',
             });
             flash();
             await loadUpcoming();
@@ -393,42 +395,52 @@ export default function AdminCampaignsPage() {
             await updateCampaignDetail(id, payload);
 
             // 2. Sync Partners
-            const remotePartners = await getPartnersByCampaign(id);
-            const localPartnerIds = new Set(detail.partners.map(p => p._apiId).filter(Boolean));
+            try {
+                const remotePartners = await getPartnersByCampaign(id);
+                const localPartnerIds = new Set(detail.partners.map(p => p._apiId).filter(Boolean));
 
-            // Delete removed
-            for (const rp of remotePartners) {
-                if (!localPartnerIds.has(rp.id)) {
-                    await deletePartnerFromCampaign(id, rp.id);
+                // Delete removed
+                for (const rp of remotePartners) {
+                    if (!localPartnerIds.has(rp.id)) {
+                        await deletePartnerFromCampaign(id, rp.id);
+                    }
                 }
-            }
-            // Add new
-            for (const lp of detail.partners) {
-                if (!lp._apiId && lp.logo) {
-                    await addPartnerToCampaign(id, { partnerLogo: lp.logo });
+                // Add new
+                for (const lp of detail.partners) {
+                    if (!lp._apiId && lp.logo) {
+                        await addPartnerToCampaign(id, { partnerLogo: lp.logo });
+                    }
                 }
+            } catch (e) {
+                console.error("Failed to sync partners:", e);
             }
 
             // 3. Sync Gallery
-            const remoteGallery = await getGalleryByCampaign(id);
-            const localGalleryIds = new Set(detail.gallery.map(g => g._apiId).filter(Boolean));
+            try {
+                const remoteGallery = await getGalleryByCampaign(id);
+                const localGalleryIds = new Set(detail.gallery.map(g => g._apiId).filter(Boolean));
 
-            // Delete removed
-            for (const rg of remoteGallery) {
-                if (!localGalleryIds.has(rg.id)) {
-                    await deleteGalleryFromCampaign(id, rg.id);
+                // Delete removed
+                for (const rg of remoteGallery) {
+                    if (!localGalleryIds.has(rg.id)) {
+                        await deleteGalleryFromCampaign(id, rg.id);
+                    }
                 }
-            }
-            // Add new
-            for (const lg of detail.gallery) {
-                if (!lg._apiId && lg.url) {
-                    await addGalleryToCampaign(id, { imageUrl: lg.url });
+                // Add new
+                for (const lg of detail.gallery) {
+                    if (!lg._apiId && lg.url) {
+                        await addGalleryToCampaign(id, { imageUrl: lg.url });
+                    }
                 }
+            } catch (e) {
+                console.error("Failed to sync gallery:", e);
             }
 
             flash();
             await loadDetail(selectedCampaignId);
         } catch (e: unknown) {
+            console.error('Save failed:', e);
+            alert('Save failed: ' + (e instanceof Error ? e.message : 'Unknown error'));
             setDetailError(e instanceof Error ? e.message : 'Save failed');
         } finally {
             setSaving(false);

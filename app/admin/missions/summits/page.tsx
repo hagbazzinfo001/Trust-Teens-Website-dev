@@ -165,6 +165,7 @@ export default function AdminSummitsPage() {
                     date_time: data.dateTime || '',
                     location: data.location || '',
                     register_url: data.registerUrl || '',
+                    promo_image: data.promoImage || '',
                 });
             }
         } catch (e: unknown) {
@@ -321,6 +322,7 @@ export default function AdminSummitsPage() {
                 registerUrl: upcoming.register_url,
                 description: upcoming.description,
                 location: upcoming.location,
+                promoImage: upcoming.promo_image || '',
             });
             flash();
             await loadUpcoming();
@@ -351,41 +353,48 @@ export default function AdminSummitsPage() {
             });
 
             // Speakers
-            const remoteSpeakers = await getSpeakersBySummit(apiId);
-            const localSpeakerIds = new Set(detail.speakers.filter(s => (s as any)._apiId).map(s => (s as any)._apiId!));
-            for (const rs of remoteSpeakers) {
-                if (!localSpeakerIds.has(rs.id)) await deleteSpeaker(apiId, rs.id);
-            }
-            for (const ls of detail.speakers) {
-                const payload = { speakerName: ls.speaker_name, speakerRole: ls.speaker_role, speakerImage: ls.speaker_image };
-                if ((ls as any)._apiId) await updateSpeaker(apiId, (ls as any)._apiId, payload);
-                else await addSpeakerToSummit(apiId, payload);
-            }
+            try {
+                const remoteSpeakers = await getSpeakersBySummit(apiId);
+                const localSpeakerIds = new Set(detail.speakers.filter(s => (s as any)._apiId).map(s => (s as any)._apiId!));
+                for (const rs of remoteSpeakers) {
+                    if (!localSpeakerIds.has(rs.id)) await deleteSpeaker(apiId, rs.id);
+                }
+                for (const ls of detail.speakers) {
+                    const payload = { speakerName: ls.speaker_name, speakerRole: ls.speaker_role, speakerImage: ls.speaker_image };
+                    if ((ls as any)._apiId) await updateSpeaker(apiId, (ls as any)._apiId, payload);
+                    else await addSpeakerToSummit(apiId, payload);
+                }
+            } catch (e) { console.error('Failed to sync speakers:', e); }
 
             // Partners
-            const remotePartners = await getPartnersBySummit(apiId);
-            const localPartnerIds = new Set(detail.partners.filter(p => (p as any)._apiId).map(p => (p as any)._apiId!));
-            for (const rp of remotePartners) {
-                if (!localPartnerIds.has(rp.id)) await deletePartner(apiId, rp.id);
-            }
-            for (const lp of detail.partners) {
-                if (!(lp as any)._apiId) await addPartnerToSummit(apiId, { partnerLogo: lp.logo });
-            }
+            try {
+                const remotePartners = await getPartnersBySummit(apiId);
+                const localPartnerIds = new Set(detail.partners.filter(p => (p as any)._apiId).map(p => (p as any)._apiId!));
+                for (const rp of remotePartners) {
+                    if (!localPartnerIds.has(rp.id)) await deletePartner(apiId, rp.id);
+                }
+                for (const lp of detail.partners) {
+                    if (!(lp as any)._apiId && lp.logo) await addPartnerToSummit(apiId, { partnerLogo: lp.logo });
+                }
+            } catch (e) { console.error('Failed to sync partners:', e); }
 
             // Gallery
-            const remoteGallery = await getGalleryBySummit(apiId);
-            const localGalleryIds = new Set(detail.gallery.filter(g => (g as any)._apiId).map(g => (g as any)._apiId!));
-            for (const rg of remoteGallery) {
-                if (!localGalleryIds.has(rg.id)) await deleteGalleryImage(apiId, rg.id);
-            }
-            for (const lg of detail.gallery) {
-                const url = typeof lg === 'string' ? lg : (lg as any).url;
-                if (!(lg as any)._apiId) await addGalleryImage(apiId, { imageUrl: url });
-            }
+            try {
+                const remoteGallery = await getGalleryBySummit(apiId);
+                const localGalleryIds = new Set(detail.gallery.filter(g => (g as any)._apiId).map(g => (g as any)._apiId!));
+                for (const rg of remoteGallery) {
+                    if (!localGalleryIds.has(rg.id)) await deleteGalleryImage(apiId, rg.id);
+                }
+                for (const lg of detail.gallery) {
+                    const url = typeof lg === 'string' ? lg : (lg as any).url;
+                    if (!(lg as any)._apiId && url) await addGalleryImage(apiId, { imageUrl: url });
+                }
+            } catch (e) { console.error('Failed to sync gallery:', e); }
 
             flash();
-        } catch (e) {
+        } catch (e: unknown) {
             console.error('Save failed:', e);
+            alert('Save failed: ' + (e instanceof Error ? e.message : 'Unknown error'));
         } finally {
             setSaving(false);
         }
@@ -596,6 +605,13 @@ export default function AdminSummitsPage() {
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Register URL</label>
                                     <input type="text" value={upcoming.register_url} onChange={(e) => setUpcoming({ ...upcoming, register_url: e.target.value })} className={inputCls} />
                                 </div>
+                            </div>
+                            <div>
+                                <CloudinaryImageUpload
+                                    label="Promo Image"
+                                    value={upcoming.promo_image || ''}
+                                    onUpload={(url) => setUpcoming({ ...upcoming, promo_image: url })}
+                                />
                             </div>
                         </div>
                     )}

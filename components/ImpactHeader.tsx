@@ -154,7 +154,7 @@ export default function AutoScrollImages() {
           onPointerUp={startAutoScroll}
           onPointerLeave={startAutoScroll}
         >
-          {[...heroImages, ...heroImages].map((src, index) => (
+          {heroImages.map((src, index) => (
             <div
               key={index}
               className="
@@ -192,14 +192,11 @@ export default function AutoScrollImages() {
           <h2 className="text-6xl font-extrabold mb-4">{impactNumber}</h2>
           <p className="tracking-widest text-sm mb-6">TEENAGERS IMPACTED</p>
 
-          <p className="text-gray-600 leading-relaxed mb-6">
-            {bodyText}
-          </p>
-
-          <p className="text-gray-600 leading-relaxed">
-            But beyond the numbers, what we have witnessed is resilience, curiosity, courage, and a deep hunger for direction.And this is only the beginning.
-            .
-          </p>
+          {bodyText.split('\n').filter(p => p.trim() !== '').slice(0, Math.ceil(bodyText.split('\n').filter(p => p.trim() !== '').length / 2)).map((p, i) => (
+            <p key={i} className="text-gray-600 leading-relaxed mb-6">
+              {p}
+            </p>
+          ))}
         </motion.div>
 
         {/* RIGHT */}
@@ -209,13 +206,11 @@ export default function AutoScrollImages() {
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
         >
-          <p className="pb-8 text-gray-600 leading-relaxed">
-            We have watched teenagers step onto stages for the first time. We have listened as they spoke about purpose, fear, identity, and dreams they had never said out loud before. We have seen them move from silence to confidence, from confusion to clarity, from observation to participation.
-
-            <br /><br />
-            As Trust Teens continues to grow, we hold one conviction firmly: impact is not only about how many teenagers we reach, but how deeply they are shaped. The numbers matter. But the transformation matters more.
-
-          </p>
+          {bodyText.split('\n').filter(p => p.trim() !== '').slice(Math.ceil(bodyText.split('\n').filter(p => p.trim() !== '').length / 2)).map((p, i) => (
+            <p key={i} className="pb-8 text-gray-600 leading-relaxed">
+              {p}
+            </p>
+          ))}
 
           <Image
             src="/images/ImpactImage_6.svg"

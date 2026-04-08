@@ -43,7 +43,8 @@ export async function updateImpactHero(
 // ═══════════════════════════════════════════════════════════════════════
 
 export async function fetchImpactMetrics(): Promise<ApiImpactMetric[]> {
-    return apiFetch<ApiImpactMetric[]>(`${BASE}/stats-grid`);
+    const data = await apiFetch<any[]>(`${BASE}/stats-grid`);
+    return data.map(item => ({ ...item, id: item.id || item._id }));
 }
 
 export async function createImpactMetric(
