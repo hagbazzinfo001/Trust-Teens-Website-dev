@@ -21,6 +21,7 @@ export interface ApiPastCampaign {
 }
 
 export interface ApiUpcoming {
+    id?: number;
     isActive?: boolean;
     campaignName: string;
     description: string;

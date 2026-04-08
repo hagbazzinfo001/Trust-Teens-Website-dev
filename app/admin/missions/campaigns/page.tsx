@@ -174,7 +174,7 @@ export default function AdminCampaignsPage() {
         try {
             const data = await fetchUpcoming();
             if (data) {
-                setUpcomingApiId(data.id);
+                setUpcomingApiId(data.id ?? null);
                 setUpcoming({
                     is_active: data.isActive ?? true,
                     name: data.campaignName || '',
